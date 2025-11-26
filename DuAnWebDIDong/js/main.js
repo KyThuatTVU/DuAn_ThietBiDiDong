@@ -842,13 +842,44 @@ function renderProductCard(product) {
     `;
 }
 
+// ==================== RENDER PRODUCT CARD WITHOUT BADGES ====================
+function renderProductCardWithoutBadges(product) {
+    return `
+        <div class="col-md-3 col-sm-6 col-6">
+            <div class="card product-card">
+                <a href="chitiet.html?id=${product.id}">
+                    <img src="${product.image}" class="card-img-top" alt="${product.name}">
+                </a>
+                <div class="card-body">
+                    <h5 class="product-name">
+                        <a href="chitiet.html?id=${product.id}" class="text-decoration-none text-dark">${product.name}</a>
+                    </h5>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="product-price">${formatCurrency(product.price)}</div>
+                        ${product.oldPrice ? `<div class="product-old-price">${formatCurrency(product.oldPrice)}</div>` : ''}
+                    </div>
+                    <div class="product-rating mb-2">
+                        ${'<i class="fas fa-star"></i>'.repeat(product.rating)}
+                        ${'<i class="far fa-star"></i>'.repeat(5 - product.rating)}
+                    </div>
+                    <div class="product-actions">
+                        <button class="btn btn-primary w-100 btn-sm" onclick="addToCart(${product.id})">
+                            <i class="fas fa-shopping-cart"></i> Thêm vào giỏ
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
 // ==================== LOAD HOT PRODUCTS ====================
 function loadHotProducts() {
     const hotProductsContainer = document.getElementById('hotProducts');
     if (!hotProductsContainer) return;
 
     const hotProducts = products.filter(p => p.hot).slice(0, 8);
-    hotProductsContainer.innerHTML = hotProducts.map(product => renderProductCard(product)).join('');
+    hotProductsContainer.innerHTML = hotProducts.map(product => renderProductCardWithoutBadges(product)).join('');
 }
 
 // ==================== BACK TO TOP ====================
