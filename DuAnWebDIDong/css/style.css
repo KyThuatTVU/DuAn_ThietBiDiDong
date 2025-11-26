@@ -225,4 +225,32 @@
     top: 80px;
 }
 
+/* ==================== PRODUCT SECTIONS ==================== */
+
+.products-section {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 15px;
+    margin: 20px 0;
+    padding: 40px 0;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.products-section h3 {
+    color: #333;
+    font-weight: 700;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+}
+
+.products-section .btn {
+    border-radius: 25px;
+    padding: 10px 30px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.products-section .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
 /* ==================== HẾT - CHỈ GIỮ NHỮNG GÌ BOOTSTRAP KHÔNG CÓ ==================== */

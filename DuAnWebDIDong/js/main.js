@@ -13,6 +13,7 @@ const products = [
         storage: 256,
         rating: 5,
         hot: true,
+        bestSelling: true,
         specs: {
             'Màn hình': '6.7", Super Retina XDR',
             'Camera sau': '48MP, 12MP, 12MP',
@@ -37,6 +38,7 @@ const products = [
         storage: 256,
         rating: 5,
         hot: true,
+        bestSelling: true,
         specs: {
             'Màn hình': '6.8", Dynamic AMOLED 2X',
             'Camera sau': '200MP, 50MP, 12MP, 10MP',
@@ -61,6 +63,7 @@ const products = [
         storage: 512,
         rating: 5,
         hot: true,
+        bestSelling: true,
         specs: {
             'Màn hình': '6.73", AMOLED',
             'Camera sau': '50MP, 50MP, 50MP, 50MP',
@@ -85,6 +88,7 @@ const products = [
         storage: 256,
         rating: 4,
         hot: true,
+        bestSelling: true,
         specs: {
             'Màn hình': '6.7", AMOLED',
             'Camera sau': '64MP, 8MP, 2MP',
@@ -109,6 +113,7 @@ const products = [
         storage: 256,
         rating: 4,
         hot: false,
+        bestSelling: true,
         specs: {
             'Màn hình': '6.78", AMOLED',
             'Camera sau': '50MP, 8MP',
@@ -133,6 +138,7 @@ const products = [
         storage: 256,
         rating: 4,
         hot: true,
+        bestSelling: true,
         specs: {
             'Màn hình': '6.7", AMOLED',
             'Camera sau': '50MP, 64MP, 8MP',
@@ -373,6 +379,7 @@ const products = [
         storage: 128,
         rating: 4,
         hot: true,
+        bestSelling: true,
         specs: {
             'Màn hình': '6.6", Super AMOLED',
             'Camera sau': '50MP, 12MP, 5MP',
@@ -397,6 +404,7 @@ const products = [
         storage: 256,
         rating: 4,
         hot: true,
+        bestSelling: true,
         specs: {
             'Màn hình': '6.67", AMOLED 120Hz',
             'Camera sau': '200MP, 8MP, 2MP',
@@ -882,6 +890,24 @@ function loadHotProducts() {
     hotProductsContainer.innerHTML = hotProducts.map(product => renderProductCardWithoutBadges(product)).join('');
 }
 
+// ==================== LOAD DISCOUNT PRODUCTS ====================
+function loadDiscountProducts() {
+    const discountProductsContainer = document.getElementById('discountProducts');
+    if (!discountProductsContainer) return;
+
+    const discountProducts = products.filter(p => p.discount > 0).slice(0, 8);
+    discountProductsContainer.innerHTML = discountProducts.map(product => renderProductCardWithoutBadges(product)).join('');
+}
+
+// ==================== LOAD BEST SELLING PRODUCTS ====================
+function loadBestSellingProducts() {
+    const bestSellingProductsContainer = document.getElementById('bestSellingProducts');
+    if (!bestSellingProductsContainer) return;
+
+    const bestSellingProducts = products.filter(p => p.bestSelling).slice(0, 8);
+    bestSellingProductsContainer.innerHTML = bestSellingProducts.map(product => renderProductCardWithoutBadges(product)).join('');
+}
+
 // ==================== BACK TO TOP ====================
 function initBackToTop() {
     const backToTopBtn = document.getElementById('backToTop');
@@ -945,6 +971,8 @@ function initSearch() {
 document.addEventListener('DOMContentLoaded', () => {
     updateCartCount();
     loadHotProducts();
+    loadDiscountProducts();
+    loadBestSellingProducts();
     initBackToTop();
     initBannerSwiper();
     initSearch();
