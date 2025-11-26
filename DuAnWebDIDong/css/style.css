@@ -1,0 +1,228 @@
+/* ==================== CUSTOM CSS (CHỈ NHỮNG GÌ BOOTSTRAP KHÔNG CÓ) ==================== */
+/* Bootstrap đã có reset CSS, chỉ cần override màu primary */
+
+:root {
+    --bs-primary: #0066cc;
+    --bs-primary-rgb: 0, 102, 204;
+}
+
+/* Override màu primary của Bootstrap */
+.btn-primary {
+    --bs-btn-bg: #0066cc;
+    --bs-btn-border-color: #0066cc;
+    --bs-btn-hover-bg: #0052a3;
+    --bs-btn-hover-border-color: #0052a3;
+}
+
+.text-primary {
+    color: #0066cc !important;
+}
+
+.bg-primary {
+    background-color: #0066cc !important;
+}
+
+.border-primary {
+    border-color: #0066cc !important;
+}
+
+/* Override màu primary của Bootstrap */
+.btn-primary {
+    --bs-btn-bg: #0066cc;
+    --bs-btn-border-color: #0066cc;
+    --bs-btn-hover-bg: #0052a3;
+    --bs-btn-hover-border-color: #0052a3;
+}
+
+.text-primary {
+    color: #0066cc !important;
+}
+
+.bg-primary {
+    background-color: #0066cc !important;
+}
+
+.border-primary {
+    border-color: #0066cc !important;
+}
+
+/* ==================== SWIPER SLIDER CUSTOMIZATION ==================== */
+/* Bootstrap không có slider, cần giữ Swiper styles */
+
+.swiper-button-next,
+.swiper-button-prev {
+    color: #fff !important;
+    background: rgba(0, 0, 0, 0.3);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+
+.swiper-button-next:after,
+.swiper-button-prev:after {
+    font-size: 20px;
+}
+
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.swiper-pagination-bullet {
+    width: 12px;
+    height: 12px;
+    background: #fff;
+    opacity: 0.5;
+}
+
+.swiper-pagination-bullet-active {
+    background: #0066cc;
+    opacity: 1;
+    width: 30px;
+    border-radius: 6px;
+}
+
+/* ==================== ANIMATIONS (Bootstrap không có) ==================== */
+
+@keyframes floatAnimation {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-20px);
+    }
+}
+
+.banner-product-image {
+    animation: floatAnimation 3s ease-in-out infinite;
+}
+
+@keyframes pulseAnimation {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.02);
+    }
+}
+
+.flash-sale-banner {
+    animation: pulseAnimation 2s ease-in-out infinite;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.loading {
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(0, 102, 204, 0.2);
+    border-top-color: #0066cc;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+/* ==================== PRODUCT CARD IMAGE (Giữ nguyên để hiển thị ảnh đẹp) ==================== */
+
+.product-card img {
+    height: 250px;
+    object-fit: contain;
+    transition: transform 0.3s;
+}
+
+.product-card:hover img {
+    transform: scale(1.05);
+}
+
+/* ==================== TEXT TRUNCATE (Bootstrap có nhưng cần custom cho 2 dòng) ==================== */
+
+.product-name {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    min-height: 48px;
+}
+
+/* ==================== CUSTOM SCROLLBAR (Bootstrap không có) ==================== */
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #0066cc;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #004a99;
+}
+
+/* ==================== RATING STARS (Bootstrap không có) ==================== */
+
+.rating-star {
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.rating-star:hover,
+.rating-star.active {
+    color: #ffc107;
+}
+
+/* ==================== STICKY FILTER SIDEBAR ==================== */
+
+.filter-sidebar {
+    position: sticky;
+    top: 80px;
+}
+
+/* ==================== HẾT - CHỈ GIỮ NHỮNG GÌ BOOTSTRAP KHÔNG CÓ ==================== */

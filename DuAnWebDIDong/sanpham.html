@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh sách sản phẩm - Thế Giới Di Động</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Header -->
+<header class="header-top py-2">
+  <div class="container-fluid px-4">
+    <div class="d-flex align-items-center justify-content-between flex-wrap">
+
+      <!-- Logo -->
+      <div class="logo d-flex align-items-center">
+        <a href="index.html" class="text-decoration-none d-flex align-items-center">
+          <i class="fas fa-mobile-alt fa-2x text-dark me-2"></i>
+          <span class="fw-bold fs-4 text-dark">Thế Giới Di Động</span>
+        </a>
+      </div>
+
+      <!-- Thanh tìm kiếm -->
+      <form class="search-form flex-grow-1 mx-3" style="max-width:600px;">
+        <div class="input-group rounded-pill overflow-hidden shadow-sm">
+          <input type="text" class="form-control border-0" placeholder="Bạn cần tìm gì?" id="searchInput">
+          <button class="btn btn-light px-4" type="submit">
+            <i class="fas fa-search text-dark"></i>
+          </button>
+        </div>
+      </form>
+
+      <!-- Hành động -->
+      <div class="header-actions d-flex align-items-center gap-4 flex-shrink-0">
+        <a href="lienhe.html" class="text-dark text-decoration-none d-flex align-items-center gap-1">
+          <i class="fas fa-headset"></i> <span>Hỗ trợ</span>
+        </a>
+        <a href="login.html" class="text-dark text-decoration-none d-flex align-items-center gap-1" id="userAccountLink">
+          <i class="fas fa-user"></i> <span>Đăng nhập</span>
+        </a>
+        <a href="giohang.html" class="text-dark text-decoration-none position-relative d-flex align-items-center gap-1">
+          <i class="fas fa-shopping-cart"></i> <span>Giỏ hàng</span>
+          <span class="badge bg-danger position-absolute top-0 start-100 translate-middle" id="cartCount">0</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-tgdd sticky-top shadow-sm">
+  <div class="container-fluid px-4">
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+      <ul class="navbar-nav flex-wrap justify-content-center text-center">
+        <li class="nav-item px-3">
+          <a class="nav-link fw-semibold text-dark" href="index.html">
+            <i class="fas fa-home"></i> Trang chủ
+          </a>
+        </li>
+        <li class="nav-item px-3">
+          <a class="nav-link fw-semibold text-dark" href="sanpham.html">
+            <i class="fas fa-mobile-alt"></i> Sản phẩm
+          </a>
+        </li>
+        <li class="nav-item px-3">
+          <a class="nav-link fw-semibold text-dark" href="danhgia.html">
+            <i class="fas fa-star"></i> Đánh giá
+          </a>
+        </li>
+        <li class="nav-item px-3">
+          <a class="nav-link fw-semibold text-dark" href="lienhe.html">
+            <i class="fas fa-envelope"></i> Liên hệ
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- CSS -->
+<style>
+/* ========== MÀU CHỦ ĐẠO ========== */
+.header-top {
+  background-color: #FFD500; /* vàng đậm thương hiệu TGDD */
+}
+
+.bg-tgdd {
+  background-color: #FFD500;
+}
+
+.navbar .nav-link {
+  color: #000 !important;
+  transition: 0.3s;
+}
+
+.navbar .nav-link:hover {
+  text-decoration: underline;
+  color: #000 !important;
+}
+
+/* ========== SEARCH BAR ========== */
+.search-form input {
+  height: 42px;
+}
+
+.search-form input::placeholder {
+  color: #666;
+}
+
+.search-form input:focus {
+  box-shadow: none;
+}
+
+.search-form .btn {
+  background-color: #fff;
+}
+
+/* ========== BUTTON STYLE ========== */
+.header-actions a {
+  font-weight: 500;
+}
+
+.header-actions i {
+  color: #222;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 992px) {
+  .search-form {
+    order: 3;
+    width: 100%;
+    margin-top: 10px;
+  }
+}
+</style>
+
+    <!-- Breadcrumb -->
+    <section class="breadcrumb-section py-3 bg-light">
+        <div class="container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="index.html">Trang chủ</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Điện thoại</li>
+                </ol>
+            </nav>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section class="products-listing py-4">
+        <div class="container">
+            <div class="row">
+                <!-- Filter Sidebar -->
+                <div class="col-lg-3">
+                    <div class="filter-sidebar">
+                        <h5 class="mb-3"><i class="fas fa-filter"></i> Bộ lọc sản phẩm</h5>
+                        
+                        <!-- Price Filter -->
+                        <div class="filter-group mb-4">
+                            <h6 class="fw-bold">Mức giá</h6>
+                            <div class="form-check">
+                                <input class="form-check-input filter-price" type="checkbox" value="0-5" id="price1">
+                                <label class="form-check-label" for="price1">
+                                    Dưới 5 triệu
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input filter-price" type="checkbox" value="5-10" id="price2">
+                                <label class="form-check-label" for="price2">
+                                    5 - 10 triệu
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input filter-price" type="checkbox" value="10-15" id="price3">
+                                <label class="form-check-label" for="price3">
+                                    10 - 15 triệu
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input filter-price" type="checkbox" value="15-20" id="price4">
+                                <label class="form-check-label" for="price4">
+                                    15 - 20 triệu
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input filter-price" type="checkbox" value="20-100" id="price5">
+                                <label class="form-check-label" for="price5">
+                                    Trên 20 triệu
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Brand Filter -->
+                        <div class="filter-group mb-4">
+                            <h6 class="fw-bold">Hãng</h6>
+                            <div class="form-check">
+                                <input class="form-check-input filter-brand" type="checkbox" value="Apple" id="brand1">
+                                <label class="form-check-label" for="brand1">
+                                    <i class="fab fa-apple"></i> Apple
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input filter-brand" type="checkbox" value="Samsung" id="brand2">
+                                <label class="form-check-label" for="brand2">
+                                    Samsung
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input filter-brand" type="checkbox" value="Xiaomi" id="brand3">
+                                <label class="form-check-label" for="brand3">
+                                    Xiaomi
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input filter-brand" type="checkbox" value="OPPO" id="brand4">
+                                <label class="form-check-label" for="brand4">
+                                    OPPO
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input filter-brand" type="checkbox" value="Vivo" id="brand5">
+                                <label class="form-check-label" for="brand5">
+                                    Vivo
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input filter-brand" type="checkbox" value="Realme" id="brand6">
+                                <label class="form-check-label" for="brand6">
+                                    Realme
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- RAM Filter -->
+                        <div class="filter-group mb-4">
+                            <h6 class="fw-bold">Dung lượng RAM</h6>
+                            <div class="form-check">
+                                <input class="form-check-input filter-ram" type="checkbox" value="4" id="ram1">
+                                <label class="form-check-label" for="ram1">4GB</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input filter-ram" type="checkbox" value="6" id="ram2">
+                                <label class="form-check-label" for="ram2">6GB</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input filter-ram" type="checkbox" value="8" id="ram3">
+                                <label class="form-check-label" for="ram3">8GB</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input filter-ram" type="checkbox" value="12" id="ram4">
+                                <label class="form-check-label" for="ram4">12GB trở lên</label>
+                            </div>
+                        </div>
+
+                        <!-- Storage Filter -->
+                        <div class="filter-group mb-4">
+                            <h6 class="fw-bold">Bộ nhớ trong</h6>
+                            <div class="form-check">
+                                <input class="form-check-input filter-storage" type="checkbox" value="64" id="storage1">
+                                <label class="form-check-label" for="storage1">64GB</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input filter-storage" type="checkbox" value="128" id="storage2">
+                                <label class="form-check-label" for="storage2">128GB</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input filter-storage" type="checkbox" value="256" id="storage3">
+                                <label class="form-check-label" for="storage3">256GB</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input filter-storage" type="checkbox" value="512" id="storage4">
+                                <label class="form-check-label" for="storage4">512GB trở lên</label>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-danger w-100" onclick="resetFilters()">
+                            <i class="fas fa-redo"></i> Xóa bộ lọc
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Products Grid -->
+                <div class="col-lg-9">
+                    <!-- Sort and Count -->
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <span id="productCount" class="text-muted">Tìm thấy 0 sản phẩm</span>
+                        </div>
+                        <div>
+                            <select class="form-select" id="sortSelect">
+                                <option value="default">Sắp xếp mặc định</option>
+                                <option value="price-asc">Giá tăng dần</option>
+                                <option value="price-desc">Giá giảm dần</option>
+                                <option value="name-asc">Tên A-Z</option>
+                                <option value="name-desc">Tên Z-A</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Products Grid -->
+                    <div class="row g-3" id="productsList">
+                        <!-- Products will be loaded by JavaScript -->
+                    </div>
+
+                    <!-- Pagination -->
+                    <nav aria-label="Page navigation" class="mt-4">
+                        <ul class="pagination justify-content-center" id="pagination">
+                            <!-- Pagination will be generated by JavaScript -->
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer bg-dark text-light py-5">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-md-3">
+                    <h5 class="text-warning mb-3">Thế Giới Di Động</h5>
+                    <p>Hệ thống bán lẻ điện thoại di động hàng đầu Việt Nam</p>
+                    <div class="social-links mt-3">
+                        <a href="#" class="text-light me-3"><i class="fab fa-facebook fa-2x"></i></a>
+                        <a href="#" class="text-light me-3"><i class="fab fa-instagram fa-2x"></i></a>
+                        <a href="#" class="text-light me-3"><i class="fab fa-youtube fa-2x"></i></a>
+                        <a href="#" class="text-light"><i class="fab fa-tiktok fa-2x"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <h5 class="text-warning mb-3">Thông tin</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-light text-decoration-none">Giới thiệu công ty</a></li>
+                        <li><a href="#" class="text-light text-decoration-none">Chính sách bảo mật</a></li>
+                        <li><a href="#" class="text-light text-decoration-none">Quy chế hoạt động</a></li>
+                        <li><a href="#" class="text-light text-decoration-none">Kiểm tra hóa đơn</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5 class="text-warning mb-3">Hỗ trợ</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-light text-decoration-none">Hướng dẫn mua hàng</a></li>
+                        <li><a href="#" class="text-light text-decoration-none">Hướng dẫn thanh toán</a></li>
+                        <li><a href="#" class="text-light text-decoration-none">Chính sách đổi trả</a></li>
+                        <li><a href="#" class="text-light text-decoration-none">Bảo hành & sửa chữa</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5 class="text-warning mb-3">Liên hệ</h5>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-phone"></i> Hotline: 1800.6789</li>
+                        <li><i class="fas fa-envelope"></i> Email: info@thegioididong.com</li>
+                        <li><i class="fas fa-map-marker-alt"></i> 123 Đường ABC, Quận 1, TP.HCM</li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="my-4 bg-light">
+            <div class="text-center">
+                <p class="mb-0">&copy; 2025 Thế Giới Di Động. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <button id="backToTop" class="btn btn-primary btn-floating">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script src="js/auth.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/products.js"></script>
+</body>
+</html>
