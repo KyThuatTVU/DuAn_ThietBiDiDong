@@ -57,8 +57,14 @@ function showSection(sectionName) {
 
 // Load dữ liệu dashboard
 function loadDashboard() {
+    // Load từ localStorage nếu có
+    const storedProducts = JSON.parse(localStorage.getItem('products'));
+    if (storedProducts) {
+        window.products = storedProducts;
+    }
+    
     // Đếm sản phẩm
-    const totalProducts = products ? products.length : 0;
+    const totalProducts = window.products ? window.products.length : 0;
     document.getElementById('totalProducts').textContent = totalProducts;
     
     // Đếm đơn hàng từ localStorage
@@ -111,14 +117,21 @@ function loadRecentOrders() {
 
 // Load sản phẩm
 function loadProducts() {
+    // Load từ localStorage nếu có
+    const storedProducts = JSON.parse(localStorage.getItem('products'));
+    if (storedProducts) {
+        // Update global products array
+        window.products = storedProducts;
+    }
+    
     const tbody = document.getElementById('productsTable');
     
-    if (!products || products.length === 0) {
+    if (!window.products || window.products.length === 0) {
         tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">Chưa có sản phẩm nào</td></tr>';
         return;
     }
     
-    tbody.innerHTML = products.map(product => `
+    tbody.innerHTML = window.products.map(product => `
         <tr>
             <td>${product.id}</td>
             <td><img src="${product.image}" alt="${product.name}" style="width: 50px; height: 50px; object-fit: contain;"></td>
@@ -141,7 +154,7 @@ function loadProducts() {
 
 // Chỉnh sửa sản phẩm
 function editProduct(id) {
-    const product = products.find(p => p.id === id);
+    const product = window.products.find(p => p.id === id);
     if (product) {
         // Điền dữ liệu vào form
         document.getElementById('productId').value = product.id;
@@ -156,6 +169,7 @@ function editProduct(id) {
         document.getElementById('productCategory').value = product.category || '';
         document.getElementById('productDescription').value = product.description || '';
         document.getElementById('productHot').checked = product.hot || false;
+        document.getElementById('productBestSelling').checked = product.bestSelling || false;
         
         // Đổi tiêu đề modal
         document.getElementById('productModalTitle').textContent = 'Chỉnh sửa sản phẩm';
@@ -199,38 +213,37 @@ function saveProduct() {
         category: document.getElementById('productCategory').value,
         description: document.getElementById('productDescription').value,
         hot: document.getElementById('productHot').checked,
+        bestSelling: document.getElementById('productBestSelling').checked,
         specs: {
-            screen: 'Chưa cập nhật',
-            os: 'Chưa cập nhật',
-            camera: 'Chưa cập nhật',
-            cameraSelfie: 'Chưa cập nhật',
-            cpu: 'Chưa cập nhật',
-            ram: document.getElementById('productRam').value,
-            storage: document.getElementById('productStorage').value,
-            sim: 'Chưa cập nhật',
-            battery: 'Chưa cập nhật'
+            'Màn hình': 'Chưa cập nhật',
+            'Camera sau': 'Chưa cập nhật',
+            'Camera trước': 'Chưa cập nhật',
+            'CPU': 'Chưa cập nhật',
+            'RAM': document.getElementById('productRam').value,
+            'Bộ nhớ trong': document.getElementById('productStorage').value,
+            'Pin': 'Chưa cập nhật'
         }
     };
     
     if (productId) {
         // Cập nhật sản phẩm
-        const index = products.findIndex(p => p.id == productId);
+        const index = window.products.findIndex(p => p.id == productId);
         if (index !== -1) {
             productData.id = parseInt(productId);
             productData.discount = productData.oldPrice ? Math.round(((productData.oldPrice - productData.price) / productData.oldPrice) * 100) : 0;
-            products[index] = { ...products[index], ...productData };
+            window.products[index] = { ...window.products[index], ...productData };
             showNotification('Cập nhật sản phẩm thành công!', 'success');
         }
     } else {
         // Thêm sản phẩm mới
-        const newId = Math.max(...products.map(p => p.id)) + 1;
+        const newId = Math.max(...window.products.map(p => p.id)) + 1;
         productData.id = newId;
         productData.discount = productData.oldPrice ? Math.round(((productData.oldPrice - productData.price) / productData.oldPrice) * 100) : 0;
-        products.push(productData);
+        window.products.push(productData);
         showNotification('Thêm sản phẩm thành công!', 'success');
     }
     
-    // Lưu vào localStorage
+    // Lưu vào localStorage để đồng bộ
     localStorage.setItem('products', JSON.stringify(products));
     
     // Đóng modal
@@ -245,11 +258,11 @@ function saveProduct() {
 // Xóa sản phẩm
 function deleteProduct(id) {
     if (confirm('Bạn có chắc muốn xóa sản phẩm này?')) {
-        const index = products.findIndex(p => p.id === id);
+        const index = window.products.findIndex(p => p.id === id);
         if (index !== -1) {
-            products.splice(index, 1);
+            window.products.splice(index, 1);
             // Lưu vào localStorage
-            localStorage.setItem('products', JSON.stringify(products));
+            localStorage.setItem('products', JSON.stringify(window.products));
             loadProducts();
             loadDashboard();
             showNotification('Đã xóa sản phẩm thành công!', 'success');
@@ -770,6 +783,15 @@ function getStatusColor(status) {
 // Khởi tạo khi trang load
 document.addEventListener('DOMContentLoaded', function() {
     checkAuth();
+    
+    // Load products from localStorage or use default
+    const storedProducts = JSON.parse(localStorage.getItem('products'));
+    if (storedProducts) {
+        window.products = storedProducts;
+    } else if (typeof products !== 'undefined') {
+        window.products = products;
+    }
+    
     loadDashboard();
     loadProducts();
     loadOrders();

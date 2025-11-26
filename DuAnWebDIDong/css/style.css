@@ -253,4 +253,15 @@
     box-shadow: 0 5px 15px rgba(0,0,0,0.2);
 }
 
+/* ==================== ADDITIONAL LINKS FOOTER ==================== */
+
+.additional-links-footer {
+    border-top: 1px solid #495057;
+}
+
+.additional-links-footer a:hover {
+    color: #ffc107 !important;
+    text-decoration: underline;
+}
+
 /* ==================== HẾT - CHỈ GIỮ NHỮNG GÌ BOOTSTRAP KHÔNG CÓ ==================== */

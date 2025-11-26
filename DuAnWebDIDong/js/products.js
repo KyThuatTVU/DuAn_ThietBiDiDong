@@ -8,134 +8,56 @@ const productsPerPage = 12;
 
 // ==================== FILTER PRODUCTS ====================
 function filterProducts() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const searchTerm = urlParams.get('search')?.toLowerCase() || '';
-    const category = urlParams.get('category') || '';
-    const brand = urlParams.get('brand') || '';
-
-    // Get selected filters
-    const selectedPrices = Array.from(document.querySelectorAll('.filter-price:checked')).map(cb => cb.value);
-    const selectedBrands = Array.from(document.querySelectorAll('.filter-brand:checked')).map(cb => cb.value);
-    const selectedRAMs = Array.from(document.querySelectorAll('.filter-ram:checked')).map(cb => parseInt(cb.value));
-    const selectedStorages = Array.from(document.querySelectorAll('.filter-storage:checked')).map(cb => parseInt(cb.value));
-
-    filteredProducts = allProducts.filter(product => {
-        // Search filter
-        if (searchTerm && !product.name.toLowerCase().includes(searchTerm)) {
-            return false;
-        }
-
-        // Category filter
-        if (category && product.category !== category) {
-            return false;
-        }
-
-        // Brand filter from URL
-        if (brand && product.brand.toLowerCase() !== brand.toLowerCase()) {
-            return false;
-        }
-
-        // Price filter
-        if (selectedPrices.length > 0) {
-            const price = product.price / 1000000;
-            const matchPrice = selectedPrices.some(range => {
-                const [min, max] = range.split('-').map(Number);
-                return price >= min && price < max;
-            });
-            if (!matchPrice) return false;
-        }
-
-        // Brand filter from checkbox
-        if (selectedBrands.length > 0 && !selectedBrands.includes(product.brand)) {
-            return false;
-        }
-
-        // RAM filter
-        if (selectedRAMs.length > 0) {
-            const matchRAM = selectedRAMs.some(ram => {
-                if (ram === 12) {
-                    return product.ram >= 12;
-                }
-                return product.ram === ram;
-            });
-            if (!matchRAM) return false;
-        }
-
-        // Storage filter
-        if (selectedStorages.length > 0) {
-            const matchStorage = selectedStorages.some(storage => {
-                if (storage === 512) {
-                    return product.storage >= 512;
-                }
-                return product.storage === storage;
-            });
-            if (!matchStorage) return false;
-        }
-
-        return true;
-    });
-
-    currentPage = 1;
-    sortProducts();
+    applyFilters(); // Use the new applyFilters function
 }
 
 // ==================== SORT PRODUCTS ====================
 function sortProducts() {
-    const sortValue = document.getElementById('sortSelect').value;
-
-    switch(sortValue) {
-        case 'price-asc':
-            filteredProducts.sort((a, b) => a.price - b.price);
-            break;
-        case 'price-desc':
-            filteredProducts.sort((a, b) => b.price - a.price);
-            break;
-        case 'name-asc':
-            filteredProducts.sort((a, b) => a.name.localeCompare(b.name));
-            break;
-        case 'name-desc':
-            filteredProducts.sort((a, b) => b.name.localeCompare(a.name));
-            break;
-        default:
-            // Default sort
-            break;
-    }
-
-    renderProducts();
+    applyFilters(); // Use the new applyFilters function which includes sorting
 }
 
 // ==================== RENDER PRODUCTS ====================
 function renderProducts() {
     const container = document.getElementById('productsList');
     const countElement = document.getElementById('productCount');
+    const loadingState = document.getElementById('loadingState');
+    const emptyState = document.getElementById('emptyState');
 
     if (!container) return;
 
-    // Update count
-    if (countElement) {
-        countElement.textContent = `Tìm thấy ${filteredProducts.length} sản phẩm`;
-    }
+    // Show loading state
+    if (loadingState) loadingState.style.display = 'block';
+    if (emptyState) emptyState.style.display = 'none';
+    container.style.display = 'none';
 
-    // Calculate pagination
-    const startIndex = (currentPage - 1) * productsPerPage;
-    const endIndex = startIndex + productsPerPage;
-    const productsToShow = filteredProducts.slice(startIndex, endIndex);
+    // Simulate loading delay for better UX
+    setTimeout(() => {
+        // Hide loading state
+        if (loadingState) loadingState.style.display = 'none';
 
-    // Render products
-    if (productsToShow.length === 0) {
-        container.innerHTML = `
-            <div class="col-12 text-center py-5">
-                <i class="fas fa-box-open fa-5x text-muted mb-3"></i>
-                <h4>Không tìm thấy sản phẩm nào</h4>
-                <p class="text-muted">Vui lòng thử lại với bộ lọc khác</p>
-            </div>
-        `;
-    } else {
-        container.innerHTML = productsToShow.map(product => renderProductCard(product)).join('');
-    }
+        // Update count
+        if (countElement) {
+            countElement.textContent = `Tìm thấy ${filteredProducts.length} sản phẩm`;
+        }
 
-    renderPagination();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+        // Calculate pagination
+        const startIndex = (currentPage - 1) * productsPerPage;
+        const endIndex = startIndex + productsPerPage;
+        const productsToShow = filteredProducts.slice(startIndex, endIndex);
+
+        // Render products
+        if (productsToShow.length === 0) {
+            if (emptyState) emptyState.style.display = 'block';
+            container.style.display = 'none';
+        } else {
+            container.innerHTML = productsToShow.map(product => renderProductCard(product)).join('');
+            container.style.display = '';
+            if (emptyState) emptyState.style.display = 'none';
+        }
+
+        renderPagination();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 300); // 300ms delay for smooth loading
 }
 
 // ==================== RENDER PAGINATION ====================
@@ -207,12 +129,143 @@ function searchProducts() {
 
 // ==================== RESET FILTERS ====================
 function resetFilters() {
+    // Reset old filter checkboxes
     document.querySelectorAll('.filter-price, .filter-brand, .filter-ram, .filter-storage').forEach(checkbox => {
         checkbox.checked = false;
     });
-    
+
+    // Reset new filter inputs
+    const searchInput = document.getElementById('searchInput');
+    const minPriceInput = document.getElementById('minPrice');
+    const maxPriceInput = document.getElementById('maxPrice');
+    const categoryCheckboxes = document.querySelectorAll('input[name="category"]');
+    const brandCheckboxes = document.querySelectorAll('input[name="brand"]');
+
+    if (searchInput) searchInput.value = '';
+    if (minPriceInput) minPriceInput.value = '';
+    if (maxPriceInput) maxPriceInput.value = '';
+
+    categoryCheckboxes.forEach(checkbox => checkbox.checked = false);
+    brandCheckboxes.forEach(checkbox => checkbox.checked = false);
+
+    // Reset sort
+    const sortSelect = document.getElementById('sortSelect');
+    if (sortSelect) sortSelect.value = 'default';
+
     // Remove URL parameters
     window.location.href = 'sanpham.html';
+}
+
+// ==================== APPLY FILTERS ====================
+function applyFilters() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlSearchTerm = urlParams.get('search')?.toLowerCase() || '';
+    const urlCategory = urlParams.get('category') || '';
+    const urlBrand = urlParams.get('brand') || '';
+
+    const searchInput = document.getElementById('searchInput')?.value.toLowerCase() || '';
+    const selectedBrands = Array.from(document.querySelectorAll('input[name="brand"]:checked')).map(cb => cb.value);
+    const selectedCategories = Array.from(document.querySelectorAll('input[name="category"]:checked')).map(cb => cb.value);
+    const minPrice = parseInt(document.getElementById('minPrice')?.value) || 0;
+    const maxPrice = parseInt(document.getElementById('maxPrice')?.value) || Infinity;
+    const sortBy = document.getElementById('sortSelect')?.value || 'name';
+
+    // Get selected filters from old checkboxes
+    const selectedPrices = Array.from(document.querySelectorAll('.filter-price:checked')).map(cb => cb.value);
+    const selectedBrandsOld = Array.from(document.querySelectorAll('.filter-brand:checked')).map(cb => cb.value);
+    const selectedRAMs = Array.from(document.querySelectorAll('.filter-ram:checked')).map(cb => parseInt(cb.value));
+    const selectedStorages = Array.from(document.querySelectorAll('.filter-storage:checked')).map(cb => parseInt(cb.value));
+
+    // Combine search terms
+    const searchTerm = searchInput || urlSearchTerm;
+
+    // Filter products
+    filteredProducts = products.filter(product => {
+        // Search filter
+        if (searchTerm && !product.name.toLowerCase().includes(searchTerm) &&
+            !product.brand.toLowerCase().includes(searchTerm) &&
+            !product.category.toLowerCase().includes(searchTerm)) {
+            return false;
+        }
+
+        // Category filter from URL or checkboxes
+        if (urlCategory && product.category !== urlCategory) {
+            return false;
+        }
+        if (selectedCategories.length > 0 && !selectedCategories.includes(product.category)) {
+            return false;
+        }
+
+        // Brand filter from URL, old checkboxes, or new checkboxes
+        if (urlBrand && product.brand.toLowerCase() !== urlBrand.toLowerCase()) {
+            return false;
+        }
+        if (selectedBrandsOld.length > 0 && !selectedBrandsOld.includes(product.brand)) {
+            return false;
+        }
+        if (selectedBrands.length > 0 && !selectedBrands.includes(product.brand)) {
+            return false;
+        }
+
+        // Price filter from old checkboxes or new inputs
+        if (selectedPrices.length > 0) {
+            const price = product.price / 1000000;
+            const matchPrice = selectedPrices.some(range => {
+                const [min, max] = range.split('-').map(Number);
+                return price >= min && price < max;
+            });
+            if (!matchPrice) return false;
+        }
+        if (product.price < minPrice || product.price > maxPrice) {
+            return false;
+        }
+
+        // RAM filter
+        if (selectedRAMs.length > 0) {
+            const matchRAM = selectedRAMs.some(ram => {
+                if (ram === 12) {
+                    return product.ram >= 12;
+                }
+                return product.ram === ram;
+            });
+            if (!matchRAM) return false;
+        }
+
+        // Storage filter
+        if (selectedStorages.length > 0) {
+            const matchStorage = selectedStorages.some(storage => {
+                if (storage === 512) {
+                    return product.storage >= 512;
+                }
+                return product.storage === storage;
+            });
+            if (!matchStorage) return false;
+        }
+
+        return true;
+    });
+
+    // Sort products
+    filteredProducts.sort((a, b) => {
+        switch (sortBy) {
+            case 'price-asc':
+                return a.price - b.price;
+            case 'price-desc':
+                return b.price - a.price;
+            case 'name-asc':
+                return a.name.localeCompare(b.name);
+            case 'name-desc':
+                return b.name.localeCompare(a.name);
+            case 'rating-desc':
+                return b.rating - a.rating;
+            case 'name':
+            default:
+                return a.name.localeCompare(b.name);
+        }
+    });
+
+    currentPage = 1; // Reset to first page
+    renderProducts();
 }
 
 // ==================== INITIALIZE ====================
@@ -220,17 +273,50 @@ document.addEventListener('DOMContentLoaded', () => {
     // Check for URL brand parameter and pre-select
     const urlParams = new URLSearchParams(window.location.search);
     const brandParam = urlParams.get('brand');
-    
+
     if (brandParam) {
+        // Pre-select in old filter checkboxes
         const brandCheckbox = document.querySelector(`.filter-brand[value="${brandParam}"]`);
         if (brandCheckbox) {
             brandCheckbox.checked = true;
         }
+        // Pre-select in new filter checkboxes
+        const newBrandCheckbox = document.querySelector(`input[name="brand"][value="${brandParam}"]`);
+        if (newBrandCheckbox) {
+            newBrandCheckbox.checked = true;
+        }
     }
 
-    // Add event listeners to filters
+    // Add event listeners to old filters
     document.querySelectorAll('.filter-price, .filter-brand, .filter-ram, .filter-storage').forEach(checkbox => {
         checkbox.addEventListener('change', filterProducts);
+    });
+
+    // Add event listeners for new filter inputs
+    const searchInput = document.getElementById('searchInput');
+    const minPriceInput = document.getElementById('minPrice');
+    const maxPriceInput = document.getElementById('maxPrice');
+    const categoryCheckboxes = document.querySelectorAll('input[name="category"]');
+    const brandCheckboxes = document.querySelectorAll('input[name="brand"]');
+
+    if (searchInput) {
+        searchInput.addEventListener('input', applyFilters);
+    }
+
+    if (minPriceInput) {
+        minPriceInput.addEventListener('input', applyFilters);
+    }
+
+    if (maxPriceInput) {
+        maxPriceInput.addEventListener('input', applyFilters);
+    }
+
+    categoryCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', applyFilters);
+    });
+
+    brandCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', applyFilters);
     });
 
     // Add event listener to sort

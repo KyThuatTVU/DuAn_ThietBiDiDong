@@ -1,5 +1,6 @@
 // ==================== PRODUCT DATA ====================
-const products = [
+// Load products from localStorage if available, otherwise use default data
+let products = JSON.parse(localStorage.getItem('products')) || [
     {
         id: 1,
         name: 'iPhone 15 Pro Max 256GB',
@@ -705,13 +706,109 @@ const products = [
         description: 'OPPO Find X6 Pro flagship đỉnh cao với bộ 3 camera Hasselblad 50MP và sạc nhanh 100W.'
     },
     {
-        id: 30,
-        name: 'Vivo X100 Pro 5G 512GB',
+        id: 31,
+        name: 'iPhone 15 Plus 128GB',
+        brand: 'Apple',
+        price: 22990000,
+        oldPrice: 25990000,
+        discount: 12,
+        image: 'https://cdn.tgdd.vn/Products/Images/42/305658/iphone-15-plus-blue-thumbnew-600x600.jpg',
+        category: 'phone',
+        ram: 6,
+        storage: 128,
+        rating: 5,
+        hot: false,
+        specs: {
+            'Màn hình': '6.7", Super Retina XDR',
+            'Camera sau': '48MP, 12MP',
+            'Camera trước': '12MP',
+            'CPU': 'Apple A16 Bionic',
+            'RAM': '6GB',
+            'Bộ nhớ trong': '128GB',
+            'Pin': '4383mAh, 20W'
+        },
+        description: 'iPhone 15 Plus với màn hình lớn 6.7 inch, pin trâu và camera chất lượng cao.'
+    },
+    {
+        id: 32,
+        name: 'Samsung Galaxy S23 Ultra 5G 256GB',
+        brand: 'Samsung',
+        price: 23990000,
+        oldPrice: 27990000,
+        discount: 14,
+        image: 'https://cdn.tgdd.vn/Products/Images/42/289700/samsung-galaxy-s23-ultra-den-thumb-600x600.jpg',
+        category: 'phone',
+        ram: 12,
+        storage: 256,
+        rating: 5,
+        hot: true,
+        specs: {
+            'Màn hình': '6.8", Dynamic AMOLED 2X',
+            'Camera sau': '200MP, 10MP, 10MP, 12MP',
+            'Camera trước': '12MP',
+            'CPU': 'Snapdragon 8 Gen 2',
+            'RAM': '12GB',
+            'Bộ nhớ trong': '256GB',
+            'Pin': '5000mAh, 45W'
+        },
+        description: 'Galaxy S23 Ultra với camera 200MP, S Pen tích hợp và hiệu năng mạnh mẽ.'
+    },
+    {
+        id: 33,
+        name: 'Xiaomi 13 5G 256GB',
+        brand: 'Xiaomi',
+        price: 16990000,
+        oldPrice: 19990000,
+        discount: 15,
+        image: 'https://cdn.tgdd.vn/Products/Images/42/309816/xiaomi-13-den-thumb-600x600.jpg',
+        category: 'phone',
+        ram: 12,
+        storage: 256,
+        rating: 5,
+        hot: true,
+        specs: {
+            'Màn hình': '6.36", AMOLED 120Hz',
+            'Camera sau': '50MP, 10MP, 12MP',
+            'Camera trước': '32MP',
+            'CPU': 'Snapdragon 8 Gen 2',
+            'RAM': '12GB',
+            'Bộ nhớ trong': '256GB',
+            'Pin': '4500mAh, 67W'
+        },
+        description: 'Xiaomi 13 với camera Leica, màn hình AMOLED 120Hz và hiệu năng đỉnh cao.'
+    },
+    {
+        id: 34,
+        name: 'OPPO Reno10 5G 256GB',
+        brand: 'OPPO',
+        price: 11990000,
+        oldPrice: 13990000,
+        discount: 14,
+        image: 'https://cdn.tgdd.vn/Products/Images/42/320536/oppo-reno10-xanh-thumb-600x600.jpg',
+        category: 'phone',
+        ram: 8,
+        storage: 256,
+        rating: 4,
+        hot: true,
+        specs: {
+            'Màn hình': '6.7", AMOLED 120Hz',
+            'Camera sau': '64MP, 32MP, 8MP',
+            'Camera trước': '32MP',
+            'CPU': 'Dimensity 7050',
+            'RAM': '8GB',
+            'Bộ nhớ trong': '256GB',
+            'Pin': '5000mAh, 67W'
+        },
+        description: 'OPPO Reno10 với camera 64MP, màn hình AMOLED 120Hz và thiết kế đẹp mắt.'
+    },
+    {
+        id: 35,
+        name: 'Vivo X90 Pro+ 5G 512GB',
         brand: 'Vivo',
-        price: 25990000,
-        oldPrice: 29990000,
-        discount: 13,
-        image: 'https://cdn.tgdd.vn/Products/Images/42/316771/vivo-x100-pro-xanh-thumb-600x600.jpg',
+        price: 29990000,
+        oldPrice: 34990000,
+        discount: 14,
+        image: 'https://cdn.tgdd.vn/Products/Images/42/309816/vivo-x90-pro-plus-xanh-thumb-600x600.jpg',
         category: 'phone',
         ram: 16,
         storage: 512,
@@ -719,16 +816,502 @@ const products = [
         hot: true,
         specs: {
             'Màn hình': '6.78", AMOLED 120Hz',
-            'Camera sau': '50MP, 50MP, 50MP',
+            'Camera sau': '50MP, 50MP, 50MP, 48MP',
             'Camera trước': '32MP',
-            'CPU': 'Dimensity 9300',
+            'CPU': 'Dimensity 9200+',
             'RAM': '16GB',
             'Bộ nhớ trong': '512GB',
-            'Pin': '5400mAh, 100W'
+            'Pin': '4700mAh, 80W'
         },
-        description: 'Vivo X100 Pro flagship cao cấp với camera Zeiss, chip Dimensity 9300 mạnh mẽ và sạc nhanh 100W.'
+        description: 'Vivo X90 Pro+ flagship với camera Zeiss, hiệu năng Dimensity 9200+ và sạc nhanh 80W.'
+    },
+    {
+        id: 36,
+        name: 'Realme GT Neo 5 5G 256GB',
+        brand: 'Realme',
+        price: 12990000,
+        oldPrice: 14990000,
+        discount: 13,
+        image: 'https://cdn.tgdd.vn/Products/Images/42/320722/realme-gt-neo-5-xanh-thumb-600x600.jpg',
+        category: 'phone',
+        ram: 12,
+        storage: 256,
+        rating: 5,
+        hot: true,
+        specs: {
+            'Màn hình': '6.74", AMOLED 144Hz',
+            'Camera sau': '50MP, 8MP, 2MP',
+            'Camera trước': '16MP',
+            'CPU': 'Dimensity 8200',
+            'RAM': '12GB',
+            'Bộ nhớ trong': '256GB',
+            'Pin': '5000mAh, 150W'
+        },
+        description: 'Realme GT Neo 5 với sạc siêu nhanh 150W, màn hình 144Hz và hiệu năng gaming.'
+    },
+    {
+        id: 37,
+        name: 'iPhone 14 128GB',
+        brand: 'Apple',
+        price: 18990000,
+        oldPrice: 21990000,
+        discount: 13,
+        image: 'https://cdn.tgdd.vn/Products/Images/42/289700/iphone-14-den-thumb-600x600.jpg',
+        category: 'phone',
+        ram: 6,
+        storage: 128,
+        rating: 4,
+        hot: false,
+        specs: {
+            'Màn hình': '6.1", Super Retina XDR',
+            'Camera sau': '12MP, 12MP',
+            'Camera trước': '12MP',
+            'CPU': 'Apple A15 Bionic',
+            'RAM': '6GB',
+            'Bộ nhớ trong': '128GB',
+            'Pin': '3279mAh, 20W'
+        },
+        description: 'iPhone 14 với Dynamic Island, camera cải tiến và hiệu năng ổn định.'
+    },
+    {
+        id: 38,
+        name: 'Samsung Galaxy A54 5G 128GB',
+        brand: 'Samsung',
+        price: 8990000,
+        oldPrice: 10990000,
+        discount: 18,
+        image: 'https://cdn.tgdd.vn/Products/Images/42/319730/samsung-galaxy-a54-xanh-thumb-600x600.jpg',
+        category: 'phone',
+        ram: 8,
+        storage: 128,
+        rating: 4,
+        hot: true,
+        bestSelling: true,
+        specs: {
+            'Màn hình': '6.4", Super AMOLED',
+            'Camera sau': '50MP, 12MP, 5MP',
+            'Camera trước': '32MP',
+            'CPU': 'Exynos 1380',
+            'RAM': '8GB',
+            'Bộ nhớ trong': '128GB',
+            'Pin': '5000mAh, 25W'
+        },
+        description: 'Galaxy A54 với camera 50MP, màn hình Super AMOLED và pin 5000mAh.'
+    },
+    {
+        id: 39,
+        name: 'Xiaomi Redmi Note 12 Pro 4G 256GB',
+        brand: 'Xiaomi',
+        price: 6990000,
+        oldPrice: 8490000,
+        discount: 18,
+        image: 'https://cdn.tgdd.vn/Products/Images/42/309816/xiaomi-redmi-note-12-pro-xanh-thumb-600x600.jpg',
+        category: 'phone',
+        ram: 8,
+        storage: 256,
+        rating: 4,
+        hot: false,
+        specs: {
+            'Màn hình': '6.67", AMOLED 120Hz',
+            'Camera sau': '108MP, 8MP, 2MP, 2MP',
+            'Camera trước': '16MP',
+            'CPU': 'Snapdragon 732G',
+            'RAM': '8GB',
+            'Bộ nhớ trong': '256GB',
+            'Pin': '5000mAh, 67W'
+        },
+        description: 'Redmi Note 12 Pro với camera 108MP, màn hình AMOLED 120Hz và giá hợp lý.'
+    },
+    {
+        id: 40,
+        name: 'OPPO A58 4G 128GB',
+        brand: 'OPPO',
+        price: 4990000,
+        oldPrice: 5990000,
+        discount: 17,
+        image: 'https://cdn.tgdd.vn/Products/Images/42/301973/oppo-a58-den-thumb-600x600.jpg',
+        category: 'phone',
+        ram: 6,
+        storage: 128,
+        rating: 4,
+        hot: false,
+        specs: {
+            'Màn hình': '6.56", IPS LCD 90Hz',
+            'Camera sau': '50MP, 2MP',
+            'Camera trước': '8MP',
+            'CPU': 'Helio G85',
+            'RAM': '6GB',
+            'Bộ nhớ trong': '128GB',
+            'Pin': '5000mAh, 33W'
+        },
+        description: 'OPPO A58 với camera 50MP, màn hình 90Hz và pin 5000mAh cho người dùng phổ thông.'
+    },
+    {
+        id: 41,
+        name: 'Vivo Y17s 4G 128GB',
+        brand: 'Vivo',
+        price: 4490000,
+        oldPrice: 5490000,
+        discount: 18,
+        image: 'https://cdn.tgdd.vn/Products/Images/42/313186/vivo-y17s-xanh-thumb-600x600.jpg',
+        category: 'phone',
+        ram: 6,
+        storage: 128,
+        rating: 4,
+        hot: false,
+        specs: {
+            'Màn hình': '6.56", IPS LCD',
+            'Camera sau': '50MP, 2MP',
+            'Camera trước': '8MP',
+            'CPU': 'Helio G85',
+            'RAM': '6GB',
+            'Bộ nhớ trong': '128GB',
+            'Pin': '5000mAh, 15W'
+        },
+        description: 'Vivo Y17s với camera 50MP, pin 5000mAh và thiết kế trẻ trung.'
+    },
+    {
+        id: 42,
+        name: 'Realme C55 4G 128GB',
+        brand: 'Realme',
+        price: 3990000,
+        oldPrice: 4990000,
+        discount: 20,
+        image: 'https://cdn.tgdd.vn/Products/Images/42/316695/realme-c55-xanh-thumb-600x600.jpg',
+        category: 'phone',
+        ram: 6,
+        storage: 128,
+        rating: 4,
+        hot: false,
+        specs: {
+            'Màn hình': '6.72", IPS LCD 90Hz',
+            'Camera sau': '64MP, 2MP',
+            'Camera trước': '8MP',
+            'CPU': 'Helio G88',
+            'RAM': '6GB',
+            'Bộ nhớ trong': '128GB',
+            'Pin': '5000mAh, 33W'
+        },
+        description: 'Realme C55 với camera 64MP, màn hình 90Hz và pin 5000mAh giá rẻ.'
+    },
+    {
+        id: 43,
+        name: 'iPhone SE (2022) 64GB',
+        brand: 'Apple',
+        price: 12990000,
+        oldPrice: 14990000,
+        discount: 13,
+        image: 'https://cdn.tgdd.vn/Products/Images/42/289700/iphone-se-2022-den-thumb-600x600.jpg',
+        category: 'phone',
+        ram: 4,
+        storage: 64,
+        rating: 4,
+        hot: false,
+        specs: {
+            'Màn hình': '4.7", Retina HD',
+            'Camera sau': '12MP',
+            'Camera trước': '7MP',
+            'CPU': 'Apple A15 Bionic',
+            'RAM': '4GB',
+            'Bộ nhớ trong': '64GB',
+            'Pin': '2018mAh, Lightning'
+        },
+        description: 'iPhone SE 2022 với thiết kế cổ điển, chip A15 Bionic và giá cả phải chăng.'
+    },
+    {
+        id: 44,
+        name: 'Samsung Galaxy M34 5G 128GB',
+        brand: 'Samsung',
+        price: 6990000,
+        oldPrice: 8490000,
+        discount: 18,
+        image: 'https://cdn.tgdd.vn/Products/Images/42/319730/samsung-galaxy-m34-xanh-thumb-600x600.jpg',
+        category: 'phone',
+        ram: 6,
+        storage: 128,
+        rating: 4,
+        hot: false,
+        specs: {
+            'Màn hình': '6.5", Super AMOLED',
+            'Camera sau': '50MP, 8MP, 2MP',
+            'Camera trước': '13MP',
+            'CPU': 'Exynos 1280',
+            'RAM': '6GB',
+            'Bộ nhớ trong': '128GB',
+            'Pin': '6000mAh, 25W'
+        },
+        description: 'Galaxy M34 với pin 6000mAh, camera 50MP và màn hình Super AMOLED.'
+    },
+    {
+        id: 45,
+        name: 'Xiaomi Redmi A2+ 64GB',
+        brand: 'Xiaomi',
+        price: 2490000,
+        oldPrice: 2990000,
+        discount: 17,
+        image: 'https://cdn.tgdd.vn/Products/Images/42/316965/xiaomi-redmi-a2-plus-den-thumb-600x600.jpg',
+        category: 'phone',
+        ram: 3,
+        storage: 64,
+        rating: 3,
+        hot: false,
+        specs: {
+            'Màn hình': '6.52", IPS LCD',
+            'Camera sau': '8MP, 0.08MP',
+            'Camera trước': '5MP',
+            'CPU': 'MediaTek Helio G36',
+            'RAM': '3GB',
+            'Bộ nhớ trong': '64GB',
+            'Pin': '5000mAh, 10W'
+        },
+        description: 'Redmi A2+ smartphone giá rẻ với pin 5000mAh và camera cơ bản.'
+    },
+    {
+        id: 46,
+        name: 'OPPO A17 4G 64GB',
+        brand: 'OPPO',
+        price: 3490000,
+        oldPrice: 4290000,
+        discount: 19,
+        image: 'https://cdn.tgdd.vn/Products/Images/42/301973/oppo-a17-xanh-thumb-600x600.jpg',
+        category: 'phone',
+        ram: 4,
+        storage: 64,
+        rating: 4,
+        hot: false,
+        specs: {
+            'Màn hình': '6.56", IPS LCD',
+            'Camera sau': '50MP, 0.3MP',
+            'Camera trước': '5MP',
+            'CPU': 'Helio G35',
+            'RAM': '4GB',
+            'Bộ nhớ trong': '64GB',
+            'Pin': '5000mAh, 10W'
+        },
+        description: 'OPPO A17 với camera 50MP, pin 5000mAh và thiết kế đơn giản.'
+    },
+    {
+        id: 47,
+        name: 'Vivo Y02s 4G 32GB',
+        brand: 'Vivo',
+        price: 2990000,
+        oldPrice: 3490000,
+        discount: 14,
+        image: 'https://cdn.tgdd.vn/Products/Images/42/313186/vivo-y02s-xanh-thumb-600x600.jpg',
+        category: 'phone',
+        ram: 3,
+        storage: 32,
+        rating: 3,
+        hot: false,
+        specs: {
+            'Màn hình': '6.51", IPS LCD',
+            'Camera sau': '8MP',
+            'Camera trước': '5MP',
+            'CPU': 'Helio P35',
+            'RAM': '3GB',
+            'Bộ nhớ trong': '32GB',
+            'Pin': '5000mAh, 10W'
+        },
+        description: 'Vivo Y02s smartphone cơ bản với pin 5000mAh và camera 8MP.'
+    },
+    {
+        id: 48,
+        name: 'Realme C30s 4G 32GB',
+        brand: 'Realme',
+        price: 2490000,
+        oldPrice: 2990000,
+        discount: 17,
+        image: 'https://cdn.tgdd.vn/Products/Images/42/316695/realme-c30s-xanh-thumb-600x600.jpg',
+        category: 'phone',
+        ram: 2,
+        storage: 32,
+        rating: 3,
+        hot: false,
+        specs: {
+            'Màn hình': '6.5", IPS LCD',
+            'Camera sau': '8MP',
+            'Camera trước': '5MP',
+            'CPU': 'Unisoc SC9863A',
+            'RAM': '2GB',
+            'Bộ nhớ trong': '32GB',
+            'Pin': '5000mAh, 10W'
+        },
+        description: 'Realme C30s smartphone giá rẻ với pin 5000mAh và camera cơ bản.'
+    },
+    {
+        id: 49,
+        name: 'Samsung Galaxy A14 5G 128GB',
+        brand: 'Samsung',
+        price: 5990000,
+        oldPrice: 6990000,
+        discount: 14,
+        image: 'https://cdn.tgdd.vn/Products/Images/42/319729/samsung-galaxy-a14-xanh-thumb-600x600.jpg',
+        category: 'phone',
+        ram: 6,
+        storage: 128,
+        rating: 4,
+        hot: false,
+        specs: {
+            'Màn hình': '6.6", PLS LCD',
+            'Camera sau': '50MP, 5MP, 2MP',
+            'Camera trước': '13MP',
+            'CPU': 'Exynos 1330',
+            'RAM': '6GB',
+            'Bộ nhớ trong': '128GB',
+            'Pin': '5000mAh, 15W'
+        },
+        description: 'Galaxy A14 với camera 50MP, pin 5000mAh và kết nối 5G.'
+    },
+    {
+        id: 50,
+        name: 'Xiaomi Redmi 12C 4GB',
+        brand: 'Xiaomi',
+        price: 2990000,
+        oldPrice: 3590000,
+        discount: 17,
+        image: 'https://cdn.tgdd.vn/Products/Images/42/316965/xiaomi-redmi-12c-xanh-thumb-600x600.jpg',
+        category: 'phone',
+        ram: 4,
+        storage: 128,
+        rating: 3,
+        hot: false,
+        specs: {
+            'Màn hình': '6.71", IPS LCD 60Hz',
+            'Camera sau': '50MP, 0.08MP',
+            'Camera trước': '5MP',
+            'CPU': 'MediaTek Helio G85',
+            'RAM': '4GB',
+            'Bộ nhớ trong': '128GB',
+            'Pin': '5000mAh, 10W'
+        },
+        description: 'Redmi 12C với camera 50MP, pin 5000mAh và giá cả phải chăng.'
+    },
+    {
+        id: 51,
+        name: 'OPPO A77s 4G 128GB',
+        brand: 'OPPO',
+        price: 5490000,
+        oldPrice: 6490000,
+        discount: 15,
+        image: 'https://cdn.tgdd.vn/Products/Images/42/301973/oppo-a77s-den-thumb-600x600.jpg',
+        category: 'phone',
+        ram: 8,
+        storage: 128,
+        rating: 4,
+        hot: false,
+        specs: {
+            'Màn hình': '6.56", IPS LCD 90Hz',
+            'Camera sau': '50MP, 2MP',
+            'Camera trước': '8MP',
+            'CPU': 'Helio G35',
+            'RAM': '8GB',
+            'Bộ nhớ trong': '128GB',
+            'Pin': '5000mAh, 33W'
+        },
+        description: 'OPPO A77s với camera 50MP, màn hình 90Hz và pin 5000mAh.'
+    },
+    {
+        id: 52,
+        name: 'Vivo Y22s 4G 128GB',
+        brand: 'Vivo',
+        price: 4990000,
+        oldPrice: 5990000,
+        discount: 17,
+        image: 'https://cdn.tgdd.vn/Products/Images/42/313186/vivo-y22s-xanh-thumb-600x600.jpg',
+        category: 'phone',
+        ram: 8,
+        storage: 128,
+        rating: 4,
+        hot: false,
+        specs: {
+            'Màn hình': '6.55", IPS LCD',
+            'Camera sau': '50MP, 2MP',
+            'Camera trước': '8MP',
+            'CPU': 'Helio G85',
+            'RAM': '8GB',
+            'Bộ nhớ trong': '128GB',
+            'Pin': '5000mAh, 18W'
+        },
+        description: 'Vivo Y22s với camera 50MP, RAM 8GB và pin 5000mAh.'
+    },
+    {
+        id: 53,
+        name: 'Realme 9i 4G 128GB',
+        brand: 'Realme',
+        price: 4990000,
+        oldPrice: 5990000,
+        discount: 17,
+        image: 'https://cdn.tgdd.vn/Products/Images/42/307643/realme-9i-xanh-thumb-600x600.jpg',
+        category: 'phone',
+        ram: 6,
+        storage: 128,
+        rating: 4,
+        hot: false,
+        specs: {
+            'Màn hình': '6.6", IPS LCD 90Hz',
+            'Camera sau': '50MP, 2MP, 2MP',
+            'Camera trước': '16MP',
+            'CPU': 'Helio G99',
+            'RAM': '6GB',
+            'Bộ nhớ trong': '128GB',
+            'Pin': '5000mAh, 33W'
+        },
+        description: 'Realme 9i với camera 50MP, màn hình 90Hz và pin 5000mAh.'
+    },
+    {
+        id: 54,
+        name: 'iPhone 12 64GB',
+        brand: 'Apple',
+        price: 14990000,
+        oldPrice: 17990000,
+        discount: 17,
+        image: 'https://cdn.tgdd.vn/Products/Images/42/250258/iphone-12-den-thumb-600x600.jpg',
+        category: 'phone',
+        ram: 4,
+        storage: 64,
+        rating: 4,
+        hot: false,
+        specs: {
+            'Màn hình': '6.1", Super Retina XDR',
+            'Camera sau': '12MP, 12MP',
+            'Camera trước': '12MP',
+            'CPU': 'Apple A14 Bionic',
+            'RAM': '4GB',
+            'Bộ nhớ trong': '64GB',
+            'Pin': '2815mAh, 20W'
+        },
+        description: 'iPhone 12 vẫn là lựa chọn tốt với thiết kế đẹp, camera chất lượng và hiệu năng ổn định.'
+    },
+    {
+        id: 55,
+        name: 'Samsung Galaxy S21 FE 5G 128GB',
+        brand: 'Samsung',
+        price: 12990000,
+        oldPrice: 15990000,
+        discount: 19,
+        image: 'https://cdn.tgdd.vn/Products/Images/42/289700/samsung-galaxy-s21-fe-xanh-thumb-600x600.jpg',
+        category: 'phone',
+        ram: 8,
+        storage: 128,
+        rating: 4,
+        hot: false,
+        specs: {
+            'Màn hình': '6.4", Dynamic AMOLED 2X',
+            'Camera sau': '12MP, 12MP, 8MP',
+            'Camera trước': '32MP',
+            'CPU': 'Exynos 2100',
+            'RAM': '8GB',
+            'Bộ nhớ trong': '128GB',
+            'Pin': '4500mAh, 25W'
+        },
+        description: 'Galaxy S21 FE với camera 32MP trước, màn hình AMOLED và hiệu năng mạnh mẽ.'
     }
 ];
+
+// Save default products to localStorage if not exists
+if (!localStorage.getItem('products')) {
+    localStorage.setItem('products', JSON.stringify(products));
+}
 
 // ==================== CART MANAGEMENT ====================
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -815,6 +1398,19 @@ function formatCurrency(amount) {
         style: 'currency',
         currency: 'VND'
     }).format(amount);
+}
+
+// ==================== CREATE LOGO ====================
+function createLogo() {
+    return `
+        <!-- Logo -->
+        <div class="logo d-flex align-items-center">
+            <a href="index.html" class="text-decoration-none d-flex align-items-center">
+                <img src="images/banners/08Oct Anis  Free Upload .png" alt="Thế Giới Di Động" class="logo-img me-2" style="height: 80px; width: auto;">
+                <span class="fw-bold fs-4 text-white">Thế Giới Di Động</span>
+            </a>
+        </div>
+    `;
 }
 
 // ==================== RENDER PRODUCT CARD ====================
