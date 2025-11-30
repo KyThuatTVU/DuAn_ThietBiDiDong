@@ -1,8 +1,33 @@
 // ==================== CHECKOUT & ORDER MANAGEMENT ====================
 
+// Hàm lấy cart key theo user
+function getCartKey() {
+    const currentUser = sessionStorage.getItem('currentUser');
+    if (currentUser) {
+        const user = JSON.parse(currentUser);
+        return `cart_${user.email}`;
+    }
+    return 'cart_guest';
+}
+
+function getUserCart() {
+    const cartKey = getCartKey();
+    return JSON.parse(localStorage.getItem(cartKey)) || [];
+}
+
+function saveUserCart(cart) {
+    const cartKey = getCartKey();
+    localStorage.setItem(cartKey, JSON.stringify(cart));
+}
+
+function clearUserCart() {
+    const cartKey = getCartKey();
+    localStorage.removeItem(cartKey);
+}
+
 // Load thông tin giỏ hàng khi vào trang checkout
 function loadCheckoutSummary() {
-    const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    const cart = getUserCart();
     const orderSummary = document.getElementById('orderSummary');
     
     if (!orderSummary) return;
@@ -60,7 +85,7 @@ function placeOrder() {
     }
     
     // Lấy giỏ hàng
-    const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    const cart = getUserCart();
     if (cart.length === 0) {
         alert('Giỏ hàng trống!');
         return;
@@ -123,8 +148,8 @@ function placeOrder() {
     orders.push(order);
     localStorage.setItem('orders', JSON.stringify(orders));
     
-    // Xóa giỏ hàng
-    localStorage.removeItem('cart');
+    // Xóa giỏ hàng của user
+    clearUserCart();
     
     // Chuyển đến trang xác nhận
     sessionStorage.setItem('lastOrderId', order.id);

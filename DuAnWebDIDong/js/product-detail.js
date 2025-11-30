@@ -123,6 +123,26 @@ function decreaseQuantity() {
 }
 
 // ==================== ADD TO CART ====================
+// Hàm lấy cart key theo user
+function getCartKey() {
+    const currentUser = sessionStorage.getItem('currentUser');
+    if (currentUser) {
+        const user = JSON.parse(currentUser);
+        return `cart_${user.email}`;
+    }
+    return 'cart_guest';
+}
+
+function getUserCart() {
+    const cartKey = getCartKey();
+    return JSON.parse(localStorage.getItem(cartKey)) || [];
+}
+
+function saveUserCart(cart) {
+    const cartKey = getCartKey();
+    localStorage.setItem(cartKey, JSON.stringify(cart));
+}
+
 function addToCart() {
     // Kiểm tra đăng nhập
     const currentUser = sessionStorage.getItem('currentUser');
@@ -140,7 +160,7 @@ function addToCart() {
     const product = products.find(p => p.id === productId);
     if (!product) return;
 
-    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    let cart = getUserCart();
     const existingItem = cart.find(item => item.id === productId);
 
     if (existingItem) {
@@ -152,7 +172,7 @@ function addToCart() {
         });
     }
 
-    localStorage.setItem('cart', JSON.stringify(cart));
+    saveUserCart(cart);
     
     // Update cart count
     const cartCount = cart.reduce((total, item) => total + item.quantity, 0);

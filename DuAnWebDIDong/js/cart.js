@@ -1,6 +1,26 @@
+// ==================== CART KEY BY USER ====================
+function getCartKey() {
+    const currentUser = sessionStorage.getItem('currentUser');
+    if (currentUser) {
+        const user = JSON.parse(currentUser);
+        return `cart_${user.email}`;
+    }
+    return 'cart_guest';
+}
+
+function getUserCart() {
+    const cartKey = getCartKey();
+    return JSON.parse(localStorage.getItem(cartKey)) || [];
+}
+
+function saveUserCart(cart) {
+    const cartKey = getCartKey();
+    localStorage.setItem(cartKey, JSON.stringify(cart));
+}
+
 // ==================== LOAD CART ====================
 function loadCart() {
-    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const cart = getUserCart();
     const cartItemsContainer = document.getElementById('cartItems');
     const emptyCartElement = document.getElementById('emptyCart');
     const orderSummaryElement = document.getElementById('orderSummary');
@@ -78,12 +98,12 @@ function updateQuantity(productId, newQuantity) {
     
     if (newQuantity < 1) return;
 
-    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    let cart = getUserCart();
     const item = cart.find(item => item.id === productId);
 
     if (item) {
         item.quantity = newQuantity;
-        localStorage.setItem('cart', JSON.stringify(cart));
+        saveUserCart(cart);
         loadCart();
         updateCartCount();
     }
@@ -93,10 +113,10 @@ function updateQuantity(productId, newQuantity) {
 function removeItem(productId) {
     if (!confirm('Bạn có chắc muốn xóa sản phẩm này khỏi giỏ hàng?')) return;
 
-    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    let cart = getUserCart();
     cart = cart.filter(item => item.id !== productId);
     
-    localStorage.setItem('cart', JSON.stringify(cart));
+    saveUserCart(cart);
     loadCart();
     updateCartCount();
     showNotification('Đã xóa sản phẩm khỏi giỏ hàng!', 'info');
@@ -107,17 +127,25 @@ function applyVoucher() {
     const voucherInput = document.getElementById('voucherInput');
     const voucherCode = voucherInput.value.trim().toUpperCase();
 
-    // Sample vouchers
-    const vouchers = {
+    // Lấy vouchers từ localStorage hoặc dùng mặc định
+    const savedVouchers = JSON.parse(localStorage.getItem('vouchers') || '[]');
+    let vouchers = {
         'SALE10': 10,
         'SALE20': 20,
         'FREESHIP': 0
     };
+    
+    // Thêm vouchers từ admin
+    savedVouchers.forEach(v => {
+        if (v.status === 'Hoạt động') {
+            vouchers[v.code] = v.discount;
+        }
+    });
 
-    if (vouchers[voucherCode]) {
+    if (vouchers[voucherCode] !== undefined) {
         showNotification(`Áp dụng mã giảm giá ${voucherCode} thành công!`, 'success');
         
-        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const cart = getUserCart();
         const subtotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
         const discount = subtotal * (vouchers[voucherCode] / 100);
         
@@ -126,6 +154,12 @@ function applyVoucher() {
         
         if (discountElement) discountElement.textContent = formatCurrency(discount);
         if (totalElement) totalElement.textContent = formatCurrency(subtotal - discount);
+        
+        // Lưu voucher đang dùng
+        sessionStorage.setItem('appliedVoucher', JSON.stringify({
+            code: voucherCode,
+            discount: vouchers[voucherCode]
+        }));
     } else {
         showNotification('Mã giảm giá không hợp lệ!', 'danger');
     }
@@ -133,7 +167,7 @@ function applyVoucher() {
 
 // ==================== CHECKOUT ====================
 function checkout() {
-    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const cart = getUserCart();
     
     if (cart.length === 0) {
         showNotification('Giỏ hàng của bạn đang trống!', 'warning');
@@ -154,7 +188,7 @@ function formatCurrency(amount) {
 
 // ==================== UPDATE CART COUNT ====================
 function updateCartCount() {
-    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const cart = getUserCart();
     const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
     document.querySelectorAll('#cartCount').forEach(el => {
         el.textContent = cartCount;

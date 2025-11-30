@@ -1314,9 +1314,32 @@ if (!localStorage.getItem('products')) {
 }
 
 // ==================== CART MANAGEMENT ====================
-let cart = JSON.parse(localStorage.getItem('cart')) || [];
+// Hàm lấy cart key theo user
+function getCartKey() {
+    const currentUser = sessionStorage.getItem('currentUser');
+    if (currentUser) {
+        const user = JSON.parse(currentUser);
+        return `cart_${user.email}`;
+    }
+    return 'cart_guest'; // Giỏ hàng cho khách
+}
+
+// Lấy giỏ hàng của user hiện tại
+function getUserCart() {
+    const cartKey = getCartKey();
+    return JSON.parse(localStorage.getItem(cartKey)) || [];
+}
+
+// Lưu giỏ hàng của user hiện tại
+function saveUserCart(cart) {
+    const cartKey = getCartKey();
+    localStorage.setItem(cartKey, JSON.stringify(cart));
+}
+
+let cart = getUserCart();
 
 function updateCartCount() {
+    cart = getUserCart(); // Reload cart for current user
     const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
     document.querySelectorAll('#cartCount').forEach(el => {
         el.textContent = cartCount;
@@ -1333,6 +1356,9 @@ function addToCart(productId, quantity = 1) {
         return;
     }
 
+    // Lấy giỏ hàng của user hiện tại
+    cart = getUserCart();
+
     const product = products.find(p => p.id === productId);
     if (!product) return;
 
@@ -1347,7 +1373,7 @@ function addToCart(productId, quantity = 1) {
         });
     }
 
-    localStorage.setItem('cart', JSON.stringify(cart));
+    saveUserCart(cart);
     updateCartCount();
     
     // Show notification
@@ -1355,23 +1381,25 @@ function addToCart(productId, quantity = 1) {
 }
 
 function removeFromCart(productId) {
+    cart = getUserCart();
     cart = cart.filter(item => item.id !== productId);
-    localStorage.setItem('cart', JSON.stringify(cart));
+    saveUserCart(cart);
     updateCartCount();
 }
 
 function updateCartItemQuantity(productId, quantity) {
+    cart = getUserCart();
     const item = cart.find(item => item.id === productId);
     if (item) {
         item.quantity = quantity;
-        localStorage.setItem('cart', JSON.stringify(cart));
+        saveUserCart(cart);
         updateCartCount();
     }
 }
 
 function clearCart() {
     cart = [];
-    localStorage.setItem('cart', JSON.stringify(cart));
+    saveUserCart(cart);
     updateCartCount();
 }
 
