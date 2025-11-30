@@ -1610,36 +1610,107 @@ function deleteVoucher(index) {
 function loadSettings() {
     const settings = JSON.parse(localStorage.getItem('settings') || '{}');
     
-    if (document.getElementById('settingWebsiteName')) {
-        document.getElementById('settingWebsiteName').value = settings.websiteName || 'Thế Giới Di Động';
-        document.getElementById('settingEmail').value = settings.email || 'info@thegioididong.com';
-        document.getElementById('settingHotline').value = settings.hotline || '1800.6789';
-        document.getElementById('settingAddress').value = settings.address || '123 Đường ABC, Quận 1, TP.HCM';
-        document.getElementById('settingShippingFee').value = settings.shippingFee || 0;
-        document.getElementById('settingFreeShipMin').value = settings.freeShipMin || 0;
+    const settingWebsiteName = document.getElementById('settingWebsiteName');
+    const settingEmail = document.getElementById('settingEmail');
+    const settingHotline = document.getElementById('settingHotline');
+    const settingAddress = document.getElementById('settingAddress');
+    const settingShippingFee = document.getElementById('settingShippingFee');
+    const settingFreeShipMin = document.getElementById('settingFreeShipMin');
+    
+    if (settingWebsiteName) settingWebsiteName.value = settings.websiteName || 'Thế Giới Di Động';
+    if (settingEmail) settingEmail.value = settings.email || 'info@thegioididong.com';
+    if (settingHotline) settingHotline.value = settings.hotline || '1800.6789';
+    if (settingAddress) settingAddress.value = settings.address || '123 Đường ABC, Quận 1, TP.HCM';
+    if (settingShippingFee) settingShippingFee.value = settings.shippingFee || 0;
+    if (settingFreeShipMin) settingFreeShipMin.value = settings.freeShipMin || 0;
+    
+    // Thêm event listener cho form
+    const settingsForm = document.getElementById('settingsForm');
+    if (settingsForm) {
+        settingsForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const newSettings = {
+                websiteName: document.getElementById('settingWebsiteName').value.trim(),
+                email: document.getElementById('settingEmail').value.trim(),
+                hotline: document.getElementById('settingHotline').value.trim(),
+                address: document.getElementById('settingAddress').value.trim(),
+                shippingFee: parseInt(document.getElementById('settingShippingFee').value) || 0,
+                freeShipMin: parseInt(document.getElementById('settingFreeShipMin').value) || 0
+            };
+            
+            localStorage.setItem('settings', JSON.stringify(newSettings));
+            showNotification('Đã lưu cài đặt thành công!', 'success');
+            console.log('Settings saved:', newSettings);
+        });
+    }
+    
+    // Thêm event listener cho form đổi mật khẩu
+    const passwordForm = document.getElementById('passwordForm');
+    if (passwordForm) {
+        passwordForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmNewPassword').value;
+            
+            // Kiểm tra mật khẩu hiện tại (mặc định là 'admin')
+            const savedPassword = localStorage.getItem('adminPassword') || 'admin';
+            
+            if (currentPassword !== savedPassword) {
+                showNotification('Mật khẩu hiện tại không đúng!', 'error');
+                return;
+            }
+            
+            if (newPassword.length < 6) {
+                showNotification('Mật khẩu mới phải có ít nhất 6 ký tự!', 'error');
+                return;
+            }
+            
+            if (newPassword !== confirmPassword) {
+                showNotification('Mật khẩu xác nhận không khớp!', 'error');
+                return;
+            }
+            
+            localStorage.setItem('adminPassword', newPassword);
+            passwordForm.reset();
+            showNotification('Đổi mật khẩu thành công!', 'success');
+            console.log('Password changed successfully');
+        });
     }
 }
 
-// Lưu cài đặt
+// Lưu cài đặt (backup function)
 function saveSettings(event) {
-    event.preventDefault();
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
     
     const settings = {
-        websiteName: document.getElementById('settingWebsiteName').value,
-        email: document.getElementById('settingEmail').value,
-        hotline: document.getElementById('settingHotline').value,
-        address: document.getElementById('settingAddress').value,
+        websiteName: document.getElementById('settingWebsiteName').value.trim(),
+        email: document.getElementById('settingEmail').value.trim(),
+        hotline: document.getElementById('settingHotline').value.trim(),
+        address: document.getElementById('settingAddress').value.trim(),
         shippingFee: parseInt(document.getElementById('settingShippingFee').value) || 0,
         freeShipMin: parseInt(document.getElementById('settingFreeShipMin').value) || 0
     };
     
     localStorage.setItem('settings', JSON.stringify(settings));
     showNotification('Đã lưu cài đặt thành công!', 'success');
+    console.log('Settings saved:', settings);
+    return false;
 }
 
-// Đổi mật khẩu
+// Đổi mật khẩu (backup function)
 function changePassword(event) {
-    event.preventDefault();
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
     
     const currentPassword = document.getElementById('currentPassword').value;
     const newPassword = document.getElementById('newPassword').value;
@@ -1650,20 +1721,22 @@ function changePassword(event) {
     
     if (currentPassword !== savedPassword) {
         showNotification('Mật khẩu hiện tại không đúng!', 'error');
-        return;
+        return false;
     }
     
     if (newPassword.length < 6) {
         showNotification('Mật khẩu mới phải có ít nhất 6 ký tự!', 'error');
-        return;
+        return false;
     }
     
     if (newPassword !== confirmPassword) {
         showNotification('Mật khẩu xác nhận không khớp!', 'error');
-        return;
+        return false;
     }
     
     localStorage.setItem('adminPassword', newPassword);
     document.getElementById('passwordForm').reset();
     showNotification('Đổi mật khẩu thành công!', 'success');
+    console.log('Password changed successfully');
+    return false;
 }

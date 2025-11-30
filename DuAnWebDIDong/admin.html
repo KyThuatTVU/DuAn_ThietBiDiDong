@@ -683,7 +683,7 @@
                     
                     <div class="table-section">
                         <h5 class="mb-3">Thông tin website</h5>
-                        <form id="settingsForm" onsubmit="saveSettings(event)">
+                        <form id="settingsForm">
                             <div class="mb-3">
                                 <label class="form-label">Tên website</label>
                                 <input type="text" class="form-control" id="settingWebsiteName" value="Thế Giới Di Động">
@@ -708,7 +708,7 @@
                                 <label class="form-label">Đơn hàng miễn phí vận chuyển từ</label>
                                 <input type="number" class="form-control" id="settingFreeShipMin" value="0">
                             </div>
-                            <button type="submit" class="btn btn-primary">
+                            <button type="button" class="btn btn-primary" onclick="saveSettings()">
                                 <i class="fas fa-save"></i> Lưu thay đổi
                             </button>
                         </form>
@@ -716,7 +716,7 @@
                         <hr class="my-4">
                         
                         <h5 class="mb-3">Đổi mật khẩu</h5>
-                        <form id="passwordForm" onsubmit="changePassword(event)">
+                        <form id="passwordForm">
                             <div class="mb-3">
                                 <label class="form-label">Mật khẩu hiện tại</label>
                                 <input type="password" class="form-control" id="currentPassword">
@@ -729,7 +729,7 @@
                                 <label class="form-label">Xác nhận mật khẩu mới</label>
                                 <input type="password" class="form-control" id="confirmNewPassword">
                             </div>
-                            <button type="submit" class="btn btn-primary">
+                            <button type="button" class="btn btn-primary" onclick="changePassword()">
                                 <i class="fas fa-key"></i> Đổi mật khẩu
                             </button>
                         </form>
