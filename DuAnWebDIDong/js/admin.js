@@ -89,6 +89,291 @@ function loadDashboard() {
     
     // Hiển thị đơn hàng gần đây
     loadRecentOrders();
+    
+    // Vẽ các biểu đồ
+    renderCharts();
+}
+
+// Vẽ các biểu đồ thống kê
+function renderCharts() {
+    renderRevenueChart();
+    renderOrderStatusChart();
+    renderTopProductsChart();
+    renderBrandChart();
+}
+
+// Biểu đồ doanh thu theo tháng
+function renderRevenueChart() {
+    const ctx = document.getElementById('revenueChart');
+    if (!ctx) return;
+    
+    const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+    
+    // Tính doanh thu theo tháng (6 tháng gần nhất)
+    const months = [];
+    const revenues = [];
+    const now = new Date();
+    
+    for (let i = 5; i >= 0; i--) {
+        const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        const monthName = date.toLocaleDateString('vi-VN', { month: 'short', year: '2-digit' });
+        months.push(monthName);
+        
+        // Tính doanh thu trong tháng
+        const monthRevenue = orders
+            .filter(order => {
+                const orderDate = new Date(order.createdAt || order.date);
+                return orderDate.getMonth() === date.getMonth() && 
+                       orderDate.getFullYear() === date.getFullYear() &&
+                       (order.status === 'Hoàn thành' || order.status === 'Đang giao' || order.status === 'Đã xác nhận');
+            })
+            .reduce((sum, order) => sum + (order.total || 0), 0);
+        
+        revenues.push(monthRevenue / 1000000); // Đơn vị triệu đồng
+    }
+    
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: months,
+            datasets: [{
+                label: 'Doanh thu (triệu đồng)',
+                data: revenues,
+                borderColor: '#0066cc',
+                backgroundColor: 'rgba(0, 102, 204, 0.1)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.4,
+                pointBackgroundColor: '#0066cc',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                pointRadius: 5
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(0,0,0,0.05)'
+                    },
+                    ticks: {
+                        callback: function(value) {
+                            return value + 'M';
+                        }
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Biểu đồ đơn hàng theo trạng thái
+function renderOrderStatusChart() {
+    const ctx = document.getElementById('orderStatusChart');
+    if (!ctx) return;
+    
+    const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+    
+    // Đếm đơn hàng theo trạng thái
+    const statusCounts = {
+        'Chờ xác nhận': 0,
+        'Đã xác nhận': 0,
+        'Đang giao': 0,
+        'Hoàn thành': 0,
+        'Đã hủy': 0
+    };
+    
+    orders.forEach(order => {
+        const status = order.status || 'Chờ xác nhận';
+        if (status === 'Chờ xử lý') {
+            statusCounts['Chờ xác nhận']++;
+        } else if (status === 'Đang xử lý') {
+            statusCounts['Đã xác nhận']++;
+        } else if (statusCounts[status] !== undefined) {
+            statusCounts[status]++;
+        }
+    });
+    
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: Object.keys(statusCounts),
+            datasets: [{
+                data: Object.values(statusCounts),
+                backgroundColor: [
+                    '#ffc107', // Chờ xác nhận - vàng
+                    '#17a2b8', // Đã xác nhận - cyan
+                    '#0066cc', // Đang giao - xanh
+                    '#28a745', // Hoàn thành - xanh lá
+                    '#dc3545'  // Đã hủy - đỏ
+                ],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 15,
+                        usePointStyle: true,
+                        font: {
+                            size: 11
+                        }
+                    }
+                }
+            },
+            cutout: '60%'
+        }
+    });
+}
+
+// Biểu đồ top sản phẩm bán chạy
+function renderTopProductsChart() {
+    const ctx = document.getElementById('topProductsChart');
+    if (!ctx) return;
+    
+    const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+    const productSales = {};
+    
+    // Đếm số lượng bán của từng sản phẩm
+    orders.forEach(order => {
+        if (order.items && Array.isArray(order.items)) {
+            order.items.forEach(item => {
+                const productName = item.name || 'Sản phẩm';
+                productSales[productName] = (productSales[productName] || 0) + (item.quantity || 1);
+            });
+        }
+    });
+    
+    // Sắp xếp và lấy top 5
+    const sorted = Object.entries(productSales)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5);
+    
+    const labels = sorted.map(item => item[0].length > 20 ? item[0].substring(0, 20) + '...' : item[0]);
+    const data = sorted.map(item => item[1]);
+    
+    // Nếu không có dữ liệu, hiển thị mẫu
+    if (labels.length === 0) {
+        labels.push('Chưa có dữ liệu');
+        data.push(0);
+    }
+    
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Số lượng bán',
+                data: data,
+                backgroundColor: [
+                    'rgba(0, 102, 204, 0.8)',
+                    'rgba(0, 102, 204, 0.7)',
+                    'rgba(0, 102, 204, 0.6)',
+                    'rgba(0, 102, 204, 0.5)',
+                    'rgba(0, 102, 204, 0.4)'
+                ],
+                borderRadius: 5
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            indexAxis: 'y',
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(0,0,0,0.05)'
+                    }
+                },
+                y: {
+                    grid: {
+                        display: false
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Biểu đồ sản phẩm theo thương hiệu
+function renderBrandChart() {
+    const ctx = document.getElementById('brandChart');
+    if (!ctx) return;
+    
+    const products = JSON.parse(localStorage.getItem('products') || '[]');
+    const brandCounts = {};
+    
+    // Đếm sản phẩm theo thương hiệu
+    products.forEach(product => {
+        const brand = product.brand || 'Khác';
+        brandCounts[brand] = (brandCounts[brand] || 0) + 1;
+    });
+    
+    const labels = Object.keys(brandCounts);
+    const data = Object.values(brandCounts);
+    
+    // Nếu không có dữ liệu, hiển thị mẫu
+    if (labels.length === 0) {
+        labels.push('Chưa có dữ liệu');
+        data.push(0);
+    }
+    
+    const colors = [
+        '#001f3f', '#003366', '#0066cc', '#3399ff', 
+        '#66b3ff', '#99ccff', '#cce6ff'
+    ];
+    
+    new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: data,
+                backgroundColor: colors.slice(0, labels.length),
+                borderWidth: 2,
+                borderColor: '#fff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'right',
+                    labels: {
+                        padding: 15,
+                        usePointStyle: true,
+                        font: {
+                            size: 11
+                        }
+                    }
+                }
+            }
+        }
+    });
 }
 
 // Load đơn hàng gần đây
