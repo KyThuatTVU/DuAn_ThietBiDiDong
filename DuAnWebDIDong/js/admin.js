@@ -50,6 +50,7 @@ function showSection(sectionName) {
         'customers': 'Danh sách khách hàng',
         'reviews': 'Quản lý đánh giá',
         'banners': 'Quản lý Banner',
+        'categories': 'Quản lý danh mục',
         'brands': 'Quản lý thương hiệu',
         'payments': 'Phương thức thanh toán',
         'vouchers': 'Mã giảm giá',
@@ -444,6 +445,9 @@ function loadProducts() {
 function editProduct(id) {
     const product = window.products.find(p => p.id === id);
     if (product) {
+        // Cập nhật dropdown danh mục trước
+        updateCategoryDropdown();
+        
         // Điền dữ liệu vào form
         document.getElementById('productId').value = product.id;
         document.getElementById('productName').value = product.name;
@@ -470,6 +474,9 @@ function editProduct(id) {
 
 // Hiển thị modal thêm sản phẩm
 function showAddProductModal() {
+    // Cập nhật dropdown danh mục
+    updateCategoryDropdown();
+    
     // Reset form
     document.getElementById('productForm').reset();
     document.getElementById('productId').value = '';
@@ -1104,6 +1111,7 @@ document.addEventListener('DOMContentLoaded', function() {
     loadCustomers();
     loadReviews();
     loadBanners();
+    loadCategories();
     loadBrands();
     loadPayments();
     loadVouchers();
@@ -1217,6 +1225,175 @@ function initSampleData() {
         };
         localStorage.setItem('settings', JSON.stringify(defaultSettings));
     }
+}
+
+// ==================== QUẢN LÝ DANH MỤC ====================
+
+// Load danh mục
+function loadCategories() {
+    // Khởi tạo danh mục mặc định nếu chưa có
+    if (!localStorage.getItem('categories')) {
+        const defaultCategories = [
+            { id: 1, name: 'Điện thoại', slug: 'phone', icon: 'fa-mobile-alt', description: 'Điện thoại thông minh', active: true },
+            { id: 2, name: 'Máy tính bảng', slug: 'tablet', icon: 'fa-tablet-alt', description: 'Tablet các loại', active: true },
+            { id: 3, name: 'Laptop', slug: 'laptop', icon: 'fa-laptop', description: 'Máy tính xách tay', active: true },
+            { id: 4, name: 'Phụ kiện', slug: 'accessory', icon: 'fa-headphones', description: 'Phụ kiện điện thoại', active: true },
+            { id: 5, name: 'Đồng hồ thông minh', slug: 'smartwatch', icon: 'fa-clock', description: 'Smartwatch', active: true }
+        ];
+        localStorage.setItem('categories', JSON.stringify(defaultCategories));
+    }
+    
+    const categories = JSON.parse(localStorage.getItem('categories') || '[]');
+    const tbody = document.getElementById('categoriesTable');
+    
+    if (!tbody) return;
+    
+    if (categories.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">Chưa có danh mục nào</td></tr>';
+        return;
+    }
+    
+    // Đếm số sản phẩm theo danh mục
+    const products = JSON.parse(localStorage.getItem('products') || '[]');
+    
+    tbody.innerHTML = categories.map((category, index) => {
+        const productCount = products.filter(p => p.category === category.slug).length;
+        return `
+            <tr>
+                <td>${category.id}</td>
+                <td><i class="fas ${category.icon || 'fa-folder'} fa-lg text-primary"></i></td>
+                <td><strong>${category.name}</strong></td>
+                <td><code>${category.slug}</code></td>
+                <td>${category.description || 'N/A'}</td>
+                <td><span class="badge bg-info">${productCount}</span></td>
+                <td><span class="badge bg-${category.active ? 'success' : 'secondary'}">${category.active ? 'Hoạt động' : 'Tạm dừng'}</span></td>
+                <td>
+                    <button class="btn btn-sm btn-warning me-1" onclick="editCategory(${index})">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteCategory(${index})">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        `;
+    }).join('');
+    
+    // Cập nhật dropdown danh mục trong form sản phẩm
+    updateCategoryDropdown();
+}
+
+// Cập nhật dropdown danh mục trong form thêm sản phẩm
+function updateCategoryDropdown() {
+    const categories = JSON.parse(localStorage.getItem('categories') || '[]');
+    const select = document.getElementById('productCategory');
+    
+    if (!select) return;
+    
+    // Giữ lại giá trị hiện tại
+    const currentValue = select.value;
+    
+    select.innerHTML = '<option value="">-- Chọn danh mục --</option>';
+    categories.filter(c => c.active).forEach(category => {
+        select.innerHTML += `<option value="${category.slug}">${category.name}</option>`;
+    });
+    
+    // Khôi phục giá trị
+    if (currentValue) {
+        select.value = currentValue;
+    }
+}
+
+// Hiển thị modal thêm danh mục
+function showAddCategoryModal() {
+    document.getElementById('categoryForm').reset();
+    document.getElementById('categoryIndex').value = '';
+    document.getElementById('categoryModalTitle').textContent = 'Thêm danh mục mới';
+    document.getElementById('categoryActive').checked = true;
+    
+    const modal = new bootstrap.Modal(document.getElementById('categoryModal'));
+    modal.show();
+}
+
+// Chỉnh sửa danh mục
+function editCategory(index) {
+    const categories = JSON.parse(localStorage.getItem('categories') || '[]');
+    if (index >= 0 && index < categories.length) {
+        const category = categories[index];
+        
+        document.getElementById('categoryIndex').value = index;
+        document.getElementById('categoryName').value = category.name;
+        document.getElementById('categorySlug').value = category.slug;
+        document.getElementById('categoryIcon').value = category.icon || '';
+        document.getElementById('categoryDescription').value = category.description || '';
+        document.getElementById('categoryActive').checked = category.active !== false;
+        
+        document.getElementById('categoryModalTitle').textContent = 'Chỉnh sửa danh mục';
+        
+        const modal = new bootstrap.Modal(document.getElementById('categoryModal'));
+        modal.show();
+    }
+}
+
+// Lưu danh mục
+function saveCategory() {
+    const form = document.getElementById('categoryForm');
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+    
+    const categories = JSON.parse(localStorage.getItem('categories') || '[]');
+    const categoryIndex = document.getElementById('categoryIndex').value;
+    
+    const categoryData = {
+        name: document.getElementById('categoryName').value.trim(),
+        slug: document.getElementById('categorySlug').value.trim().toLowerCase(),
+        icon: document.getElementById('categoryIcon').value.trim(),
+        description: document.getElementById('categoryDescription').value.trim(),
+        active: document.getElementById('categoryActive').checked
+    };
+    
+    if (categoryIndex === '') {
+        // Thêm mới
+        categoryData.id = categories.length > 0 ? Math.max(...categories.map(c => c.id)) + 1 : 1;
+        categories.push(categoryData);
+        showNotification('Thêm danh mục thành công!', 'success');
+    } else {
+        // Cập nhật
+        categoryData.id = categories[categoryIndex].id;
+        categories[categoryIndex] = categoryData;
+        showNotification('Cập nhật danh mục thành công!', 'success');
+    }
+    
+    localStorage.setItem('categories', JSON.stringify(categories));
+    
+    // Đóng modal và reload
+    bootstrap.Modal.getInstance(document.getElementById('categoryModal')).hide();
+    loadCategories();
+}
+
+// Xóa danh mục
+function deleteCategory(index) {
+    if (!confirm('Bạn có chắc muốn xóa danh mục này?')) return;
+    
+    const categories = JSON.parse(localStorage.getItem('categories') || '[]');
+    const products = JSON.parse(localStorage.getItem('products') || '[]');
+    
+    // Kiểm tra xem có sản phẩm nào đang dùng danh mục này không
+    const categorySlug = categories[index].slug;
+    const productCount = products.filter(p => p.category === categorySlug).length;
+    
+    if (productCount > 0) {
+        if (!confirm(`Danh mục này đang có ${productCount} sản phẩm. Bạn vẫn muốn xóa?`)) {
+            return;
+        }
+    }
+    
+    categories.splice(index, 1);
+    localStorage.setItem('categories', JSON.stringify(categories));
+    showNotification('Đã xóa danh mục!', 'success');
+    loadCategories();
 }
 
 // ==================== QUẢN LÝ THƯƠNG HIỆU ====================
