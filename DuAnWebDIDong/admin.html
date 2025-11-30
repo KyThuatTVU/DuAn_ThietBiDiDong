@@ -191,6 +191,21 @@
                     </a>
                 </li>
                 <li>
+                    <a href="#brands" onclick="showSection('brands')">
+                        <i class="fas fa-tags"></i> Thương hiệu
+                    </a>
+                </li>
+                <li>
+                    <a href="#payments" onclick="showSection('payments')">
+                        <i class="fas fa-credit-card"></i> Thanh toán
+                    </a>
+                </li>
+                <li>
+                    <a href="#vouchers" onclick="showSection('vouchers')">
+                        <i class="fas fa-ticket-alt"></i> Mã giảm giá
+                    </a>
+                </li>
+                <li>
                     <a href="#settings" onclick="showSection('settings')">
                         <i class="fas fa-cog"></i> Cài đặt
                     </a>
@@ -443,28 +458,137 @@
                     </div>
                 </div>
                 
+                <!-- Brands Section -->
+                <div id="section-brands" class="content-section" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3>Quản lý thương hiệu</h3>
+                        <button class="btn btn-primary" onclick="showAddBrandModal()">
+                            <i class="fas fa-plus"></i> Thêm thương hiệu
+                        </button>
+                    </div>
+                    
+                    <div class="table-section">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Logo</th>
+                                        <th>Tên thương hiệu</th>
+                                        <th>Mô tả</th>
+                                        <th>Số sản phẩm</th>
+                                        <th>Trạng thái</th>
+                                        <th>Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="brandsTable">
+                                    <tr>
+                                        <td colspan="7" class="text-center text-muted">Chưa có thương hiệu nào</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Payment Methods Section -->
+                <div id="section-payments" class="content-section" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3>Quản lý phương thức thanh toán</h3>
+                        <button class="btn btn-primary" onclick="showAddPaymentModal()">
+                            <i class="fas fa-plus"></i> Thêm phương thức
+                        </button>
+                    </div>
+                    
+                    <div class="table-section">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Logo</th>
+                                        <th>Tên phương thức</th>
+                                        <th>Mô tả</th>
+                                        <th>Phí giao dịch</th>
+                                        <th>Trạng thái</th>
+                                        <th>Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="paymentsTable">
+                                    <tr>
+                                        <td colspan="7" class="text-center text-muted">Chưa có phương thức thanh toán nào</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Vouchers Section -->
+                <div id="section-vouchers" class="content-section" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3>Quản lý mã giảm giá</h3>
+                        <button class="btn btn-primary" onclick="showAddVoucherModal()">
+                            <i class="fas fa-plus"></i> Thêm mã giảm giá
+                        </button>
+                    </div>
+                    
+                    <div class="table-section">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Mã</th>
+                                        <th>Loại giảm</th>
+                                        <th>Giá trị</th>
+                                        <th>Đơn tối thiểu</th>
+                                        <th>Số lượng</th>
+                                        <th>Hạn sử dụng</th>
+                                        <th>Trạng thái</th>
+                                        <th>Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="vouchersTable">
+                                    <tr>
+                                        <td colspan="9" class="text-center text-muted">Chưa có mã giảm giá nào</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
                 <!-- Settings Section -->
                 <div id="section-settings" class="content-section" style="display: none;">
                     <h3 class="mb-4">Cài đặt hệ thống</h3>
                     
                     <div class="table-section">
                         <h5 class="mb-3">Thông tin website</h5>
-                        <form>
+                        <form id="settingsForm" onsubmit="saveSettings(event)">
                             <div class="mb-3">
                                 <label class="form-label">Tên website</label>
-                                <input type="text" class="form-control" value="Thế Giới Di Động">
+                                <input type="text" class="form-control" id="settingWebsiteName" value="Thế Giới Di Động">
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Email</label>
-                                <input type="email" class="form-control" value="info@thegioididong.com">
+                                <input type="email" class="form-control" id="settingEmail" value="info@thegioididong.com">
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Hotline</label>
-                                <input type="text" class="form-control" value="1800.6789">
+                                <input type="text" class="form-control" id="settingHotline" value="1800.6789">
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Địa chỉ</label>
-                                <input type="text" class="form-control" value="123 Đường ABC, Quận 1, TP.HCM">
+                                <input type="text" class="form-control" id="settingAddress" value="123 Đường ABC, Quận 1, TP.HCM">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Phí vận chuyển mặc định</label>
+                                <input type="number" class="form-control" id="settingShippingFee" value="0">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Đơn hàng miễn phí vận chuyển từ</label>
+                                <input type="number" class="form-control" id="settingFreeShipMin" value="0">
                             </div>
                             <button type="submit" class="btn btn-primary">
                                 <i class="fas fa-save"></i> Lưu thay đổi
@@ -474,18 +598,18 @@
                         <hr class="my-4">
                         
                         <h5 class="mb-3">Đổi mật khẩu</h5>
-                        <form>
+                        <form id="passwordForm" onsubmit="changePassword(event)">
                             <div class="mb-3">
                                 <label class="form-label">Mật khẩu hiện tại</label>
-                                <input type="password" class="form-control">
+                                <input type="password" class="form-control" id="currentPassword">
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Mật khẩu mới</label>
-                                <input type="password" class="form-control">
+                                <input type="password" class="form-control" id="newPassword">
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Xác nhận mật khẩu mới</label>
-                                <input type="password" class="form-control">
+                                <input type="password" class="form-control" id="confirmNewPassword">
                             </div>
                             <button type="submit" class="btn btn-primary">
                                 <i class="fas fa-key"></i> Đổi mật khẩu
@@ -736,6 +860,168 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
                     <button type="button" class="btn btn-primary" onclick="saveBanner()">
+                        <i class="fas fa-save"></i> Lưu lại
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Thêm/Sửa Thương Hiệu -->
+    <div class="modal fade" id="brandModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="brandModalTitle">Thêm thương hiệu</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="brandForm">
+                        <input type="hidden" id="brandIndex">
+                        <div class="mb-3">
+                            <label class="form-label">Tên thương hiệu <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="brandName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">URL Logo</label>
+                            <input type="url" class="form-control" id="brandLogo" placeholder="https://example.com/logo.png">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Mô tả</label>
+                            <textarea class="form-control" id="brandDescription" rows="2"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="brandActive" checked>
+                                <label class="form-check-label" for="brandActive">
+                                    Kích hoạt
+                                </label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-primary" onclick="saveBrand()">
+                        <i class="fas fa-save"></i> Lưu lại
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Thêm/Sửa Phương Thức Thanh Toán -->
+    <div class="modal fade" id="paymentModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="paymentModalTitle">Thêm phương thức thanh toán</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="paymentForm">
+                        <input type="hidden" id="paymentIndex">
+                        <div class="mb-3">
+                            <label class="form-label">Tên phương thức <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="paymentName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">URL Logo</label>
+                            <input type="url" class="form-control" id="paymentLogo" placeholder="https://example.com/logo.png">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Mô tả</label>
+                            <textarea class="form-control" id="paymentDescription" rows="2"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Phí giao dịch (%)</label>
+                            <input type="number" class="form-control" id="paymentFee" value="0" min="0" step="0.1">
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="paymentActive" checked>
+                                <label class="form-check-label" for="paymentActive">
+                                    Kích hoạt
+                                </label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-primary" onclick="savePayment()">
+                        <i class="fas fa-save"></i> Lưu lại
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Thêm/Sửa Mã Giảm Giá -->
+    <div class="modal fade" id="voucherModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="voucherModalTitle">Thêm mã giảm giá</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="voucherForm">
+                        <input type="hidden" id="voucherIndex">
+                        <div class="mb-3">
+                            <label class="form-label">Mã giảm giá <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="voucherCode" required placeholder="VD: SALE50">
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Loại giảm <span class="text-danger">*</span></label>
+                                <select class="form-control" id="voucherType" required>
+                                    <option value="percent">Phần trăm (%)</option>
+                                    <option value="fixed">Số tiền cố định</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Giá trị <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="voucherValue" required min="0">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Đơn tối thiểu</label>
+                                <input type="number" class="form-control" id="voucherMinOrder" value="0" min="0">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Giảm tối đa</label>
+                                <input type="number" class="form-control" id="voucherMaxDiscount" value="0" min="0">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Số lượng</label>
+                                <input type="number" class="form-control" id="voucherQuantity" value="100" min="1">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Hạn sử dụng</label>
+                                <input type="date" class="form-control" id="voucherExpiry">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Mô tả</label>
+                            <textarea class="form-control" id="voucherDescription" rows="2"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="voucherActive" checked>
+                                <label class="form-check-label" for="voucherActive">
+                                    Kích hoạt
+                                </label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-primary" onclick="saveVoucher()">
                         <i class="fas fa-save"></i> Lưu lại
                     </button>
                 </div>

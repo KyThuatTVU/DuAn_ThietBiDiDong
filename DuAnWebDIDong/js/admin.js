@@ -50,6 +50,9 @@ function showSection(sectionName) {
         'customers': 'Danh sách khách hàng',
         'reviews': 'Quản lý đánh giá',
         'banners': 'Quản lý Banner',
+        'brands': 'Quản lý thương hiệu',
+        'payments': 'Phương thức thanh toán',
+        'vouchers': 'Mã giảm giá',
         'settings': 'Cài đặt hệ thống'
     };
     document.getElementById('pageTitle').textContent = titles[sectionName];
@@ -342,6 +345,9 @@ function loadOrders() {
                         <i class="fas fa-check-circle"></i>
                     </button>
                 ` : ''}
+                <button class="btn btn-sm btn-outline-danger" onclick="deleteOrder(${index})" title="Xóa đơn hàng">
+                    <i class="fas fa-trash"></i>
+                </button>
             </td>
         </tr>
     `).join('');
@@ -419,6 +425,21 @@ function completeOrder(index) {
         loadRecentOrders();
         loadDashboard();
         showNotification('Đơn hàng đã hoàn thành!', 'success');
+    }
+}
+
+// Xóa đơn hàng
+function deleteOrder(index) {
+    if (!confirm('Bạn có chắc muốn xóa đơn hàng này khỏi hệ thống?\nHành động này không thể hoàn tác!')) return;
+    
+    const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+    if (index >= 0 && index < orders.length) {
+        orders.splice(index, 1);
+        localStorage.setItem('orders', JSON.stringify(orders));
+        loadOrders();
+        loadRecentOrders();
+        loadDashboard();
+        showNotification('Đã xóa đơn hàng khỏi hệ thống!', 'success');
     }
 }
 
@@ -798,6 +819,10 @@ document.addEventListener('DOMContentLoaded', function() {
     loadCustomers();
     loadReviews();
     loadBanners();
+    loadBrands();
+    loadPayments();
+    loadVouchers();
+    loadSettings();
     
     // Lấy dữ liệu mẫu từ localStorage nếu chưa có
     initSampleData();
@@ -858,4 +883,502 @@ function initSampleData() {
         ];
         localStorage.setItem('customers', JSON.stringify(sampleCustomers));
     }
+    
+    // Thương hiệu mẫu
+    if (!localStorage.getItem('brands')) {
+        const sampleBrands = [
+            { id: 1, name: 'Apple', logo: 'https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg', description: 'Thương hiệu điện thoại cao cấp từ Mỹ', active: true },
+            { id: 2, name: 'Samsung', logo: 'https://upload.wikimedia.org/wikipedia/commons/2/24/Samsung_Logo.svg', description: 'Thương hiệu điện tử hàng đầu Hàn Quốc', active: true },
+            { id: 3, name: 'Xiaomi', logo: 'https://upload.wikimedia.org/wikipedia/commons/a/ae/Xiaomi_logo_%282021-%29.svg', description: 'Thương hiệu công nghệ từ Trung Quốc', active: true },
+            { id: 4, name: 'OPPO', logo: 'https://upload.wikimedia.org/wikipedia/commons/0/0a/OPPO_LOGO_2019.svg', description: 'Thương hiệu smartphone phổ biến', active: true },
+            { id: 5, name: 'Vivo', logo: 'https://upload.wikimedia.org/wikipedia/commons/1/10/Vivo_logo.svg', description: 'Thương hiệu điện thoại giá tốt', active: true },
+            { id: 6, name: 'Realme', logo: 'https://upload.wikimedia.org/wikipedia/commons/9/91/Realme_logo.svg', description: 'Thương hiệu smartphone trẻ trung', active: true }
+        ];
+        localStorage.setItem('brands', JSON.stringify(sampleBrands));
+    }
+    
+    // Phương thức thanh toán mẫu
+    if (!localStorage.getItem('paymentMethods')) {
+        const samplePayments = [
+            { id: 1, name: 'Thanh toán khi nhận hàng (COD)', logo: '', description: 'Thanh toán bằng tiền mặt khi nhận hàng', fee: 0, active: true },
+            { id: 2, name: 'Chuyển khoản ngân hàng', logo: '', description: 'Chuyển khoản qua Internet Banking', fee: 0, active: true },
+            { id: 3, name: 'Ví MoMo', logo: 'https://upload.wikimedia.org/wikipedia/vi/f/fe/MoMo_Logo.png', description: 'Thanh toán qua ví điện tử MoMo', fee: 0, active: true },
+            { id: 4, name: 'VNPay', logo: 'https://vinadesign.vn/uploads/images/2023/05/vnpay-logo-vinadesign-25-12-57-55.jpg', description: 'Thanh toán qua VNPay QR', fee: 0, active: true },
+            { id: 5, name: 'ZaloPay', logo: 'https://cdn.haitrieu.com/wp-content/uploads/2022/10/Logo-ZaloPay-Square.png', description: 'Thanh toán qua ví ZaloPay', fee: 0, active: true },
+            { id: 6, name: 'Thẻ Visa/Mastercard', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/200px-Visa_Inc._logo.svg.png', description: 'Thanh toán bằng thẻ tín dụng/ghi nợ', fee: 1.5, active: true }
+        ];
+        localStorage.setItem('paymentMethods', JSON.stringify(samplePayments));
+    }
+    
+    // Voucher mẫu
+    if (!localStorage.getItem('vouchers')) {
+        const sampleVouchers = [
+            { id: 1, code: 'WELCOME10', type: 'percent', value: 10, minOrder: 1000000, maxDiscount: 500000, quantity: 100, used: 0, expiry: '2025-12-31', description: 'Giảm 10% cho khách hàng mới', active: true },
+            { id: 2, code: 'SALE50K', type: 'fixed', value: 50000, minOrder: 500000, maxDiscount: 50000, quantity: 50, used: 0, expiry: '2025-12-31', description: 'Giảm 50.000đ cho đơn từ 500.000đ', active: true },
+            { id: 3, code: 'FREESHIP', type: 'fixed', value: 30000, minOrder: 0, maxDiscount: 30000, quantity: 200, used: 0, expiry: '2025-12-31', description: 'Miễn phí vận chuyển', active: true }
+        ];
+        localStorage.setItem('vouchers', JSON.stringify(sampleVouchers));
+    }
+    
+    // Cài đặt mẫu
+    if (!localStorage.getItem('settings')) {
+        const defaultSettings = {
+            websiteName: 'Thế Giới Di Động',
+            email: 'info@thegioididong.com',
+            hotline: '1800.6789',
+            address: '123 Đường ABC, Quận 1, TP.HCM',
+            shippingFee: 0,
+            freeShipMin: 0
+        };
+        localStorage.setItem('settings', JSON.stringify(defaultSettings));
+    }
+}
+
+// ==================== QUẢN LÝ THƯƠNG HIỆU ====================
+
+// Load thương hiệu
+function loadBrands() {
+    const brands = JSON.parse(localStorage.getItem('brands') || '[]');
+    const tbody = document.getElementById('brandsTable');
+    
+    if (!tbody) return;
+    
+    if (brands.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">Chưa có thương hiệu nào</td></tr>';
+        return;
+    }
+    
+    // Đếm số sản phẩm theo thương hiệu
+    const products = JSON.parse(localStorage.getItem('products') || '[]');
+    
+    tbody.innerHTML = brands.map((brand, index) => {
+        const productCount = products.filter(p => p.brand === brand.name).length;
+        return `
+            <tr>
+                <td>${brand.id}</td>
+                <td>${brand.logo ? `<img src="${brand.logo}" alt="${brand.name}" style="height: 30px; width: auto;">` : '<i class="fas fa-image text-muted"></i>'}</td>
+                <td><strong>${brand.name}</strong></td>
+                <td>${brand.description || 'N/A'}</td>
+                <td>${productCount}</td>
+                <td><span class="badge bg-${brand.active ? 'success' : 'secondary'}">${brand.active ? 'Hoạt động' : 'Tạm dừng'}</span></td>
+                <td>
+                    <button class="btn btn-sm btn-info" onclick="editBrand(${index})">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteBrand(${index})">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+// Hiển thị modal thêm thương hiệu
+function showAddBrandModal() {
+    document.getElementById('brandForm').reset();
+    document.getElementById('brandIndex').value = '';
+    document.getElementById('brandModalTitle').textContent = 'Thêm thương hiệu mới';
+    document.getElementById('brandActive').checked = true;
+    
+    const modal = new bootstrap.Modal(document.getElementById('brandModal'));
+    modal.show();
+}
+
+// Chỉnh sửa thương hiệu
+function editBrand(index) {
+    const brands = JSON.parse(localStorage.getItem('brands') || '[]');
+    if (index >= 0 && index < brands.length) {
+        const brand = brands[index];
+        
+        document.getElementById('brandIndex').value = index;
+        document.getElementById('brandName').value = brand.name;
+        document.getElementById('brandLogo').value = brand.logo || '';
+        document.getElementById('brandDescription').value = brand.description || '';
+        document.getElementById('brandActive').checked = brand.active !== false;
+        
+        document.getElementById('brandModalTitle').textContent = 'Chỉnh sửa thương hiệu';
+        
+        const modal = new bootstrap.Modal(document.getElementById('brandModal'));
+        modal.show();
+    }
+}
+
+// Lưu thương hiệu
+function saveBrand() {
+    const form = document.getElementById('brandForm');
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+    
+    const brands = JSON.parse(localStorage.getItem('brands') || '[]');
+    const brandIndex = document.getElementById('brandIndex').value;
+    
+    const brandData = {
+        name: document.getElementById('brandName').value,
+        logo: document.getElementById('brandLogo').value,
+        description: document.getElementById('brandDescription').value,
+        active: document.getElementById('brandActive').checked
+    };
+    
+    if (brandIndex !== '') {
+        const index = parseInt(brandIndex);
+        if (index >= 0 && index < brands.length) {
+            brandData.id = brands[index].id;
+            brands[index] = brandData;
+            showNotification('Cập nhật thương hiệu thành công!', 'success');
+        }
+    } else {
+        brandData.id = brands.length > 0 ? Math.max(...brands.map(b => b.id || 0)) + 1 : 1;
+        brands.push(brandData);
+        showNotification('Thêm thương hiệu thành công!', 'success');
+    }
+    
+    localStorage.setItem('brands', JSON.stringify(brands));
+    
+    const modal = bootstrap.Modal.getInstance(document.getElementById('brandModal'));
+    modal.hide();
+    
+    loadBrands();
+}
+
+// Xóa thương hiệu
+function deleteBrand(index) {
+    if (confirm('Bạn có chắc muốn xóa thương hiệu này?')) {
+        const brands = JSON.parse(localStorage.getItem('brands') || '[]');
+        brands.splice(index, 1);
+        localStorage.setItem('brands', JSON.stringify(brands));
+        loadBrands();
+        showNotification('Đã xóa thương hiệu!', 'success');
+    }
+}
+
+// ==================== QUẢN LÝ PHƯƠNG THỨC THANH TOÁN ====================
+
+// Load phương thức thanh toán
+function loadPayments() {
+    const payments = JSON.parse(localStorage.getItem('paymentMethods') || '[]');
+    const tbody = document.getElementById('paymentsTable');
+    
+    if (!tbody) return;
+    
+    if (payments.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">Chưa có phương thức thanh toán nào</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = payments.map((payment, index) => `
+        <tr>
+            <td>${payment.id}</td>
+            <td>${payment.logo ? `<img src="${payment.logo}" alt="${payment.name}" style="height: 30px; width: auto;">` : '<i class="fas fa-credit-card text-muted"></i>'}</td>
+            <td><strong>${payment.name}</strong></td>
+            <td>${payment.description || 'N/A'}</td>
+            <td>${payment.fee > 0 ? payment.fee + '%' : 'Miễn phí'}</td>
+            <td><span class="badge bg-${payment.active ? 'success' : 'secondary'}">${payment.active ? 'Hoạt động' : 'Tạm dừng'}</span></td>
+            <td>
+                <button class="btn btn-sm btn-info" onclick="editPayment(${index})">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn btn-sm btn-danger" onclick="deletePayment(${index})">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+// Hiển thị modal thêm phương thức thanh toán
+function showAddPaymentModal() {
+    document.getElementById('paymentForm').reset();
+    document.getElementById('paymentIndex').value = '';
+    document.getElementById('paymentModalTitle').textContent = 'Thêm phương thức thanh toán';
+    document.getElementById('paymentActive').checked = true;
+    
+    const modal = new bootstrap.Modal(document.getElementById('paymentModal'));
+    modal.show();
+}
+
+// Chỉnh sửa phương thức thanh toán
+function editPayment(index) {
+    const payments = JSON.parse(localStorage.getItem('paymentMethods') || '[]');
+    if (index >= 0 && index < payments.length) {
+        const payment = payments[index];
+        
+        document.getElementById('paymentIndex').value = index;
+        document.getElementById('paymentName').value = payment.name;
+        document.getElementById('paymentLogo').value = payment.logo || '';
+        document.getElementById('paymentDescription').value = payment.description || '';
+        document.getElementById('paymentFee').value = payment.fee || 0;
+        document.getElementById('paymentActive').checked = payment.active !== false;
+        
+        document.getElementById('paymentModalTitle').textContent = 'Chỉnh sửa phương thức thanh toán';
+        
+        const modal = new bootstrap.Modal(document.getElementById('paymentModal'));
+        modal.show();
+    }
+}
+
+// Lưu phương thức thanh toán
+function savePayment() {
+    const form = document.getElementById('paymentForm');
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+    
+    const payments = JSON.parse(localStorage.getItem('paymentMethods') || '[]');
+    const paymentIndex = document.getElementById('paymentIndex').value;
+    
+    const paymentData = {
+        name: document.getElementById('paymentName').value,
+        logo: document.getElementById('paymentLogo').value,
+        description: document.getElementById('paymentDescription').value,
+        fee: parseFloat(document.getElementById('paymentFee').value) || 0,
+        active: document.getElementById('paymentActive').checked
+    };
+    
+    if (paymentIndex !== '') {
+        const index = parseInt(paymentIndex);
+        if (index >= 0 && index < payments.length) {
+            paymentData.id = payments[index].id;
+            payments[index] = paymentData;
+            showNotification('Cập nhật phương thức thanh toán thành công!', 'success');
+        }
+    } else {
+        paymentData.id = payments.length > 0 ? Math.max(...payments.map(p => p.id || 0)) + 1 : 1;
+        payments.push(paymentData);
+        showNotification('Thêm phương thức thanh toán thành công!', 'success');
+    }
+    
+    localStorage.setItem('paymentMethods', JSON.stringify(payments));
+    
+    const modal = bootstrap.Modal.getInstance(document.getElementById('paymentModal'));
+    modal.hide();
+    
+    loadPayments();
+}
+
+// Xóa phương thức thanh toán
+function deletePayment(index) {
+    if (confirm('Bạn có chắc muốn xóa phương thức thanh toán này?')) {
+        const payments = JSON.parse(localStorage.getItem('paymentMethods') || '[]');
+        payments.splice(index, 1);
+        localStorage.setItem('paymentMethods', JSON.stringify(payments));
+        loadPayments();
+        showNotification('Đã xóa phương thức thanh toán!', 'success');
+    }
+}
+
+// ==================== QUẢN LÝ VOUCHER ====================
+
+// Load vouchers
+function loadVouchers() {
+    const vouchers = JSON.parse(localStorage.getItem('vouchers') || '[]');
+    const tbody = document.getElementById('vouchersTable');
+    
+    if (!tbody) return;
+    
+    if (vouchers.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="9" class="text-center text-muted">Chưa có mã giảm giá nào</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = vouchers.map((voucher, index) => {
+        const isExpired = voucher.expiry && new Date(voucher.expiry) < new Date();
+        const remaining = voucher.quantity - (voucher.used || 0);
+        
+        return `
+            <tr class="${isExpired ? 'table-secondary' : ''}">
+                <td>${voucher.id}</td>
+                <td><code class="bg-light p-1">${voucher.code}</code></td>
+                <td>${voucher.type === 'percent' ? 'Phần trăm' : 'Số tiền'}</td>
+                <td>${voucher.type === 'percent' ? voucher.value + '%' : formatCurrency(voucher.value)}</td>
+                <td>${formatCurrency(voucher.minOrder || 0)}</td>
+                <td>${remaining}/${voucher.quantity}</td>
+                <td>${voucher.expiry ? new Date(voucher.expiry).toLocaleDateString('vi-VN') : 'Không giới hạn'}</td>
+                <td>
+                    ${isExpired ? '<span class="badge bg-danger">Hết hạn</span>' : 
+                      remaining <= 0 ? '<span class="badge bg-warning">Hết lượt</span>' :
+                      voucher.active ? '<span class="badge bg-success">Hoạt động</span>' : '<span class="badge bg-secondary">Tạm dừng</span>'}
+                </td>
+                <td>
+                    <button class="btn btn-sm btn-info" onclick="editVoucher(${index})">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteVoucher(${index})">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+// Hiển thị modal thêm voucher
+function showAddVoucherModal() {
+    document.getElementById('voucherForm').reset();
+    document.getElementById('voucherIndex').value = '';
+    document.getElementById('voucherModalTitle').textContent = 'Thêm mã giảm giá mới';
+    document.getElementById('voucherActive').checked = true;
+    
+    // Set default expiry date (30 days from now)
+    const defaultExpiry = new Date();
+    defaultExpiry.setDate(defaultExpiry.getDate() + 30);
+    document.getElementById('voucherExpiry').value = defaultExpiry.toISOString().split('T')[0];
+    
+    const modal = new bootstrap.Modal(document.getElementById('voucherModal'));
+    modal.show();
+}
+
+// Chỉnh sửa voucher
+function editVoucher(index) {
+    const vouchers = JSON.parse(localStorage.getItem('vouchers') || '[]');
+    if (index >= 0 && index < vouchers.length) {
+        const voucher = vouchers[index];
+        
+        document.getElementById('voucherIndex').value = index;
+        document.getElementById('voucherCode').value = voucher.code;
+        document.getElementById('voucherType').value = voucher.type;
+        document.getElementById('voucherValue').value = voucher.value;
+        document.getElementById('voucherMinOrder').value = voucher.minOrder || 0;
+        document.getElementById('voucherMaxDiscount').value = voucher.maxDiscount || 0;
+        document.getElementById('voucherQuantity').value = voucher.quantity;
+        document.getElementById('voucherExpiry').value = voucher.expiry || '';
+        document.getElementById('voucherDescription').value = voucher.description || '';
+        document.getElementById('voucherActive').checked = voucher.active !== false;
+        
+        document.getElementById('voucherModalTitle').textContent = 'Chỉnh sửa mã giảm giá';
+        
+        const modal = new bootstrap.Modal(document.getElementById('voucherModal'));
+        modal.show();
+    }
+}
+
+// Lưu voucher
+function saveVoucher() {
+    const form = document.getElementById('voucherForm');
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+    
+    const vouchers = JSON.parse(localStorage.getItem('vouchers') || '[]');
+    const voucherIndex = document.getElementById('voucherIndex').value;
+    
+    const voucherData = {
+        code: document.getElementById('voucherCode').value.toUpperCase(),
+        type: document.getElementById('voucherType').value,
+        value: parseFloat(document.getElementById('voucherValue').value),
+        minOrder: parseInt(document.getElementById('voucherMinOrder').value) || 0,
+        maxDiscount: parseInt(document.getElementById('voucherMaxDiscount').value) || 0,
+        quantity: parseInt(document.getElementById('voucherQuantity').value) || 100,
+        expiry: document.getElementById('voucherExpiry').value,
+        description: document.getElementById('voucherDescription').value,
+        active: document.getElementById('voucherActive').checked
+    };
+    
+    // Kiểm tra mã trùng
+    const existingIndex = vouchers.findIndex(v => v.code === voucherData.code);
+    if (existingIndex !== -1 && existingIndex !== parseInt(voucherIndex)) {
+        showNotification('Mã giảm giá đã tồn tại!', 'error');
+        return;
+    }
+    
+    if (voucherIndex !== '') {
+        const index = parseInt(voucherIndex);
+        if (index >= 0 && index < vouchers.length) {
+            voucherData.id = vouchers[index].id;
+            voucherData.used = vouchers[index].used || 0;
+            vouchers[index] = voucherData;
+            showNotification('Cập nhật mã giảm giá thành công!', 'success');
+        }
+    } else {
+        voucherData.id = vouchers.length > 0 ? Math.max(...vouchers.map(v => v.id || 0)) + 1 : 1;
+        voucherData.used = 0;
+        vouchers.push(voucherData);
+        showNotification('Thêm mã giảm giá thành công!', 'success');
+    }
+    
+    localStorage.setItem('vouchers', JSON.stringify(vouchers));
+    
+    const modal = bootstrap.Modal.getInstance(document.getElementById('voucherModal'));
+    modal.hide();
+    
+    loadVouchers();
+}
+
+// Xóa voucher
+function deleteVoucher(index) {
+    if (confirm('Bạn có chắc muốn xóa mã giảm giá này?')) {
+        const vouchers = JSON.parse(localStorage.getItem('vouchers') || '[]');
+        vouchers.splice(index, 1);
+        localStorage.setItem('vouchers', JSON.stringify(vouchers));
+        loadVouchers();
+        showNotification('Đã xóa mã giảm giá!', 'success');
+    }
+}
+
+// ==================== CÀI ĐẶT HỆ THỐNG ====================
+
+// Load cài đặt
+function loadSettings() {
+    const settings = JSON.parse(localStorage.getItem('settings') || '{}');
+    
+    if (document.getElementById('settingWebsiteName')) {
+        document.getElementById('settingWebsiteName').value = settings.websiteName || 'Thế Giới Di Động';
+        document.getElementById('settingEmail').value = settings.email || 'info@thegioididong.com';
+        document.getElementById('settingHotline').value = settings.hotline || '1800.6789';
+        document.getElementById('settingAddress').value = settings.address || '123 Đường ABC, Quận 1, TP.HCM';
+        document.getElementById('settingShippingFee').value = settings.shippingFee || 0;
+        document.getElementById('settingFreeShipMin').value = settings.freeShipMin || 0;
+    }
+}
+
+// Lưu cài đặt
+function saveSettings(event) {
+    event.preventDefault();
+    
+    const settings = {
+        websiteName: document.getElementById('settingWebsiteName').value,
+        email: document.getElementById('settingEmail').value,
+        hotline: document.getElementById('settingHotline').value,
+        address: document.getElementById('settingAddress').value,
+        shippingFee: parseInt(document.getElementById('settingShippingFee').value) || 0,
+        freeShipMin: parseInt(document.getElementById('settingFreeShipMin').value) || 0
+    };
+    
+    localStorage.setItem('settings', JSON.stringify(settings));
+    showNotification('Đã lưu cài đặt thành công!', 'success');
+}
+
+// Đổi mật khẩu
+function changePassword(event) {
+    event.preventDefault();
+    
+    const currentPassword = document.getElementById('currentPassword').value;
+    const newPassword = document.getElementById('newPassword').value;
+    const confirmPassword = document.getElementById('confirmNewPassword').value;
+    
+    // Kiểm tra mật khẩu hiện tại (mặc định là 'admin')
+    const savedPassword = localStorage.getItem('adminPassword') || 'admin';
+    
+    if (currentPassword !== savedPassword) {
+        showNotification('Mật khẩu hiện tại không đúng!', 'error');
+        return;
+    }
+    
+    if (newPassword.length < 6) {
+        showNotification('Mật khẩu mới phải có ít nhất 6 ký tự!', 'error');
+        return;
+    }
+    
+    if (newPassword !== confirmPassword) {
+        showNotification('Mật khẩu xác nhận không khớp!', 'error');
+        return;
+    }
+    
+    localStorage.setItem('adminPassword', newPassword);
+    document.getElementById('passwordForm').reset();
+    showNotification('Đổi mật khẩu thành công!', 'success');
 }
