@@ -926,26 +926,85 @@ function loadReviews() {
     const reviews = JSON.parse(localStorage.getItem('reviews') || '[]');
     const tbody = document.getElementById('reviewsTable');
     
+    if (!tbody) return;
+    
+    // Cập nhật số lượng
+    const pendingCount = reviews.filter(r => !r.status || r.status === 'pending').length;
+    const approvedCount = reviews.filter(r => r.status === 'approved').length;
+    
+    const pendingEl = document.getElementById('pendingReviewsCount');
+    const approvedEl = document.getElementById('approvedReviewsCount');
+    if (pendingEl) pendingEl.textContent = pendingCount;
+    if (approvedEl) approvedEl.textContent = approvedCount;
+    
     if (reviews.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">Chưa có đánh giá nào</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">Chưa có đánh giá nào</td></tr>';
         return;
     }
     
-    tbody.innerHTML = reviews.map((review, index) => `
-        <tr>
-            <td>${index + 1}</td>
-            <td>${review.name}</td>
-            <td>${review.product || 'N/A'}</td>
-            <td>${'⭐'.repeat(review.rating || 5)}</td>
-            <td>${review.comment ? review.comment.substring(0, 50) + '...' : 'N/A'}</td>
-            <td>${review.date || new Date().toLocaleDateString('vi-VN')}</td>
-            <td>
-                <button class="btn btn-sm btn-danger" onclick="deleteReview(${index})">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </td>
-        </tr>
-    `).join('');
+    tbody.innerHTML = reviews.map((review, index) => {
+        const stars = '★'.repeat(review.rating || 5) + '☆'.repeat(5 - (review.rating || 5));
+        const statusBadge = getReviewStatusBadge(review.status);
+        const content = review.content || review.comment || 'N/A';
+        
+        return `
+            <tr>
+                <td>${review.id || index + 1}</td>
+                <td>
+                    <strong>${review.name}</strong><br>
+                    <small class="text-muted">${review.email || ''}</small>
+                </td>
+                <td>${review.product || 'Chung'}</td>
+                <td class="text-warning">${stars}</td>
+                <td style="max-width: 250px;">
+                    <div class="text-truncate" title="${content}">${content}</div>
+                </td>
+                <td>${review.date || new Date().toLocaleDateString('vi-VN')}</td>
+                <td>${statusBadge}</td>
+                <td>
+                    ${review.status !== 'approved' ? `<button class="btn btn-sm btn-success me-1" onclick="approveReview(${index})" title="Duyệt"><i class="fas fa-check"></i></button>` : ''}
+                    ${review.status !== 'rejected' ? `<button class="btn btn-sm btn-warning me-1" onclick="rejectReview(${index})" title="Từ chối"><i class="fas fa-ban"></i></button>` : ''}
+                    <button class="btn btn-sm btn-danger" onclick="deleteReview(${index})" title="Xóa">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+// Lấy badge trạng thái đánh giá
+function getReviewStatusBadge(status) {
+    switch(status) {
+        case 'approved':
+            return '<span class="badge bg-success">Đã duyệt</span>';
+        case 'rejected':
+            return '<span class="badge bg-danger">Từ chối</span>';
+        default:
+            return '<span class="badge bg-warning">Chờ duyệt</span>';
+    }
+}
+
+// Duyệt đánh giá
+function approveReview(index) {
+    const reviews = JSON.parse(localStorage.getItem('reviews') || '[]');
+    if (index >= 0 && index < reviews.length) {
+        reviews[index].status = 'approved';
+        localStorage.setItem('reviews', JSON.stringify(reviews));
+        loadReviews();
+        showNotification('Đã duyệt đánh giá!', 'success');
+    }
+}
+
+// Từ chối đánh giá
+function rejectReview(index) {
+    const reviews = JSON.parse(localStorage.getItem('reviews') || '[]');
+    if (index >= 0 && index < reviews.length) {
+        reviews[index].status = 'rejected';
+        localStorage.setItem('reviews', JSON.stringify(reviews));
+        loadReviews();
+        showNotification('Đã từ chối đánh giá!', 'warning');
+    }
 }
 
 // Xóa đánh giá

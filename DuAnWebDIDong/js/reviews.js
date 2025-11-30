@@ -71,22 +71,28 @@ function submitReview(event) {
 
     // Create review object
     const review = {
+        id: Date.now(),
         name: name,
         email: email,
         product: product,
         rating: parseInt(rating),
         content: content,
-        date: new Date().toLocaleDateString('vi-VN')
+        date: new Date().toLocaleDateString('vi-VN'),
+        status: 'pending' // pending, approved, rejected
     };
 
-    // In a real application, this would be sent to a server
+    // Lưu vào localStorage
+    const reviews = JSON.parse(localStorage.getItem('reviews') || '[]');
+    reviews.unshift(review); // Thêm vào đầu
+    localStorage.setItem('reviews', JSON.stringify(reviews));
+
     console.log('Review submitted:', review);
 
-    // Add review to list (prepend)
-    addReviewToList(review);
+    // Add review to list (prepend) - hiển thị với trạng thái chờ duyệt
+    addReviewToList(review, true);
 
     // Show success message
-    showNotification('Cảm ơn bạn đã gửi đánh giá! Đánh giá của bạn đã được ghi nhận.', 'success');
+    showNotification('Cảm ơn bạn đã gửi đánh giá! Đánh giá của bạn đang chờ duyệt.', 'success');
 
     // Reset form
     document.getElementById('reviewForm').reset();
@@ -98,12 +104,20 @@ function submitReview(event) {
 }
 
 // ==================== ADD REVIEW TO LIST ====================
-function addReviewToList(review) {
+function addReviewToList(review, prepend = true) {
     const reviewsList = document.getElementById('reviewsList');
     if (!reviewsList) return;
 
     const starIcons = Array(review.rating).fill('<i class="fas fa-star"></i>').join('') +
                      Array(5 - review.rating).fill('<i class="far fa-star"></i>').join('');
+
+    // Xác định thời gian hiển thị
+    const timeDisplay = prepend ? 'Vừa xong' : review.date;
+    
+    // Xác định trạng thái hiển thị
+    const statusBadge = review.status === 'pending' 
+        ? '<span class="badge bg-warning ms-2"><i class="fas fa-clock"></i> Đang chờ duyệt</span>' 
+        : '';
 
     const reviewHTML = `
         <div class="review-card card mb-3 shadow-sm fade-in">
@@ -115,12 +129,12 @@ function addReviewToList(review) {
                         </div>
                     </div>
                     <div class="flex-grow-1 ms-3">
-                        <h5 class="mb-1">${review.name}</h5>
+                        <h5 class="mb-1">${review.name}${statusBadge}</h5>
                         <div class="text-warning mb-1">
                             ${starIcons}
                         </div>
                         <p class="text-muted small mb-0">
-                            <i class="fas fa-clock"></i> Vừa xong${review.product ? ' | <i class="fas fa-mobile-alt"></i> ' + review.product : ''}
+                            <i class="fas fa-clock"></i> ${timeDisplay}${review.product ? ' | <i class="fas fa-mobile-alt"></i> ' + review.product : ''}
                         </p>
                     </div>
                 </div>
@@ -177,9 +191,35 @@ function showNotification(message, type = 'info') {
     }, 3000);
 }
 
+// ==================== LOAD APPROVED REVIEWS ====================
+function loadApprovedReviews() {
+    const reviewsList = document.getElementById('reviewsList');
+    if (!reviewsList) return;
+    
+    const reviews = JSON.parse(localStorage.getItem('reviews') || '[]');
+    // Chỉ hiển thị đánh giá đã duyệt
+    const approvedReviews = reviews.filter(r => r.status === 'approved');
+    
+    if (approvedReviews.length === 0) {
+        // Giữ các đánh giá mẫu đã có trong HTML
+        return;
+    }
+    
+    // Thêm đánh giá đã duyệt vào đầu danh sách
+    approvedReviews.forEach(review => {
+        addReviewToList(review, false);
+    });
+}
+
 // ==================== UPDATE CART COUNT ====================
 function updateCartCount() {
-    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const currentUser = sessionStorage.getItem('currentUser');
+    let cartKey = 'cart_guest';
+    if (currentUser) {
+        const user = JSON.parse(currentUser);
+        cartKey = `cart_${user.email}`;
+    }
+    const cart = JSON.parse(localStorage.getItem(cartKey)) || [];
     const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
     document.querySelectorAll('#cartCount').forEach(el => {
         el.textContent = cartCount;
@@ -190,5 +230,6 @@ function updateCartCount() {
 document.addEventListener('DOMContentLoaded', () => {
     initRatingInput();
     filterReviews();
+    loadApprovedReviews();
     updateCartCount();
 });

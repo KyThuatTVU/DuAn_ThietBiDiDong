@@ -539,7 +539,13 @@
                 
                 <!-- Reviews Section -->
                 <div id="section-reviews" class="content-section" style="display: none;">
-                    <h3 class="mb-4">Quản lý đánh giá</h3>
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3>Quản lý đánh giá</h3>
+                        <div>
+                            <span class="badge bg-warning me-2">Chờ duyệt: <span id="pendingReviewsCount">0</span></span>
+                            <span class="badge bg-success">Đã duyệt: <span id="approvedReviewsCount">0</span></span>
+                        </div>
+                    </div>
                     
                     <div class="table-section">
                         <div class="table-responsive">
@@ -552,12 +558,13 @@
                                         <th>Đánh giá</th>
                                         <th>Nội dung</th>
                                         <th>Ngày</th>
+                                        <th>Trạng thái</th>
                                         <th>Thao tác</th>
                                     </tr>
                                 </thead>
                                 <tbody id="reviewsTable">
                                     <tr>
-                                        <td colspan="7" class="text-center text-muted">Chưa có đánh giá nào</td>
+                                        <td colspan="8" class="text-center text-muted">Chưa có đánh giá nào</td>
                                     </tr>
                                 </tbody>
                             </table>
