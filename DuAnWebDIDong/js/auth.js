@@ -62,6 +62,20 @@ function handleRegister(event) {
     users.push(newUser);
     localStorage.setItem('users', JSON.stringify(users));
     
+    // Đồng bộ dữ liệu khách hàng cho admin quản lý
+    let customers = JSON.parse(localStorage.getItem('customers') || '[]');
+    const newCustomer = {
+        id: newUser.id,
+        name: name,
+        email: email,
+        phone: phone,
+        address: '',
+        orders: 0,
+        registerDate: new Date().toLocaleDateString('vi-VN')
+    };
+    customers.push(newCustomer);
+    localStorage.setItem('customers', JSON.stringify(customers));
+    
     alert('Đăng ký thành công! Vui lòng đăng nhập.');
     
     // Chuyển sang tab đăng nhập
