@@ -19,12 +19,81 @@ function logout() {
     }
 }
 
-// Toggle sidebar (mobile)
+// Toggle sidebar (mobile) - improved
 function toggleSidebar() {
-    document.getElementById('sidebar').classList.toggle('active');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    const body = document.body;
+
+    const isActive = sidebar.classList.contains('active');
+
+    if (isActive) {
+        // Closing sidebar
+        sidebar.classList.remove('active');
+        if (overlay) overlay.classList.remove('active');
+        body.style.overflow = '';
+    } else {
+        // Opening sidebar
+        sidebar.classList.add('active');
+        if (overlay) overlay.classList.add('active');
+        body.style.overflow = 'hidden'; // Prevent background scroll
+    }
 }
 
-// Hiển thị section
+// Close sidebar when clicking on overlay
+function closeSidebarOnOverlay() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    const body = document.body;
+
+    sidebar.classList.remove('active');
+    if (overlay) overlay.classList.remove('active');
+    body.style.overflow = '';
+}
+
+// Initialize mobile features
+function initMobileFeatures() {
+    // Swipe to close sidebar on mobile
+    let startX = 0;
+    let startY = 0;
+    const sidebar = document.getElementById('sidebar');
+
+    sidebar.addEventListener('touchstart', (e) => {
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+    }, { passive: true });
+
+    sidebar.addEventListener('touchmove', (e) => {
+        if (!sidebar.classList.contains('active')) return;
+
+        const currentX = e.touches[0].clientX;
+        const currentY = e.touches[0].clientY;
+        const diffX = startX - currentX;
+        const diffY = Math.abs(startY - currentY);
+
+        // If swipe left more than right and not too vertical
+        if (diffX > 50 && diffY < 100) {
+            closeSidebarOnMobile();
+        }
+    }, { passive: true });
+
+    // Close sidebar on window resize if desktop
+    window.addEventListener('resize', () => {
+        if (window.innerWidth > 768) {
+            closeSidebarOnMobile();
+        }
+    });
+
+    // Prevent zoom on double tap for iOS
+    let lastTouchEnd = 0;
+    document.addEventListener('touchend', (e) => {
+        const now = Date.now();
+        if (now - lastTouchEnd <= 300) {
+            e.preventDefault();
+        }
+        lastTouchEnd = now;
+    }, false);
+}// Hiển thị section
 function showSection(sectionName) {
     // Ẩn tất cả sections
     const sections = document.querySelectorAll('.content-section');
@@ -57,6 +126,9 @@ function showSection(sectionName) {
         'settings': 'Cài đặt hệ thống'
     };
     document.getElementById('pageTitle').textContent = titles[sectionName];
+    
+    // Đóng sidebar trên mobile sau khi chọn menu
+    closeSidebarOnMobile();
 }
 
 // Load dữ liệu dashboard
@@ -565,35 +637,76 @@ function deleteProduct(id) {
     }
 }
 
-// Notification helper
-function showNotification(message, type = 'success') {
-    const colors = {
-        success: '#28a745',
-        error: '#dc3545',
-        info: '#17a2b8',
-        warning: '#ffc107'
-    };
-    
+// Show loading state
+function showLoading(element, text = 'Đang xử lý...') {
+    if (typeof element === 'string') {
+        element = document.querySelector(element);
+    }
+    if (element) {
+        element.classList.add('loading');
+        element.disabled = true;
+        const originalText = element.innerHTML;
+        element.innerHTML = `<i class="fas fa-spinner fa-spin me-2"></i>${text}`;
+        element._originalText = originalText;
+    }
+}
+
+// Hide loading state
+function hideLoading(element) {
+    if (typeof element === 'string') {
+        element = document.querySelector(element);
+    }
+    if (element) {
+        element.classList.remove('loading');
+        element.disabled = false;
+        if (element._originalText) {
+            element.innerHTML = element._originalText;
+        }
+    }
+}
+
+// Enhanced notification for mobile
+function showNotification(message, type = 'success', duration = 3000) {
+    // Remove existing notifications
+    const existingNotifications = document.querySelectorAll('.admin-notification');
+    existingNotifications.forEach(notification => notification.remove());
+
     const notification = document.createElement('div');
+    notification.className = `alert alert-${type} position-fixed admin-notification`;
     notification.style.cssText = `
-        position: fixed;
         top: 20px;
         right: 20px;
-        background: ${colors[type]};
-        color: white;
-        padding: 15px 25px;
-        border-radius: 5px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         z-index: 9999;
-        animation: slideIn 0.3s ease-out;
+        max-width: 90vw;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        border-radius: 8px;
+        font-size: 14px;
     `;
-    notification.textContent = message;
+
+    const iconMap = {
+        success: 'check-circle',
+        error: 'exclamation-circle',
+        warning: 'exclamation-triangle',
+        info: 'info-circle'
+    };
+
+    notification.innerHTML = `
+        <i class="fas fa-${iconMap[type] || 'info-circle'} me-2"></i>
+        ${message}
+        <button type="button" class="btn-close ms-2" onclick="this.parentElement.remove()"></button>
+    `;
+
     document.body.appendChild(notification);
-    
-    setTimeout(() => {
-        notification.style.animation = 'slideOut 0.3s ease-out';
-        setTimeout(() => notification.remove(), 300);
-    }, 3000);
+
+    // Auto remove after duration
+    if (duration > 0) {
+        setTimeout(() => {
+            if (notification.parentElement) {
+                notification.style.animation = 'slideOutRight 0.3s ease-out';
+                setTimeout(() => notification.remove(), 300);
+            }
+        }, duration);
+    }
 }
 
 // Load đơn hàng
@@ -1244,6 +1357,7 @@ function getStatusColor(status) {
 // Khởi tạo khi trang load
 document.addEventListener('DOMContentLoaded', function() {
     checkAuth();
+    initMobileFeatures(); // Initialize mobile features
     
     // Load products from localStorage or use default
     const storedProducts = JSON.parse(localStorage.getItem('products'));
@@ -2064,4 +2178,17 @@ function changePassword(event) {
     showNotification('Đổi mật khẩu thành công!', 'success');
     console.log('Password changed successfully');
     return false;
+}
+
+// Đóng sidebar khi click vào menu item trên mobile
+function closeSidebarOnMobile() {
+    if (window.innerWidth <= 768) {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        const body = document.body;
+
+        sidebar.classList.remove('active');
+        if (overlay) overlay.classList.remove('active');
+        body.style.overflow = '';
+    }
 }
