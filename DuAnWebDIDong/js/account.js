@@ -282,6 +282,9 @@ function updateProfile(event) {
         currentUser.phone = phone;
         sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
         
+        // Đồng bộ với customers cho admin quản lý
+        syncUserToCustomers(users[userIndex]);
+        
         showNotification('Cập nhật thông tin thành công!', 'success');
         loadUserInfo();
     }
@@ -326,6 +329,33 @@ function changePassword(event) {
     }
     
     return false;
+}
+
+// Đồng bộ user với customers cho admin
+function syncUserToCustomers(user) {
+    let customers = JSON.parse(localStorage.getItem('customers') || '[]');
+    const customerIndex = customers.findIndex(c => c.id === user.id || c.email === user.email);
+    
+    if (customerIndex !== -1) {
+        // Cập nhật customer đã tồn tại
+        customers[customerIndex].name = user.name;
+        customers[customerIndex].phone = user.phone;
+        customers[customerIndex].email = user.email;
+        customers[customerIndex].address = user.address || '';
+    } else {
+        // Tạo customer mới
+        customers.push({
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            phone: user.phone,
+            address: user.address || '',
+            orders: 0,
+            registerDate: new Date().toLocaleDateString('vi-VN')
+        });
+    }
+    
+    localStorage.setItem('customers', JSON.stringify(customers));
 }
 
 // Notification helper

@@ -797,9 +797,69 @@ function saveOrder() {
 // Xóa các hàm cũ không dùng
 // function updateOrderStatus - đã thay bằng approveOrder, rejectOrder, shipOrder, completeOrder
 
+// Đồng bộ customers từ users (đảm bảo dữ liệu không bị mất)
+function syncCustomersFromUsers() {
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+    let customers = JSON.parse(localStorage.getItem('customers') || '[]');
+    const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+    
+    // Chỉ đồng bộ users có role là 'user' (không phải admin)
+    const userAccounts = users.filter(u => u.role !== 'admin');
+    
+    userAccounts.forEach(user => {
+        // Kiểm tra xem customer đã tồn tại chưa (theo email hoặc id)
+        const existingIndex = customers.findIndex(c => c.id === user.id || c.email === user.email);
+        
+        // Đếm số đơn hàng của user
+        const orderCount = orders.filter(o => o.userId === user.id || o.customerEmail === user.email).length;
+        
+        if (existingIndex === -1) {
+            // Thêm customer mới từ user
+            customers.push({
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                phone: user.phone,
+                address: user.address || '',
+                orders: orderCount,
+                registerDate: user.createdAt ? new Date(user.createdAt).toLocaleDateString('vi-VN') : new Date().toLocaleDateString('vi-VN')
+            });
+        } else {
+            // Cập nhật thông tin nếu đã tồn tại
+            customers[existingIndex].name = user.name;
+            customers[existingIndex].email = user.email;
+            customers[existingIndex].phone = user.phone;
+            customers[existingIndex].address = user.address || customers[existingIndex].address || '';
+            customers[existingIndex].orders = orderCount;
+            // Giữ nguyên id nếu đã có
+            if (!customers[existingIndex].id) {
+                customers[existingIndex].id = user.id;
+            }
+        }
+    });
+    
+    localStorage.setItem('customers', JSON.stringify(customers));
+    return customers;
+}
+
+// Đồng bộ customer ngược lại với user (khi admin cập nhật)
+function syncCustomerToUser(customer) {
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+    const userIndex = users.findIndex(u => u.id === customer.id || u.email === customer.email);
+    
+    if (userIndex !== -1) {
+        users[userIndex].name = customer.name;
+        users[userIndex].phone = customer.phone;
+        users[userIndex].address = customer.address || '';
+        // Không cập nhật email vì có thể ảnh hưởng đăng nhập
+        localStorage.setItem('users', JSON.stringify(users));
+    }
+}
+
 // Load khách hàng
 function loadCustomers() {
-    const customers = JSON.parse(localStorage.getItem('customers') || '[]');
+    // Đồng bộ từ users trước
+    const customers = syncCustomersFromUsers();
     const tbody = document.getElementById('customersTable');
     
     if (customers.length === 0) {
@@ -885,10 +945,15 @@ function saveCustomer() {
         // Cập nhật khách hàng
         const index = parseInt(customerId);
         if (index >= 0 && index < customers.length) {
-            customerData.id = customers[index].id || index + 1;
-            customerData.orders = customers[index].orders || 0;
-            customerData.registerDate = customers[index].registerDate;
+            const oldCustomer = customers[index];
+            customerData.id = oldCustomer.id || index + 1;
+            customerData.orders = oldCustomer.orders || 0;
+            customerData.registerDate = oldCustomer.registerDate;
             customers[index] = customerData;
+            
+            // Đồng bộ ngược lại với users nếu có liên kết
+            syncCustomerToUser(customerData);
+            
             showNotification('Cập nhật khách hàng thành công!', 'success');
         }
     } else {
@@ -911,10 +976,34 @@ function saveCustomer() {
 
 // Xóa khách hàng
 function deleteCustomer(index) {
-    if (confirm('Bạn có chắc muốn xóa khách hàng này?')) {
-        const customers = JSON.parse(localStorage.getItem('customers') || '[]');
+    const customers = JSON.parse(localStorage.getItem('customers') || '[]');
+    if (index < 0 || index >= customers.length) return;
+    
+    const customer = customers[index];
+    
+    // Kiểm tra xem customer này có liên kết với user account không
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+    const linkedUser = users.find(u => u.id === customer.id || u.email === customer.email);
+    
+    let confirmMessage = 'Bạn có chắc muốn xóa khách hàng này?';
+    if (linkedUser) {
+        confirmMessage = 'Khách hàng này có tài khoản đăng nhập. Xóa sẽ xóa cả tài khoản của họ. Bạn có chắc không?';
+    }
+    
+    if (confirm(confirmMessage)) {
+        // Xóa customer
         customers.splice(index, 1);
         localStorage.setItem('customers', JSON.stringify(customers));
+        
+        // Nếu có liên kết user, xóa luôn user
+        if (linkedUser) {
+            const userIndex = users.findIndex(u => u.id === linkedUser.id);
+            if (userIndex !== -1) {
+                users.splice(userIndex, 1);
+                localStorage.setItem('users', JSON.stringify(users));
+            }
+        }
+        
         loadCustomers();
         loadDashboard();
         showNotification('Đã xóa khách hàng!', 'success');
