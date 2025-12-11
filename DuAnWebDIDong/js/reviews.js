@@ -48,6 +48,36 @@ function initRatingInput() {
     }
 }
 
+// ==================== CHECK USER PURCHASED PRODUCT ====================
+function checkUserPurchasedProduct(email, productName) {
+    const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+    
+    // Tìm đơn hàng của người dùng với email tương ứng
+    const userOrders = orders.filter(order => {
+        return order.email && order.email.toLowerCase() === email.toLowerCase() &&
+               (order.status === 'Hoàn thành' || order.status === 'Đã giao');
+    });
+    
+    // Nếu không có productName, chỉ cần kiểm tra có đơn hàng hoàn thành không
+    if (!productName) {
+        return userOrders.length > 0;
+    }
+    
+    // Kiểm tra xem có mua sản phẩm cụ thể không
+    for (let order of userOrders) {
+        if (order.items && Array.isArray(order.items)) {
+            const hasPurchased = order.items.some(item => 
+                item.name && item.name.toLowerCase().includes(productName.toLowerCase())
+            );
+            if (hasPurchased) {
+                return true;
+            }
+        }
+    }
+    
+    return false;
+}
+
 // ==================== SUBMIT REVIEW ====================
 function submitReview(event) {
     event.preventDefault();
@@ -63,9 +93,22 @@ function submitReview(event) {
         showNotification('Vui lòng điền đầy đủ thông tin!', 'warning');
         return;
     }
+    
+    if (!product) {
+        showNotification('Vui lòng chọn sản phẩm đã mua!', 'warning');
+        return;
+    }
 
     if (!rating || rating === '0') {
         showNotification('Vui lòng chọn số sao đánh giá!', 'warning');
+        return;
+    }
+    
+    // Kiểm tra người dùng đã mua sản phẩm chưa
+    const hasPurchased = checkUserPurchasedProduct(email, product);
+    
+    if (!hasPurchased) {
+        showNotification('Bạn chỉ có thể đánh giá sản phẩm đã mua! Vui lòng kiểm tra lại email và chọn đúng sản phẩm.', 'error');
         return;
     }
 
@@ -226,10 +269,86 @@ function updateCartCount() {
     });
 }
 
+// ==================== AUTO FILL USER INFO ====================
+function autoFillUserInfo() {
+    const currentUser = sessionStorage.getItem('currentUser');
+    if (currentUser) {
+        const user = JSON.parse(currentUser);
+        const nameInput = document.getElementById('reviewName');
+        const emailInput = document.getElementById('reviewEmail');
+        
+        if (nameInput && user.name) {
+            nameInput.value = user.name;
+        }
+        if (emailInput && user.email) {
+            emailInput.value = user.email;
+            // Tự động load sản phẩm đã mua
+            loadUserPurchasedProducts(user.email);
+        }
+    }
+}
+
+// ==================== LOAD USER PURCHASED PRODUCTS ====================
+function loadUserPurchasedProducts(email) {
+    const productSelect = document.getElementById('reviewProduct');
+    if (!productSelect || !email) return;
+    
+    const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+    
+    // Lọc đơn hàng hoàn thành của user
+    const completedOrders = orders.filter(order => {
+        return order.email && order.email.toLowerCase() === email.toLowerCase() &&
+               (order.status === 'Hoàn thành' || order.status === 'Đã giao');
+    });
+    
+    // Lấy danh sách sản phẩm duy nhất
+    const purchasedProducts = new Set();
+    completedOrders.forEach(order => {
+        if (order.items && Array.isArray(order.items)) {
+            order.items.forEach(item => {
+                if (item.name) {
+                    purchasedProducts.add(item.name);
+                }
+            });
+        }
+    });
+    
+    // Cập nhật dropdown
+    productSelect.innerHTML = '<option value="">-- Chọn sản phẩm đã mua --</option>';
+    
+    if (purchasedProducts.size === 0) {
+        productSelect.innerHTML = '<option value="">Bạn chưa mua sản phẩm nào</option>';
+        productSelect.disabled = true;
+    } else {
+        purchasedProducts.forEach(productName => {
+            const option = document.createElement('option');
+            option.value = productName;
+            option.textContent = productName;
+            productSelect.appendChild(option);
+        });
+        productSelect.disabled = false;
+    }
+}
+
+// ==================== LISTEN EMAIL CHANGE ====================
+function setupEmailListener() {
+    const emailInput = document.getElementById('reviewEmail');
+    if (emailInput) {
+        emailInput.addEventListener('blur', function() {
+            const email = this.value.trim();
+            if (email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                loadUserPurchasedProducts(email);
+            }
+        });
+    }
+}
+
 // ==================== INITIALIZE ====================
 document.addEventListener('DOMContentLoaded', () => {
     initRatingInput();
     filterReviews();
     loadApprovedReviews();
     updateCartCount();
+    autoFillUserInfo();
+    setupEmailListener();
 });

@@ -34,11 +34,19 @@ function loadAndApplySettings() {
     // Cập nhật hotline
     document.querySelectorAll('[data-setting="hotline"], .setting-hotline').forEach(el => {
         el.textContent = hotline;
+        // Cập nhật href nếu là link
+        if (el.tagName === 'A') {
+            el.href = 'tel:' + hotline.replace(/\./g, '');
+        }
     });
     
     // Cập nhật email
     document.querySelectorAll('[data-setting="email"], .setting-email').forEach(el => {
         el.textContent = email;
+        // Cập nhật href nếu là link
+        if (el.tagName === 'A') {
+            el.href = 'mailto:' + email;
+        }
     });
     
     // Cập nhật địa chỉ
@@ -78,55 +86,57 @@ function loadAndApplySettings() {
 
 // Cập nhật các link mạng xã hội
 function updateSocialLinks(facebook, youtube, instagram, zalo) {
+    // Lấy tất cả các link social (cả footer và contact page)
+    const fbLinks = document.querySelectorAll('[data-social="facebook"]');
+    const ytLinks = document.querySelectorAll('[data-social="youtube"]');
+    const igLinks = document.querySelectorAll('[data-social="instagram"]');
+    const zaloLinks = document.querySelectorAll('[data-social="zalo"]');
+    
     // Facebook
-    const fbLink = document.querySelector('[data-social="facebook"]');
-    if (fbLink) {
+    fbLinks.forEach(fbLink => {
         if (facebook) {
             fbLink.href = facebook;
-            fbLink.style.display = 'inline-block';
+            fbLink.style.display = fbLink.classList.contains('btn') ? 'inline-block' : 'inline-block';
             fbLink.target = '_blank';
         } else {
             fbLink.style.display = 'none';
         }
-    }
+    });
     
     // YouTube
-    const ytLink = document.querySelector('[data-social="youtube"]');
-    if (ytLink) {
+    ytLinks.forEach(ytLink => {
         if (youtube) {
             ytLink.href = youtube;
-            ytLink.style.display = 'inline-block';
+            ytLink.style.display = ytLink.classList.contains('btn') ? 'inline-block' : 'inline-block';
             ytLink.target = '_blank';
         } else {
             ytLink.style.display = 'none';
         }
-    }
+    });
     
     // Instagram
-    const igLink = document.querySelector('[data-social="instagram"]');
-    if (igLink) {
+    igLinks.forEach(igLink => {
         if (instagram) {
             igLink.href = instagram;
-            igLink.style.display = 'inline-block';
+            igLink.style.display = igLink.classList.contains('btn') ? 'inline-block' : 'inline-block';
             igLink.target = '_blank';
         } else {
             igLink.style.display = 'none';
         }
-    }
+    });
     
     // Zalo
-    const zaloLink = document.querySelector('[data-social="zalo"]');
-    if (zaloLink) {
+    zaloLinks.forEach(zaloLink => {
         if (zalo) {
             // Zalo link format: https://zalo.me/PHONE_NUMBER
             const zaloUrl = zalo.startsWith('http') ? zalo : `https://zalo.me/${zalo.replace(/\D/g, '')}`;
             zaloLink.href = zaloUrl;
-            zaloLink.style.display = 'inline-block';
+            zaloLink.style.display = zaloLink.classList.contains('btn') ? 'inline-block' : 'inline-block';
             zaloLink.target = '_blank';
         } else {
             zaloLink.style.display = 'none';
         }
-    }
+    });
 }
 
 // Helper function format tiền

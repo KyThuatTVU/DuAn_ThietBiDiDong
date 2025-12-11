@@ -103,6 +103,9 @@ function loadUserOrders(filter = 'all') {
                                 <button class="btn btn-sm btn-outline-success" onclick="reorder(${order.id})">
                                     <i class="fas fa-redo"></i> Mua lại
                                 </button>
+                                <a href="danhgia.html" class="btn btn-sm btn-warning">
+                                    <i class="fas fa-star"></i> Đánh giá
+                                </a>
                             ` : ''}
                         </div>
                     </div>
@@ -148,6 +151,11 @@ function viewOrderDetail(orderId) {
                     <h6 class="mb-1">${item.name}</h6>
                     <p class="text-muted small mb-1">Số lượng: ${item.quantity}</p>
                     <p class="text-danger fw-bold mb-0">${formatCurrency(item.price * item.quantity)}</p>
+                    ${order.status === 'Hoàn thành' ? `
+                        <a href="danhgia.html" class="btn btn-sm btn-warning mt-2">
+                            <i class="fas fa-star"></i> Đánh giá sản phẩm
+                        </a>
+                    ` : ''}
                 </div>
             </div>
         `;

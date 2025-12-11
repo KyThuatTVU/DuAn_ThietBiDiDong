@@ -91,11 +91,11 @@
 <style>
 /* ========== MÀU CHỦ ĐẠO ========== */
 .header-top {
-  background-color: #FFD500; /* vàng đậm thương hiệu TGDD */
+  background-color: #001f3f; /* navy blue */
 }
 
 .bg-tgdd {
-  background-color: #FFD500;
+  background-color: #002b5c !important; /* navy blue */
 }
 
 .navbar .nav-link {
@@ -105,7 +105,14 @@
 
 .navbar .nav-link:hover {
   text-decoration: underline;
+  color: #666 !important;
+}
+
+.navbar .nav-link.active {
   color: #000 !important;
+  font-weight: bold;
+  border-bottom: 3px solid #000;
+  text-decoration: none !important;
 }
 
 /* ========== SEARCH BAR ========== */
@@ -128,10 +135,15 @@
 /* ========== BUTTON STYLE ========== */
 .header-actions a {
   font-weight: 500;
+  color: #fff !important;
+}
+
+.header-actions a:hover {
+  color: #e0e0e0 !important;
 }
 
 .header-actions i {
-  color: #222;
+  color: #fff;
 }
 
 /* ========== RESPONSIVE ========== */
@@ -141,6 +153,108 @@
     width: 100%;
     margin-top: 10px;
   }
+}
+
+/* ========== PRODUCT DETAIL PAGE ========== */
+/* Main Image */
+.main-image {
+  position: relative;
+  overflow: hidden;
+}
+
+.main-image img {
+  width: 100%;
+  transition: transform 0.3s ease;
+}
+
+/* Thumbnails */
+.image-thumbnails {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: #888 #f1f1f1;
+}
+
+.image-thumbnails::-webkit-scrollbar {
+  height: 6px;
+}
+
+.image-thumbnails::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.image-thumbnails::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+.image-thumbnails::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.image-thumbnails img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  cursor: pointer;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  padding: 5px;
+  transition: all 0.3s ease;
+  background-color: #fff;
+  flex-shrink: 0;
+}
+
+.image-thumbnails img:hover {
+  border-color: #007bff;
+  transform: scale(1.05);
+}
+
+.image-thumbnails img.active {
+  border-color: #007bff;
+  box-shadow: 0 0 10px rgba(0, 123, 255, 0.3);
+}
+
+/* Responsive for product images */
+@media (max-width: 768px) {
+  .main-image img {
+    max-height: 300px !important;
+  }
+  
+  .image-thumbnails img {
+    width: 60px;
+    height: 60px;
+  }
+}
+
+/* Rating input stars */
+.rating-input {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+  gap: 5px;
+}
+
+.rating-input input[type="radio"] {
+  display: none;
+}
+
+.rating-input label {
+  cursor: pointer;
+  font-size: 2rem;
+  color: #ddd;
+  transition: color 0.2s;
+}
+
+.rating-input label:hover,
+.rating-input label:hover ~ label,
+.rating-input input[type="radio"]:checked ~ label {
+  color: #ffc107;
+}
+
+.rating-input input[type="radio"]:checked ~ label {
+  color: #ffc107;
 }
 </style>
 
@@ -164,10 +278,10 @@
                 <!-- Product Image -->
                 <div class="col-lg-5">
                     <div class="product-image-section">
-                        <div class="main-image mb-3">
-                            <img src="" alt="" class="img-fluid rounded border" id="mainImage">
+                        <div class="main-image mb-3 text-center bg-white p-3 rounded border">
+                            <img src="" alt="" class="img-fluid" id="mainImage" style="max-height: 400px; object-fit: contain;">
                         </div>
-                        <div class="image-thumbnails d-flex gap-2">
+                        <div class="image-thumbnails d-flex gap-2 flex-wrap justify-content-center">
                             <!-- Thumbnails will be loaded by JavaScript -->
                         </div>
                     </div>
@@ -243,12 +357,7 @@
                         </div>
 
                         <div class="row g-3">
-                            <div class="col-md-6">
-                                <button class="btn btn-danger btn-lg w-100">
-                                    MUA NGAY
-                                </button>
-                            </div>
-                            <div class="col-md-6">
+                            <div class="col-12">
                                 <button class="btn btn-outline-primary btn-lg w-100">
                                     <i class="fas fa-phone"></i> GỌI ĐẶT HÀNG: <span data-setting="hotline">1800.6789</span>
                                 </button>
@@ -298,48 +407,50 @@
                             <div class="reviews-section">
                                 <h5 class="mb-4">Đánh giá từ khách hàng</h5>
                                 
-                                <div class="review-item mb-4 pb-4 border-bottom">
-                                    <div class="d-flex mb-2">
-                                        <div class="flex-shrink-0">
-                                            <div class="avatar bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
-                                                <i class="fas fa-user"></i>
-                                            </div>
-                                        </div>
-                                        <div class="flex-grow-1 ms-3">
-                                            <h6 class="mb-1">Nguyễn Văn A</h6>
-                                            <div class="text-warning mb-1">
-                                                <i class="fas fa-star"></i>
-                                                <i class="fas fa-star"></i>
-                                                <i class="fas fa-star"></i>
-                                                <i class="fas fa-star"></i>
-                                                <i class="fas fa-star"></i>
-                                            </div>
-                                            <p class="text-muted small mb-2">15/10/2024</p>
-                                            <p>Sản phẩm rất tốt, giao hàng nhanh, đóng gói cẩn thận. Máy đẹp, chạy mượt mà!</p>
+                                <!-- Form đánh giá (chỉ hiện nếu đã mua) -->
+                                <div id="reviewFormSection" style="display: none;">
+                                    <div class="card mb-4">
+                                        <div class="card-body">
+                                            <h6 class="card-title mb-3">Viết đánh giá của bạn</h6>
+                                            <form id="productReviewForm">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Đánh giá của bạn <span class="text-danger">*</span></label>
+                                                    <div class="rating-input">
+                                                        <input type="radio" name="rating" value="5" id="star5" required>
+                                                        <label for="star5"><i class="fas fa-star"></i></label>
+                                                        <input type="radio" name="rating" value="4" id="star4">
+                                                        <label for="star4"><i class="fas fa-star"></i></label>
+                                                        <input type="radio" name="rating" value="3" id="star3">
+                                                        <label for="star3"><i class="fas fa-star"></i></label>
+                                                        <input type="radio" name="rating" value="2" id="star2">
+                                                        <label for="star2"><i class="fas fa-star"></i></label>
+                                                        <input type="radio" name="rating" value="1" id="star1">
+                                                        <label for="star1"><i class="fas fa-star"></i></label>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Nhận xét <span class="text-danger">*</span></label>
+                                                    <textarea class="form-control" id="reviewComment" rows="4" required placeholder="Chia sẻ trải nghiệm của bạn về sản phẩm này..."></textarea>
+                                                </div>
+                                                <button type="submit" class="btn btn-primary">
+                                                    <i class="fas fa-paper-plane"></i> Gửi đánh giá
+                                                </button>
+                                            </form>
                                         </div>
                                     </div>
                                 </div>
-
-                                <div class="review-item mb-4 pb-4 border-bottom">
-                                    <div class="d-flex mb-2">
-                                        <div class="flex-shrink-0">
-                                            <div class="avatar bg-success text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
-                                                <i class="fas fa-user"></i>
-                                            </div>
-                                        </div>
-                                        <div class="flex-grow-1 ms-3">
-                                            <h6 class="mb-1">Trần Thị B</h6>
-                                            <div class="text-warning mb-1">
-                                                <i class="fas fa-star"></i>
-                                                <i class="fas fa-star"></i>
-                                                <i class="fas fa-star"></i>
-                                                <i class="fas fa-star"></i>
-                                                <i class="far fa-star"></i>
-                                            </div>
-                                            <p class="text-muted small mb-2">10/10/2024</p>
-                                            <p>Máy ok, pin trâu, camera đẹp. Giá hơi cao nhưng chất lượng tốt nên chấp nhận được.</p>
-                                        </div>
+                                
+                                <!-- Thông báo nếu chưa mua -->
+                                <div id="notPurchasedMessage" style="display: none;">
+                                    <div class="alert alert-info">
+                                        <i class="fas fa-info-circle"></i> Bạn cần mua sản phẩm này trước khi có thể đánh giá.
                                     </div>
+                                </div>
+                                
+                                <!-- Danh sách đánh giá -->
+                                <div id="reviewsList">
+                                    <!-- Reviews will be loaded by JavaScript -->
+                                    <p class="text-muted">Đang tải đánh giá...</p>
                                 </div>
 
                                 <div class="text-center mt-4">

@@ -196,7 +196,7 @@
                                     </div>
                                     <div class="flex-grow-1 ms-3">
                                         <h6>Địa chỉ</h6>
-                                        <p class="text-muted mb-0">123 Đường Nguyễn Huệ, Quận 1, TP.Hồ Chí Minh</p>
+                                        <p class="text-muted mb-0" data-setting="address">123 Đường ABC, Quận 1, TP.HCM</p>
                                     </div>
                                 </div>
                             </div>
@@ -211,8 +211,7 @@
                                     <div class="flex-grow-1 ms-3">
                                         <h6>Điện thoại</h6>
                                         <p class="text-muted mb-0">
-                                            Hotline: <a href="tel:18006789" class="text-decoration-none">1800.6789</a><br>
-                                            Hỗ trợ: <a href="tel:0901234567" class="text-decoration-none">0901.234.567</a>
+                                            Hotline: <a href="tel:18006789" class="text-decoration-none" data-setting="hotline">1800.6789</a>
                                         </p>
                                     </div>
                                 </div>
@@ -228,8 +227,7 @@
                                     <div class="flex-grow-1 ms-3">
                                         <h6>Email</h6>
                                         <p class="text-muted mb-0">
-                                            <a href="mailto:info@thegioididong.com" class="text-decoration-none">info@thegioididong.com</a><br>
-                                            <a href="mailto:support@thegioididong.com" class="text-decoration-none">support@thegioididong.com</a>
+                                            <a href="mailto:info@thegioididong.com" class="text-decoration-none" data-setting="email">info@thegioididong.com</a>
                                         </p>
                                     </div>
                                 </div>
@@ -254,15 +252,18 @@
 
                             <div class="social-links mt-4">
                                 <h6 class="mb-3">Kết nối với chúng tôi</h6>
-                                <div class="d-flex gap-2">
-                                    <a href="#" class="btn btn-primary btn-sm">
+                                <div class="d-flex gap-2" id="contactSocialLinks">
+                                    <a href="#" class="btn btn-primary btn-sm" data-social="facebook" style="display: none;">
                                         <i class="fab fa-facebook-f"></i> Facebook
                                     </a>
-                                    <a href="#" class="btn btn-danger btn-sm">
+                                    <a href="#" class="btn btn-danger btn-sm" data-social="youtube" style="display: none;">
+                                        <i class="fab fa-youtube"></i> YouTube
+                                    </a>
+                                    <a href="#" class="btn btn-danger btn-sm" data-social="instagram" style="display: none;">
                                         <i class="fab fa-instagram"></i> Instagram
                                     </a>
-                                    <a href="#" class="btn btn-danger btn-sm">
-                                        <i class="fab fa-youtube"></i> YouTube
+                                    <a href="#" class="btn btn-success btn-sm" data-social="zalo" style="display: none;">
+                                        <i class="fas fa-comment-dots"></i> Zalo
                                     </a>
                                 </div>
                             </div>
@@ -284,11 +285,11 @@
                                     </div>
                                     <div class="col-md-6">
                                         <label for="phone" class="form-label">Số điện thoại <span class="text-danger">*</span></label>
-                                        <input type="tel" class="form-control" id="phone" required>
+                                        <input type="tel" class="form-control" id="phone" required pattern="[0-9]{10}" placeholder="0901234567">
                                     </div>
                                     <div class="col-md-6">
                                         <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
-                                        <input type="email" class="form-control" id="email" required>
+                                        <input type="email" class="form-control" id="email" required placeholder="example@email.com">
                                     </div>
                                     <div class="col-md-6">
                                         <label for="subject" class="form-label">Chủ đề</label>

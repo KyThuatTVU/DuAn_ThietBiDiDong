@@ -101,6 +101,18 @@ function placeOrder() {
     const customerWard = document.getElementById('customerWard').value;
     const orderNote = document.getElementById('orderNote').value;
     
+    // Validate số điện thoại
+    if (!/^[0-9]{10}$/.test(customerPhone)) {
+        alert('Số điện thoại phải có đúng 10 chữ số!');
+        return;
+    }
+    
+    // Validate email nếu có nhập
+    if (customerEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail)) {
+        alert('Email không hợp lệ!');
+        return;
+    }
+    
     const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
     const paymentNames = {
         'cod': 'Thanh toán khi nhận hàng',
@@ -123,6 +135,7 @@ function placeOrder() {
         customerName: customerName,
         customerPhone: customerPhone,
         customerEmail: customerEmail,
+        email: customerEmail, // Thêm trường email để dùng cho kiểm tra đánh giá
         address: `${customerAddress}, ${customerWard}, ${customerDistrict}, ${customerCity}`,
         items: cart.map(item => ({
             id: item.id,

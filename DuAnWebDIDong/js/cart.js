@@ -96,7 +96,18 @@ function updateOrderSummary(cart) {
 function updateQuantity(productId, newQuantity) {
     newQuantity = parseInt(newQuantity);
     
-    if (newQuantity < 1) return;
+    // Validate số lượng phải lớn hơn 0
+    if (newQuantity < 1) {
+        showNotification('Số lượng phải lớn hơn 0!', 'error');
+        loadCart(); // Reload để reset về giá trị cũ
+        return;
+    }
+    
+    // Giới hạn số lượng tối đa
+    if (newQuantity > 99) {
+        showNotification('Số lượng tối đa là 99!', 'warning');
+        newQuantity = 99;
+    }
 
     let cart = getUserCart();
     const item = cart.find(item => item.id === productId);

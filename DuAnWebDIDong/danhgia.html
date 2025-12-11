@@ -179,6 +179,10 @@
                             <h5 class="mb-0"><i class="fas fa-edit"></i> Gửi đánh giá của bạn</h5>
                         </div>
                         <div class="card-body">
+                            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                                <i class="fas fa-info-circle"></i> <strong>Lưu ý:</strong> Chỉ khách hàng đã mua và nhận sản phẩm mới được đánh giá.
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
                             <form id="reviewForm" onsubmit="submitReview(event)">
                                 <div class="mb-3">
                                     <label for="reviewName" class="form-label">Họ và tên <span class="text-danger">*</span></label>
@@ -187,10 +191,14 @@
                                 <div class="mb-3">
                                     <label for="reviewEmail" class="form-label">Email <span class="text-danger">*</span></label>
                                     <input type="email" class="form-control" id="reviewEmail" required>
+                                    <small class="text-muted">Chỉ email đã mua hàng mới được đánh giá</small>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="reviewProduct" class="form-label">Sản phẩm đã mua</label>
-                                    <input type="text" class="form-control" id="reviewProduct" placeholder="VD: iPhone 15 Pro Max">
+                                    <label for="reviewProduct" class="form-label">Sản phẩm đã mua <span class="text-danger">*</span></label>
+                                    <select class="form-control" id="reviewProduct" required>
+                                        <option value="">-- Chọn sản phẩm đã mua --</option>
+                                    </select>
+                                    <small class="text-muted">Nhập email để xem sản phẩm đã mua</small>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Đánh giá <span class="text-danger">*</span></label>

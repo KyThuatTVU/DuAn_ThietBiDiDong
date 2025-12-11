@@ -26,6 +26,30 @@ function handleRegister(event) {
     const password = document.getElementById('registerPassword').value;
     const confirmPassword = document.getElementById('registerConfirmPassword').value;
     
+    // Validate tên không được rỗng
+    if (!name || name.trim() === '') {
+        alert('Vui lòng nhập họ tên!');
+        return false;
+    }
+    
+    // Validate email
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        alert('Email không hợp lệ!');
+        return false;
+    }
+    
+    // Validate số điện thoại
+    if (!/^[0-9]{10}$/.test(phone)) {
+        alert('Số điện thoại phải có đúng 10 chữ số!');
+        return false;
+    }
+    
+    // Validate mật khẩu tối thiểu 6 ký tự
+    if (password.length < 6) {
+        alert('Mật khẩu phải có ít nhất 6 ký tự!');
+        return false;
+    }
+    
     // Kiểm tra mật khẩu khớp
     if (password !== confirmPassword) {
         alert('Mật khẩu xác nhận không khớp!');

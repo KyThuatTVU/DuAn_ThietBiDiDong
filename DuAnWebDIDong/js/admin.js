@@ -19,6 +19,14 @@ function logout() {
     }
 }
 
+// Lưu trữ chart instances để destroy khi cần
+let chartInstances = {
+    revenueChart: null,
+    orderStatusChart: null,
+    topProductsChart: null,
+    brandChart: null
+};
+
 // Toggle sidebar (mobile) - improved
 function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
@@ -180,6 +188,11 @@ function renderRevenueChart() {
     const ctx = document.getElementById('revenueChart');
     if (!ctx) return;
     
+    // Destroy chart cũ nếu tồn tại
+    if (chartInstances.revenueChart) {
+        chartInstances.revenueChart.destroy();
+    }
+    
     const orders = JSON.parse(localStorage.getItem('orders') || '[]');
     
     // Tính doanh thu theo tháng (6 tháng gần nhất)
@@ -205,7 +218,7 @@ function renderRevenueChart() {
         revenues.push(monthRevenue / 1000000); // Đơn vị triệu đồng
     }
     
-    new Chart(ctx, {
+    chartInstances.revenueChart = new Chart(ctx, {
         type: 'line',
         data: {
             labels: months,
@@ -258,6 +271,11 @@ function renderOrderStatusChart() {
     const ctx = document.getElementById('orderStatusChart');
     if (!ctx) return;
     
+    // Destroy chart cũ nếu tồn tại
+    if (chartInstances.orderStatusChart) {
+        chartInstances.orderStatusChart.destroy();
+    }
+    
     const orders = JSON.parse(localStorage.getItem('orders') || '[]');
     
     // Đếm đơn hàng theo trạng thái
@@ -280,7 +298,7 @@ function renderOrderStatusChart() {
         }
     });
     
-    new Chart(ctx, {
+    chartInstances.orderStatusChart = new Chart(ctx, {
         type: 'doughnut',
         data: {
             labels: Object.keys(statusCounts),
@@ -321,6 +339,11 @@ function renderTopProductsChart() {
     const ctx = document.getElementById('topProductsChart');
     if (!ctx) return;
     
+    // Destroy chart cũ nếu tồn tại
+    if (chartInstances.topProductsChart) {
+        chartInstances.topProductsChart.destroy();
+    }
+    
     const orders = JSON.parse(localStorage.getItem('orders') || '[]');
     const productSales = {};
     
@@ -348,7 +371,7 @@ function renderTopProductsChart() {
         data.push(0);
     }
     
-    new Chart(ctx, {
+    chartInstances.topProductsChart = new Chart(ctx, {
         type: 'bar',
         data: {
             labels: labels,
@@ -396,6 +419,11 @@ function renderBrandChart() {
     const ctx = document.getElementById('brandChart');
     if (!ctx) return;
     
+    // Destroy chart cũ nếu tồn tại
+    if (chartInstances.brandChart) {
+        chartInstances.brandChart.destroy();
+    }
+    
     const products = JSON.parse(localStorage.getItem('products') || '[]');
     const brandCounts = {};
     
@@ -419,7 +447,7 @@ function renderBrandChart() {
         '#66b3ff', '#99ccff', '#cce6ff'
     ];
     
-    new Chart(ctx, {
+    chartInstances.brandChart = new Chart(ctx, {
         type: 'pie',
         data: {
             labels: labels,
@@ -526,14 +554,29 @@ function editProduct(id) {
         document.getElementById('productBrand').value = product.brand;
         document.getElementById('productPrice').value = product.price;
         document.getElementById('productOldPrice').value = product.oldPrice || '';
-        document.getElementById('productRam').value = product.ram;
-        document.getElementById('productStorage').value = product.storage;
+        // Format RAM và Storage
+        const ramStr = typeof product.ram === 'number' ? `${product.ram}GB` : product.ram;
+        const storageStr = typeof product.storage === 'number' ? `${product.storage}GB` : product.storage;
+        document.getElementById('productRam').value = ramStr;
+        document.getElementById('productStorage').value = storageStr;
         document.getElementById('productRating').value = product.rating || 5;
         document.getElementById('productImage').value = product.image;
         document.getElementById('productCategory').value = product.category || '';
         document.getElementById('productDescription').value = product.description || '';
         document.getElementById('productHot').checked = product.hot || false;
         document.getElementById('productBestSelling').checked = product.bestSelling || false;
+        
+        // Điền thông số kỹ thuật
+        if (product.specs) {
+            document.getElementById('productScreen').value = product.specs['Màn hình'] !== 'Chưa cập nhật' ? product.specs['Màn hình'] : '';
+            document.getElementById('productCPU').value = product.specs['CPU'] !== 'Chưa cập nhật' ? product.specs['CPU'] : '';
+            document.getElementById('productCameraBack').value = product.specs['Camera sau'] !== 'Chưa cập nhật' ? product.specs['Camera sau'] : '';
+            document.getElementById('productCameraFront').value = product.specs['Camera trước'] !== 'Chưa cập nhật' ? product.specs['Camera trước'] : '';
+            document.getElementById('productBattery').value = product.specs['Pin'] !== 'Chưa cập nhật' ? product.specs['Pin'] : '';
+        }
+        
+        // Preview hình ảnh
+        previewProductImage();
         
         // Đổi tiêu đề modal
         document.getElementById('productModalTitle').textContent = 'Chỉnh sửa sản phẩm';
@@ -554,9 +597,65 @@ function showAddProductModal() {
     document.getElementById('productId').value = '';
     document.getElementById('productModalTitle').textContent = 'Thêm sản phẩm mới';
     
+    // Reset các trường thông số kỹ thuật
+    document.getElementById('productScreen').value = '';
+    document.getElementById('productCPU').value = '';
+    document.getElementById('productCameraBack').value = '';
+    document.getElementById('productCameraFront').value = '';
+    document.getElementById('productBattery').value = '';
+    
+    // Ẩn preview
+    const imagePreview = document.getElementById('imagePreview');
+    if (imagePreview) {
+        imagePreview.style.display = 'none';
+    }
+    
     // Hiển thị modal
     const modal = new bootstrap.Modal(document.getElementById('productModal'));
     modal.show();
+}
+
+// Preview hình ảnh sản phẩm
+function previewProductImage() {
+    const imageUrl = document.getElementById('productImage').value;
+    const imagePreview = document.getElementById('imagePreview');
+    const previewImg = document.getElementById('previewImg');
+    
+    if (imageUrl && imageUrl.trim() !== '') {
+        // Validate URL format
+        try {
+            new URL(imageUrl);
+        } catch (e) {
+            imagePreview.style.display = 'none';
+            return;
+        }
+        
+        // Reset previous handlers
+        previewImg.onerror = null;
+        previewImg.onload = null;
+        
+        // Hiển thị loading
+        imagePreview.style.display = 'block';
+        previewImg.src = '';
+        previewImg.alt = 'Đang tải...';
+        
+        // Xử lý lỗi khi load hình (chỉ hiển thị placeholder, không popup)
+        previewImg.onerror = function() {
+            this.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect width="200" height="200" fill="%23f0f0f0"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" font-family="Arial" font-size="14" fill="%23999"%3EURL không hợp lệ%3C/text%3E%3C/svg%3E';
+            this.alt = 'Không thể tải ảnh';
+        };
+        
+        // Xử lý thành công
+        previewImg.onload = function() {
+            if (this.src.startsWith('data:image/svg')) return; // Không làm gì nếu là error placeholder
+            this.alt = 'Preview';
+        };
+        
+        // Set src sau khi đã set handlers
+        previewImg.src = imageUrl;
+    } else {
+        imagePreview.style.display = 'none';
+    }
 }
 
 // Lưu sản phẩm (thêm mới hoặc cập nhật)
@@ -567,28 +666,66 @@ function saveProduct() {
         return;
     }
     
+    // Validate định dạng URL (không kiểm tra ảnh có load được hay không)
+    const imageUrl = document.getElementById('productImage').value;
+    if (!imageUrl || imageUrl.trim() === '') {
+        showNotification('Vui lòng nhập URL hình ảnh!', 'error');
+        return;
+    }
+    
+    try {
+        const url = new URL(imageUrl);
+        // Kiểm tra protocol phải là http hoặc https
+        if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+            showNotification('URL phải bắt đầu bằng http:// hoặc https://', 'error');
+            return;
+        }
+    } catch (e) {
+        showNotification('Định dạng URL không hợp lệ!', 'error');
+        return;
+    }
+    
     const productId = document.getElementById('productId').value;
+    
+    // Parse RAM và Storage về dạng số
+    const ramValue = document.getElementById('productRam').value;
+    const storageValue = document.getElementById('productStorage').value;
+    
+    // Validate giá bán
+    const price = parseInt(document.getElementById('productPrice').value);
+    const oldPrice = parseInt(document.getElementById('productOldPrice').value) || null;
+    
+    if (price <= 0) {
+        showNotification('Giá bán phải lớn hơn 0!', 'error');
+        return;
+    }
+    
+    if (oldPrice && oldPrice <= price) {
+        showNotification('Giá cũ phải lớn hơn giá bán!', 'error');
+        return;
+    }
+    
     const productData = {
         name: document.getElementById('productName').value,
         brand: document.getElementById('productBrand').value,
-        price: parseInt(document.getElementById('productPrice').value),
-        oldPrice: parseInt(document.getElementById('productOldPrice').value) || null,
-        ram: document.getElementById('productRam').value,
-        storage: document.getElementById('productStorage').value,
+        price: price,
+        oldPrice: oldPrice,
+        ram: parseInt(ramValue.replace('GB', '')),
+        storage: parseInt(storageValue.replace(/GB|TB/, '')),
         rating: parseFloat(document.getElementById('productRating').value),
         image: document.getElementById('productImage').value,
-        category: document.getElementById('productCategory').value,
+        category: document.getElementById('productCategory').value || 'phone',
         description: document.getElementById('productDescription').value,
         hot: document.getElementById('productHot').checked,
         bestSelling: document.getElementById('productBestSelling').checked,
         specs: {
-            'Màn hình': 'Chưa cập nhật',
-            'Camera sau': 'Chưa cập nhật',
-            'Camera trước': 'Chưa cập nhật',
-            'CPU': 'Chưa cập nhật',
-            'RAM': document.getElementById('productRam').value,
-            'Bộ nhớ trong': document.getElementById('productStorage').value,
-            'Pin': 'Chưa cập nhật'
+            'Màn hình': document.getElementById('productScreen').value || 'Chưa cập nhật',
+            'Camera sau': document.getElementById('productCameraBack').value || 'Chưa cập nhật',
+            'Camera trước': document.getElementById('productCameraFront').value || 'Chưa cập nhật',
+            'CPU': document.getElementById('productCPU').value || 'Chưa cập nhật',
+            'RAM': ramValue,
+            'Bộ nhớ trong': storageValue,
+            'Pin': document.getElementById('productBattery').value || 'Chưa cập nhật'
         }
     };
     
@@ -611,7 +748,7 @@ function saveProduct() {
     }
     
     // Lưu vào localStorage để đồng bộ
-    localStorage.setItem('products', JSON.stringify(products));
+    localStorage.setItem('products', JSON.stringify(window.products));
     
     // Đóng modal
     const modal = bootstrap.Modal.getInstance(document.getElementById('productModal'));
@@ -762,39 +899,56 @@ function loadOrders() {
 function approveOrder(index) {
     if (!confirm('Xác nhận duyệt đơn hàng này?')) return;
     
-    const orders = JSON.parse(localStorage.getItem('orders') || '[]');
-    if (index >= 0 && index < orders.length) {
-        orders[index].status = 'Đã xác nhận';
-        orders[index].updatedAt = new Date().toISOString();
-        orders[index].approvedBy = sessionStorage.getItem('adminUsername') || 'Admin';
-        orders[index].approvedAt = new Date().toISOString();
-        
-        localStorage.setItem('orders', JSON.stringify(orders));
-        loadOrders();
-        loadRecentOrders();
-        loadDashboard();
-        showNotification('Đã duyệt đơn hàng thành công!', 'success');
+    try {
+        const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+        if (index >= 0 && index < orders.length) {
+            orders[index].status = 'Đã xác nhận';
+            orders[index].updatedAt = new Date().toISOString();
+            orders[index].approvedBy = sessionStorage.getItem('adminUsername') || 'Admin';
+            orders[index].approvedAt = new Date().toISOString();
+            
+            localStorage.setItem('orders', JSON.stringify(orders));
+            loadOrders();
+            loadRecentOrders();
+            loadDashboard();
+            showNotification('Đã duyệt đơn hàng thành công!', 'success');
+        } else {
+            showNotification('Không tìm thấy đơn hàng!', 'error');
+        }
+    } catch (error) {
+        console.error('Error approving order:', error);
+        showNotification('Có lỗi khi duyệt đơn hàng!', 'error');
     }
 }
 
 // Từ chối đơn hàng
 function rejectOrder(index) {
     const reason = prompt('Nhập lý do từ chối đơn hàng:');
-    if (!reason) return;
+    if (!reason || reason.trim() === '') {
+        showNotification('Vui lòng nhập lý do từ chối!', 'warning');
+        return;
+    }
     
-    const orders = JSON.parse(localStorage.getItem('orders') || '[]');
-    if (index >= 0 && index < orders.length) {
-        orders[index].status = 'Đã hủy';
-        orders[index].updatedAt = new Date().toISOString();
-        orders[index].rejectedBy = sessionStorage.getItem('adminUsername') || 'Admin';
-        orders[index].rejectedAt = new Date().toISOString();
-        orders[index].rejectReason = reason;
-        
-        localStorage.setItem('orders', JSON.stringify(orders));
-        loadOrders();
-        loadRecentOrders();
-        loadDashboard();
-        showNotification('Đã từ chối đơn hàng!', 'info');
+    try {
+        const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+        if (index >= 0 && index < orders.length) {
+            orders[index].status = 'Đã hủy';
+            orders[index].updatedAt = new Date().toISOString();
+            orders[index].rejectedBy = sessionStorage.getItem('adminUsername') || 'Admin';
+            orders[index].rejectedAt = new Date().toISOString();
+            orders[index].rejectReason = reason;
+            
+            localStorage.setItem('orders', JSON.stringify(orders));
+            loadOrders();
+            loadRecentOrders();
+            loadDashboard();
+            showNotification('Đã từ chối đơn hàng!', 'info');
+        } else {
+            showNotification('Không tìm thấy đơn hàng!', 'error');
+        }
+    } catch (error) {
+        console.error('Error rejecting order:', error);
+        showNotification('Có lỗi khi từ chối đơn hàng!', 'error');
     }
 }
 
@@ -802,16 +956,24 @@ function rejectOrder(index) {
 function shipOrder(index) {
     if (!confirm('Xác nhận đơn hàng đang được giao?')) return;
     
-    const orders = JSON.parse(localStorage.getItem('orders') || '[]');
-    if (index >= 0 && index < orders.length) {
-        orders[index].status = 'Đang giao';
-        orders[index].updatedAt = new Date().toISOString();
-        orders[index].shippedAt = new Date().toISOString();
-        
-        localStorage.setItem('orders', JSON.stringify(orders));
-        loadOrders();
-        loadRecentOrders();
-        showNotification('Đã cập nhật trạng thái đang giao!', 'success');
+    try {
+        const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+        if (index >= 0 && index < orders.length) {
+            orders[index].status = 'Đang giao';
+            orders[index].updatedAt = new Date().toISOString();
+            orders[index].shippedAt = new Date().toISOString();
+            
+            localStorage.setItem('orders', JSON.stringify(orders));
+            loadOrders();
+            loadRecentOrders();
+            loadDashboard();
+            showNotification('Đơn hàng đang được giao!', 'success');
+        } else {
+            showNotification('Không tìm thấy đơn hàng!', 'error');
+        }
+    } catch (error) {
+        console.error('Error shipping order:', error);
+        showNotification('Có lỗi khi cập nhật trạng thái!', 'error');
     }
 }
 
@@ -819,17 +981,24 @@ function shipOrder(index) {
 function completeOrder(index) {
     if (!confirm('Xác nhận đơn hàng đã hoàn thành?')) return;
     
-    const orders = JSON.parse(localStorage.getItem('orders') || '[]');
-    if (index >= 0 && index < orders.length) {
-        orders[index].status = 'Hoàn thành';
-        orders[index].updatedAt = new Date().toISOString();
-        orders[index].completedAt = new Date().toISOString();
-        
-        localStorage.setItem('orders', JSON.stringify(orders));
-        loadOrders();
-        loadRecentOrders();
-        loadDashboard();
-        showNotification('Đơn hàng đã hoàn thành!', 'success');
+    try {
+        const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+        if (index >= 0 && index < orders.length) {
+            orders[index].status = 'Hoàn thành';
+            orders[index].updatedAt = new Date().toISOString();
+            orders[index].completedAt = new Date().toISOString();
+            
+            localStorage.setItem('orders', JSON.stringify(orders));
+            loadOrders();
+            loadRecentOrders();
+            loadDashboard();
+            showNotification('Đơn hàng đã hoàn thành!', 'success');
+        } else {
+            showNotification('Không tìm thấy đơn hàng!', 'error');
+        }
+    } catch (error) {
+        console.error('Error completing order:', error);
+        showNotification('Có lỗi khi hoàn thành đơn hàng!', 'error');
     }
 }
 
@@ -837,14 +1006,22 @@ function completeOrder(index) {
 function deleteOrder(index) {
     if (!confirm('Bạn có chắc muốn xóa đơn hàng này khỏi hệ thống?\nHành động này không thể hoàn tác!')) return;
     
-    const orders = JSON.parse(localStorage.getItem('orders') || '[]');
-    if (index >= 0 && index < orders.length) {
-        orders.splice(index, 1);
-        localStorage.setItem('orders', JSON.stringify(orders));
-        loadOrders();
-        loadRecentOrders();
-        loadDashboard();
-        showNotification('Đã xóa đơn hàng khỏi hệ thống!', 'success');
+    try {
+        const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+        if (index >= 0 && index < orders.length) {
+            const deletedOrder = orders[index];
+            orders.splice(index, 1);
+            localStorage.setItem('orders', JSON.stringify(orders));
+            loadOrders();
+            loadRecentOrders();
+            loadDashboard();
+            showNotification(`Đã xóa đơn hàng ${deletedOrder.orderNumber || '#' + deletedOrder.id}!`, 'success');
+        } else {
+            showNotification('Không tìm thấy đơn hàng!', 'error');
+        }
+    } catch (error) {
+        console.error('Error deleting order:', error);
+        showNotification('Có lỗi khi xóa đơn hàng!', 'error');
     }
 }
 
@@ -880,15 +1057,29 @@ function saveOrder() {
         return;
     }
     
+    // Validate số điện thoại
+    const phone = document.getElementById('orderPhone').value;
+    if (!/^[0-9]{10}$/.test(phone)) {
+        showNotification('Số điện thoại phải có 10 chữ số!', 'error');
+        return;
+    }
+    
+    // Validate tổng tiền
+    const total = parseInt(document.getElementById('orderTotal').value);
+    if (total <= 0) {
+        showNotification('Tổng tiền phải lớn hơn 0!', 'error');
+        return;
+    }
+    
     const orders = JSON.parse(localStorage.getItem('orders') || '[]');
     const orderIndex = parseInt(document.getElementById('orderIndex').value);
     
     if (orderIndex >= 0 && orderIndex < orders.length) {
         orders[orderIndex].customerName = document.getElementById('orderCustomerName').value;
-        orders[orderIndex].customerPhone = document.getElementById('orderPhone').value;
+        orders[orderIndex].customerPhone = phone;
         orders[orderIndex].address = document.getElementById('orderAddress').value;
         orders[orderIndex].status = document.getElementById('orderStatus').value;
-        orders[orderIndex].total = parseInt(document.getElementById('orderTotal').value);
+        orders[orderIndex].total = total;
         orders[orderIndex].note = document.getElementById('orderNote').value;
         orders[orderIndex].updatedAt = new Date().toISOString();
         
@@ -1042,13 +1233,27 @@ function saveCustomer() {
         return;
     }
     
+    // Validate số điện thoại
+    const phone = document.getElementById('customerPhone').value;
+    if (!/^[0-9]{10}$/.test(phone)) {
+        showNotification('Số điện thoại phải có 10 chữ số!', 'error');
+        return;
+    }
+    
+    // Validate email nếu có nhập
+    const email = document.getElementById('customerEmail').value;
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        showNotification('Email không hợp lệ!', 'error');
+        return;
+    }
+    
     const customers = JSON.parse(localStorage.getItem('customers') || '[]');
     const customerId = document.getElementById('customerId').value;
     
     const customerData = {
         name: document.getElementById('customerName').value,
-        email: document.getElementById('customerEmail').value,
-        phone: document.getElementById('customerPhone').value,
+        email: email,
+        phone: phone,
         address: document.getElementById('customerAddress').value,
         orders: 0,
         registerDate: new Date().toLocaleDateString('vi-VN')

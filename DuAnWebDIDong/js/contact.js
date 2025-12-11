@@ -27,10 +27,10 @@ function submitContact(event) {
         return;
     }
 
-    // Validate phone format (Vietnamese phone number)
-    const phoneRegex = /^(0|\+84)[0-9]{9}$/;
-    if (!phoneRegex.test(phone.replace(/\s/g, ''))) {
-        showNotification('Số điện thoại không hợp lệ!', 'warning');
+    // Validate phone format (10 digits)
+    const phoneRegex = /^[0-9]{10}$/;
+    if (!phoneRegex.test(phone)) {
+        showNotification('Số điện thoại phải có đúng 10 chữ số!', 'warning');
         return;
     }
 

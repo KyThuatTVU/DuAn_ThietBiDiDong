@@ -1199,11 +1199,11 @@
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Phí vận chuyển mặc định</label>
-                                <input type="number" class="form-control" id="settingShippingFee" value="0">
+                                <input type="number" class="form-control" id="settingShippingFee" value="0" min="0" step="1000">
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Đơn hàng miễn phí vận chuyển từ</label>
-                                <input type="number" class="form-control" id="settingFreeShipMin" value="0">
+                                <input type="number" class="form-control" id="settingFreeShipMin" value="0" min="0" step="1000">
                             </div>
                             
                             <h6 class="mt-4 mb-3">Mạng xã hội</h6>
@@ -1288,11 +1288,12 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Giá bán <span class="text-danger">*</span></label>
-                                <input type="number" class="form-control" id="productPrice" required>
+                                <input type="number" class="form-control" id="productPrice" required min="0" step="1000">
+                                <small class="text-muted">Giá phải lớn hơn 0</small>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Giá cũ</label>
-                                <input type="number" class="form-control" id="productOldPrice">
+                                <input type="number" class="form-control" id="productOldPrice" min="0" step="1000">
                             </div>
                         </div>
                         <div class="row">
@@ -1325,7 +1326,11 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">URL Hình ảnh <span class="text-danger">*</span></label>
-                            <input type="url" class="form-control" id="productImage" required placeholder="https://example.com/image.jpg">
+                            <input type="url" class="form-control" id="productImage" required placeholder="https://cdn.tgdd.vn/Products/Images/42/..." onchange="previewProductImage()">
+                            <small class="text-muted">Nhập URL hình ảnh sản phẩm</small>
+                            <div id="imagePreview" class="mt-2" style="display: none;">
+                                <img id="previewImg" src="" alt="Preview" class="img-thumbnail" style="max-width: 200px; max-height: 200px;">
+                            </div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Danh mục <span class="text-danger">*</span></label>
@@ -1337,6 +1342,34 @@
                             <label class="form-label">Mô tả</label>
                             <textarea class="form-control" id="productDescription" rows="3"></textarea>
                         </div>
+                        
+                        <!-- Thông số kỹ thuật chi tiết -->
+                        <h6 class="mt-4 mb-3">Thông số kỹ thuật</h6>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Màn hình</label>
+                                <input type="text" class="form-control" id="productScreen" placeholder='VD: 6.7", Super Retina XDR'>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">CPU</label>
+                                <input type="text" class="form-control" id="productCPU" placeholder="VD: Apple A17 Pro">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Camera sau</label>
+                                <input type="text" class="form-control" id="productCameraBack" placeholder="VD: 48MP, 12MP, 12MP">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Camera trước</label>
+                                <input type="text" class="form-control" id="productCameraFront" placeholder="VD: 12MP">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Pin</label>
+                            <input type="text" class="form-control" id="productBattery" placeholder="VD: 4422mAh, 20W">
+                        </div>
+                        
                         <div class="mb-3">
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" id="productHot">
@@ -1381,7 +1414,8 @@
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Số điện thoại <span class="text-danger">*</span></label>
-                                <input type="tel" class="form-control" id="orderPhone" required>
+                                <input type="tel" class="form-control" id="orderPhone" required pattern="[0-9]{10}" placeholder="0901234567">
+                                <small class="text-muted">Nhập 10 chữ số</small>
                             </div>
                         </div>
                         <div class="mb-3">
@@ -1401,7 +1435,8 @@
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Tổng tiền <span class="text-danger">*</span></label>
-                                <input type="number" class="form-control" id="orderTotal" required>
+                                <input type="number" class="form-control" id="orderTotal" required min="0" step="1000">
+                                <small class="text-muted">Giá trị phải lớn hơn 0</small>
                             </div>
                         </div>
                         <div class="mb-3">
@@ -1437,11 +1472,13 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Email</label>
-                            <input type="email" class="form-control" id="customerEmail">
+                            <input type="email" class="form-control" id="customerEmail" placeholder="example@email.com">
+                            <small class="text-muted">Email hợp lệ: example@domain.com</small>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Số điện thoại <span class="text-danger">*</span></label>
-                            <input type="tel" class="form-control" id="customerPhone" required>
+                            <input type="tel" class="form-control" id="customerPhone" required pattern="[0-9]{10}" placeholder="0901234567">
+                            <small class="text-muted">Nhập 10 chữ số</small>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Địa chỉ</label>
