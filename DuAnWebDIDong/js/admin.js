@@ -859,7 +859,8 @@ function loadOrders() {
     // Sắp xếp theo thời gian mới nhất
     orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     
-    tbody.innerHTML = orders.map((order, index) => `
+    // Dùng order.id thay vì index để tránh lỗi khi sắp xếp
+    tbody.innerHTML = orders.map((order) => `
         <tr>
             <td>${order.orderNumber || '#' + order.id}</td>
             <td>${order.customerName || 'Khách hàng'}</td>
@@ -868,26 +869,26 @@ function loadOrders() {
             <td><span class="badge bg-${getStatusColor(order.status)}">${order.status || 'Chờ xác nhận'}</span></td>
             <td>${new Date(order.createdAt).toLocaleString('vi-VN')}</td>
             <td>
-                <button class="btn btn-sm btn-info" onclick="viewOrder(${index})" title="Xem chi tiết">
+                <button class="btn btn-sm btn-info" onclick="viewOrderById(${order.id})" title="Xem chi tiết">
                     <i class="fas fa-eye"></i>
                 </button>
                 ${order.status === 'Chờ xác nhận' ? `
-                    <button class="btn btn-sm btn-success" onclick="approveOrder(${index})" title="Duyệt đơn">
+                    <button class="btn btn-sm btn-success" onclick="approveOrderById(${order.id})" title="Duyệt đơn">
                         <i class="fas fa-check"></i>
                     </button>
-                    <button class="btn btn-sm btn-danger" onclick="rejectOrder(${index})" title="Từ chối">
+                    <button class="btn btn-sm btn-danger" onclick="rejectOrderById(${order.id})" title="Từ chối">
                         <i class="fas fa-times"></i>
                     </button>
                 ` : order.status === 'Đã xác nhận' ? `
-                    <button class="btn btn-sm btn-primary" onclick="shipOrder(${index})" title="Đang giao">
+                    <button class="btn btn-sm btn-primary" onclick="shipOrderById(${order.id})" title="Đang giao">
                         <i class="fas fa-shipping-fast"></i>
                     </button>
                 ` : order.status === 'Đang giao' ? `
-                    <button class="btn btn-sm btn-success" onclick="completeOrder(${index})" title="Hoàn thành">
+                    <button class="btn btn-sm btn-success" onclick="completeOrderById(${order.id})" title="Hoàn thành">
                         <i class="fas fa-check-circle"></i>
                     </button>
                 ` : ''}
-                <button class="btn btn-sm btn-outline-danger" onclick="deleteOrder(${index})" title="Xóa đơn hàng">
+                <button class="btn btn-sm btn-outline-danger" onclick="deleteOrderById(${order.id})" title="Xóa đơn hàng">
                     <i class="fas fa-trash"></i>
                 </button>
             </td>
@@ -895,13 +896,21 @@ function loadOrders() {
     `).join('');
 }
 
-// Duyệt đơn hàng
-function approveOrder(index) {
+// Helper: Tìm order theo ID
+function findOrderIndexById(orderId) {
+    const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+    return orders.findIndex(o => o.id === orderId);
+}
+
+// Duyệt đơn hàng theo ID
+function approveOrderById(orderId) {
     if (!confirm('Xác nhận duyệt đơn hàng này?')) return;
     
     try {
         const orders = JSON.parse(localStorage.getItem('orders') || '[]');
-        if (index >= 0 && index < orders.length) {
+        const index = orders.findIndex(o => o.id === orderId);
+        
+        if (index !== -1) {
             orders[index].status = 'Đã xác nhận';
             orders[index].updatedAt = new Date().toISOString();
             orders[index].approvedBy = sessionStorage.getItem('adminUsername') || 'Admin';
@@ -921,8 +930,8 @@ function approveOrder(index) {
     }
 }
 
-// Từ chối đơn hàng
-function rejectOrder(index) {
+// Từ chối đơn hàng theo ID
+function rejectOrderById(orderId) {
     const reason = prompt('Nhập lý do từ chối đơn hàng:');
     if (!reason || reason.trim() === '') {
         showNotification('Vui lòng nhập lý do từ chối!', 'warning');
@@ -931,7 +940,9 @@ function rejectOrder(index) {
     
     try {
         const orders = JSON.parse(localStorage.getItem('orders') || '[]');
-        if (index >= 0 && index < orders.length) {
+        const index = orders.findIndex(o => o.id === orderId);
+        
+        if (index !== -1) {
             orders[index].status = 'Đã hủy';
             orders[index].updatedAt = new Date().toISOString();
             orders[index].rejectedBy = sessionStorage.getItem('adminUsername') || 'Admin';
@@ -952,13 +963,15 @@ function rejectOrder(index) {
     }
 }
 
-// Chuyển sang đang giao
-function shipOrder(index) {
+// Chuyển sang đang giao theo ID
+function shipOrderById(orderId) {
     if (!confirm('Xác nhận đơn hàng đang được giao?')) return;
     
     try {
         const orders = JSON.parse(localStorage.getItem('orders') || '[]');
-        if (index >= 0 && index < orders.length) {
+        const index = orders.findIndex(o => o.id === orderId);
+        
+        if (index !== -1) {
             orders[index].status = 'Đang giao';
             orders[index].updatedAt = new Date().toISOString();
             orders[index].shippedAt = new Date().toISOString();
@@ -977,13 +990,15 @@ function shipOrder(index) {
     }
 }
 
-// Hoàn thành đơn hàng
-function completeOrder(index) {
+// Hoàn thành đơn hàng theo ID
+function completeOrderById(orderId) {
     if (!confirm('Xác nhận đơn hàng đã hoàn thành?')) return;
     
     try {
         const orders = JSON.parse(localStorage.getItem('orders') || '[]');
-        if (index >= 0 && index < orders.length) {
+        const index = orders.findIndex(o => o.id === orderId);
+        
+        if (index !== -1) {
             orders[index].status = 'Hoàn thành';
             orders[index].updatedAt = new Date().toISOString();
             orders[index].completedAt = new Date().toISOString();
@@ -1002,13 +1017,15 @@ function completeOrder(index) {
     }
 }
 
-// Xóa đơn hàng
-function deleteOrder(index) {
+// Xóa đơn hàng theo ID
+function deleteOrderById(orderId) {
     if (!confirm('Bạn có chắc muốn xóa đơn hàng này khỏi hệ thống?\nHành động này không thể hoàn tác!')) return;
     
     try {
         const orders = JSON.parse(localStorage.getItem('orders') || '[]');
-        if (index >= 0 && index < orders.length) {
+        const index = orders.findIndex(o => o.id === orderId);
+        
+        if (index !== -1) {
             const deletedOrder = orders[index];
             orders.splice(index, 1);
             localStorage.setItem('orders', JSON.stringify(orders));
@@ -1025,14 +1042,14 @@ function deleteOrder(index) {
     }
 }
 
-// Xem chi tiết đơn hàng
-function viewOrder(index) {
+// Xem chi tiết đơn hàng theo ID
+function viewOrderById(orderId) {
     const orders = JSON.parse(localStorage.getItem('orders') || '[]');
-    if (index >= 0 && index < orders.length) {
-        const order = orders[index];
-        
-        // Điền dữ liệu vào form
-        document.getElementById('orderIndex').value = index;
+    const order = orders.find(o => o.id === orderId);
+    
+    if (order) {
+        // Điền dữ liệu vào form - lưu orderId thay vì index
+        document.getElementById('orderIndex').value = orderId;
         document.getElementById('orderCustomerName').value = order.customerName || '';
         document.getElementById('orderPhone').value = order.customerPhone || '';
         document.getElementById('orderAddress').value = order.address || '';
@@ -1046,6 +1063,8 @@ function viewOrder(index) {
         // Hiển thị modal
         const modal = new bootstrap.Modal(document.getElementById('orderModal'));
         modal.show();
+    } else {
+        showNotification('Không tìm thấy đơn hàng!', 'error');
     }
 }
 
@@ -1072,9 +1091,10 @@ function saveOrder() {
     }
     
     const orders = JSON.parse(localStorage.getItem('orders') || '[]');
-    const orderIndex = parseInt(document.getElementById('orderIndex').value);
+    const orderId = parseInt(document.getElementById('orderIndex').value);
+    const orderIndex = orders.findIndex(o => o.id === orderId);
     
-    if (orderIndex >= 0 && orderIndex < orders.length) {
+    if (orderIndex !== -1) {
         orders[orderIndex].customerName = document.getElementById('orderCustomerName').value;
         orders[orderIndex].customerPhone = phone;
         orders[orderIndex].address = document.getElementById('orderAddress').value;
@@ -1095,6 +1115,8 @@ function saveOrder() {
         loadDashboard();
         
         showNotification('Cập nhật đơn hàng thành công!', 'success');
+    } else {
+        showNotification('Không tìm thấy đơn hàng!', 'error');
     }
 }
 
@@ -1565,11 +1587,21 @@ document.addEventListener('DOMContentLoaded', function() {
     initMobileFeatures(); // Initialize mobile features
     
     // Load products from localStorage or use default
-    const storedProducts = JSON.parse(localStorage.getItem('products'));
+    const storedProducts = localStorage.getItem('products');
     if (storedProducts) {
-        window.products = storedProducts;
+        const parsedProducts = JSON.parse(storedProducts);
+        // Nếu localStorage có nhưng rỗng, load dữ liệu mặc định từ main.js
+        if (parsedProducts.length === 0 && typeof products !== 'undefined' && products.length > 0) {
+            console.log('Products empty, loading default data...');
+            window.products = products;
+            localStorage.setItem('products', JSON.stringify(products));
+        } else {
+            window.products = parsedProducts;
+        }
     } else if (typeof products !== 'undefined') {
+        console.log('No products in localStorage, loading default data...');
         window.products = products;
+        localStorage.setItem('products', JSON.stringify(products));
     }
     
     loadDashboard();

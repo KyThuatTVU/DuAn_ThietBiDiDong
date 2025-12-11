@@ -53,9 +53,12 @@ function checkUserPurchasedProduct(email, productName) {
     const orders = JSON.parse(localStorage.getItem('orders') || '[]');
     
     // Tìm đơn hàng của người dùng với email tương ứng
+    // Kiểm tra cả email, customerEmail (từ checkout)
     const userOrders = orders.filter(order => {
-        return order.email && order.email.toLowerCase() === email.toLowerCase() &&
-               (order.status === 'Hoàn thành' || order.status === 'Đã giao');
+        const orderEmail = order.email || order.customerEmail || '';
+        const isUserOrder = orderEmail.toLowerCase() === email.toLowerCase();
+        const isCompleted = order.status === 'Hoàn thành' || order.status === 'Đã giao';
+        return isUserOrder && isCompleted;
     });
     
     // Nếu không có productName, chỉ cần kiểm tra có đơn hàng hoàn thành không
@@ -296,9 +299,12 @@ function loadUserPurchasedProducts(email) {
     const orders = JSON.parse(localStorage.getItem('orders') || '[]');
     
     // Lọc đơn hàng hoàn thành của user
+    // Kiểm tra cả email, customerEmail (từ checkout)
     const completedOrders = orders.filter(order => {
-        return order.email && order.email.toLowerCase() === email.toLowerCase() &&
-               (order.status === 'Hoàn thành' || order.status === 'Đã giao');
+        const orderEmail = order.email || order.customerEmail || '';
+        const isUserOrder = orderEmail.toLowerCase() === email.toLowerCase();
+        const isCompleted = order.status === 'Hoàn thành' || order.status === 'Đã giao';
+        return isUserOrder && isCompleted;
     });
     
     // Lấy danh sách sản phẩm duy nhất

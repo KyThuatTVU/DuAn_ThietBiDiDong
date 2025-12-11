@@ -1591,8 +1591,21 @@ function initSearch() {
     });
 }
 
+// ==================== INITIALIZE DATA ====================
+function initializeDefaultData() {
+    // Kiểm tra và khởi tạo dữ liệu mặc định nếu localStorage trống
+    const storedProducts = localStorage.getItem('products');
+    
+    // Nếu chưa có hoặc là mảng rỗng, lưu dữ liệu mẫu
+    if (!storedProducts || JSON.parse(storedProducts).length === 0) {
+        console.log('Initializing default product data...');
+        localStorage.setItem('products', JSON.stringify(products));
+    }
+}
+
 // ==================== INITIALIZE ====================
 document.addEventListener('DOMContentLoaded', () => {
+    initializeDefaultData();
     updateCartCount();
     loadHotProducts();
     loadDiscountProducts();
