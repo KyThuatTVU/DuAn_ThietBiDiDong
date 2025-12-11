@@ -154,19 +154,33 @@ function addReviewToList(review, prepend = true) {
     const reviewsList = document.getElementById('reviewsList');
     if (!reviewsList) return;
 
-    const starIcons = Array(review.rating).fill('<i class="fas fa-star"></i>').join('') +
-                     Array(5 - review.rating).fill('<i class="far fa-star"></i>').join('');
+    // Đảm bảo rating là số hợp lệ
+    const rating = parseInt(review.rating) || 0;
+    const starIcons = Array(rating).fill('<i class="fas fa-star"></i>').join('') +
+                     Array(5 - rating).fill('<i class="far fa-star"></i>').join('');
 
     // Xác định thời gian hiển thị
-    const timeDisplay = prepend ? 'Vừa xong' : review.date;
+    const timeDisplay = prepend ? 'Vừa xong' : (review.date || 'Không rõ');
     
     // Xác định trạng thái hiển thị
     const statusBadge = review.status === 'pending' 
         ? '<span class="badge bg-warning ms-2"><i class="fas fa-clock"></i> Đang chờ duyệt</span>' 
         : '';
 
+    // Escape HTML để tránh XSS và giữ nguyên nội dung
+    const escapeHtml = (text) => {
+        if (!text) return '';
+        return text
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;')
+            .replace(/\n/g, '<br>'); // Giữ xuống dòng
+    };
+
     const reviewHTML = `
-        <div class="review-card card mb-3 shadow-sm fade-in">
+        <div class="review-card card mb-3 shadow-sm fade-in" data-review-id="${review.id || ''}">
             <div class="card-body">
                 <div class="d-flex mb-3">
                     <div class="flex-shrink-0">
@@ -175,16 +189,16 @@ function addReviewToList(review, prepend = true) {
                         </div>
                     </div>
                     <div class="flex-grow-1 ms-3">
-                        <h5 class="mb-1">${review.name}${statusBadge}</h5>
+                        <h5 class="mb-1">${escapeHtml(review.name)}${statusBadge}</h5>
                         <div class="text-warning mb-1">
                             ${starIcons}
                         </div>
                         <p class="text-muted small mb-0">
-                            <i class="fas fa-clock"></i> ${timeDisplay}${review.product ? ' | <i class="fas fa-mobile-alt"></i> ' + review.product : ''}
+                            <i class="fas fa-clock"></i> ${timeDisplay}${review.product ? ' | <i class="fas fa-mobile-alt"></i> ' + escapeHtml(review.product) : ''}
                         </p>
                     </div>
                 </div>
-                <p class="mb-2">${review.content}</p>
+                <p class="mb-2">${escapeHtml(review.content)}</p>
                 <div class="d-flex gap-2">
                     <button class="btn btn-sm btn-outline-primary">
                         <i class="fas fa-thumbs-up"></i> Hữu ích (0)
@@ -197,7 +211,11 @@ function addReviewToList(review, prepend = true) {
         </div>
     `;
 
-    reviewsList.insertAdjacentHTML('afterbegin', reviewHTML);
+    if (prepend) {
+        reviewsList.insertAdjacentHTML('afterbegin', reviewHTML);
+    } else {
+        reviewsList.insertAdjacentHTML('beforeend', reviewHTML);
+    }
 }
 
 // ==================== FILTER REVIEWS ====================
@@ -243,16 +261,19 @@ function loadApprovedReviews() {
     if (!reviewsList) return;
     
     const reviews = JSON.parse(localStorage.getItem('reviews') || '[]');
-    // Chỉ hiển thị đánh giá đã duyệt
-    const approvedReviews = reviews.filter(r => r.status === 'approved');
+    // Hiển thị cả đánh giá đã duyệt và đang chờ duyệt (để người dùng thấy đánh giá của mình)
+    const visibleReviews = reviews.filter(r => r.status === 'approved' || r.status === 'pending');
     
-    if (approvedReviews.length === 0) {
+    if (visibleReviews.length === 0) {
         // Giữ các đánh giá mẫu đã có trong HTML
         return;
     }
     
-    // Thêm đánh giá đã duyệt vào đầu danh sách
-    approvedReviews.forEach(review => {
+    // Xóa các đánh giá mẫu cũ trong HTML nếu có đánh giá thực
+    reviewsList.innerHTML = '';
+    
+    // Thêm đánh giá vào danh sách
+    visibleReviews.forEach(review => {
         addReviewToList(review, false);
     });
 }

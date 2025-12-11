@@ -74,15 +74,7 @@
                     <div class="card-body">
                         <p class="text-muted">Xuất toàn bộ dữ liệu localStorage ra file JSON để backup hoặc chuyển sang trình duyệt khác.</p>
                         
-                        <div class="alert alert-info py-2 small">
-                            <i class="fas fa-info-circle me-1"></i>
-                            <strong>Tùy chọn ảnh:</strong> 
-                            <ul class="mb-0 mt-1">
-                                <li><strong>Export JSON:</strong> Chỉ lưu URL ảnh (file nhỏ, cần internet)</li>
-                                <li><strong>Export JSON + Ảnh:</strong> Nhúng ảnh Base64 (file lớn, dùng offline)</li>
-                            </ul>
-                            <small class="text-muted">⚠️ Ảnh từ CDN bên ngoài cần tải về local trước (xem phần Quản lý Hình ảnh bên dưới)</small>
-                        </div>
+
                         
                         <div class="mb-3">
                             <label class="form-label fw-bold">Chọn dữ liệu cần export:</label>
@@ -224,75 +216,7 @@
             </div>
         </div>
 
-        <!-- Image URLs -->
-        <div class="card mb-4">
-            <div class="card-header bg-info text-white">
-                <h5 class="mb-0"><i class="fas fa-image me-2"></i>Quản lý Hình ảnh</h5>
-            </div>
-            <div class="card-body">
-                <div class="alert alert-warning py-2 small mb-3">
-                    <i class="fas fa-exclamation-triangle me-1"></i>
-                    <strong>Lưu ý:</strong> Ảnh từ CDN bên ngoài (cdn.tgdd.vn) không thể tự động chuyển đổi do chính sách CORS của trình duyệt. 
-                    Để backup ảnh hoàn toàn, bạn cần tải ảnh về thủ công hoặc sử dụng ảnh local.
-                </div>
-                
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <h6><i class="fas fa-upload me-2"></i>Cách 1: Tải ảnh lên từ máy tính</h6>
-                        <p class="text-muted small">Chọn nhiều ảnh để thay thế URL bên ngoài bằng ảnh local (Base64)</p>
-                        <input type="file" class="form-control mb-2" id="localImagesInput" multiple accept="image/*">
-                        <button class="btn btn-sm btn-primary" onclick="processLocalImages()">
-                            <i class="fas fa-sync me-1"></i> Xử lý & Thay thế ảnh
-                        </button>
-                    </div>
-                    <div class="col-md-6">
-                        <h6><i class="fas fa-paste me-2"></i>Cách 2: Thay thế ảnh theo ID</h6>
-                        <p class="text-muted small">Nhập ID sản phẩm và chọn ảnh mới</p>
-                        <div class="input-group input-group-sm mb-2">
-                            <input type="number" class="form-control" id="productIdInput" placeholder="ID sản phẩm">
-                            <input type="file" class="form-control" id="singleImageInput" accept="image/*">
-                        </div>
-                        <button class="btn btn-sm btn-success" onclick="replaceProductImage()">
-                            <i class="fas fa-exchange-alt me-1"></i> Thay thế ảnh
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="row mb-3">
-                    <div class="col-12">
-                        <h6><i class="fas fa-link me-2"></i>Danh sách URL ảnh</h6>
-                        <div class="d-flex gap-2 flex-wrap">
-                            <button class="btn btn-sm btn-info" onclick="showImageUrls()">
-                                <i class="fas fa-list me-1"></i> Xem URL
-                            </button>
-                            <button class="btn btn-sm btn-outline-info" onclick="checkImageUrls()">
-                                <i class="fas fa-chart-pie me-1"></i> Thống kê
-                            </button>
-                            <button class="btn btn-sm btn-outline-secondary" onclick="copyImageUrls()">
-                                <i class="fas fa-copy me-1"></i> Copy URL
-                            </button>
-                            <button class="btn btn-sm btn-outline-success" onclick="downloadImageList()">
-                                <i class="fas fa-download me-1"></i> Tải danh sách URL
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div id="imageUrlsContainer" style="display: none;">
-                    <div class="mb-2">
-                        <span class="badge bg-primary" id="imageCount">0 ảnh</span>
-                    </div>
-                    <textarea class="form-control" id="imageUrlsList" rows="6" readonly style="font-size: 11px;"></textarea>
-                </div>
-                
-                <div id="localImagesResult" class="mt-3" style="display: none;">
-                    <div class="alert alert-success py-2">
-                        <i class="fas fa-check-circle me-1"></i>
-                        <span id="localImagesResultText"></span>
-                    </div>
-                </div>
-            </div>
-        </div>
+
 
         <!-- Danger Zone -->
         <div class="card border-danger">
@@ -346,55 +270,20 @@
             document.getElementById('statTotal').textContent = total;
         }
         
-        // Danh sách CORS proxy để thử
-        const CORS_PROXIES = [
-            'https://corsproxy.io/?',
-            'https://api.allorigins.win/raw?url=',
-            'https://cors-anywhere.herokuapp.com/'
-        ];
-        
-        // Hàm chuyển đổi URL ảnh thành Base64 sử dụng CORS proxy
-        async function imageUrlToBase64(url) {
-            if (!url) return url;
-            if (url.startsWith('data:')) return url;
-            
-            // Thử tải trực tiếp trước (cho ảnh local)
-            if (url.startsWith('images/') || url.startsWith('./images/') || url.startsWith('/images/')) {
-                try {
-                    const response = await fetch(url);
-                    const blob = await response.blob();
-                    return await blobToBase64(blob);
-                } catch (e) {
-                    console.warn('Không thể tải ảnh local:', url);
-                }
-            }
-            
-            // Thử qua các CORS proxy
-            for (const proxy of CORS_PROXIES) {
-                try {
-                    const proxyUrl = proxy + encodeURIComponent(url);
-                    const response = await fetch(proxyUrl, { 
-                        method: 'GET',
-                        headers: { 'Accept': 'image/*' }
-                    });
-                    
-                    if (response.ok) {
-                        const blob = await response.blob();
-                        if (blob.size > 0 && blob.type.startsWith('image/')) {
-                            const base64 = await blobToBase64(blob);
-                            console.log('✓ Đã tải ảnh qua proxy:', url.substring(0, 50) + '...');
-                            return base64;
-                        }
-                    }
-                } catch (e) {
-                    console.warn(`Proxy ${proxy} failed:`, e.message);
-                }
-            }
-            
-            // Nếu tất cả proxy đều thất bại, thử dùng Image element
+        // Hàm chuyển đổi URL ảnh thành Base64 sử dụng canvas
+        function imageUrlToBase64(url) {
             return new Promise((resolve) => {
+                if (!url) {
+                    resolve(url);
+                    return;
+                }
+                if (url.startsWith('data:')) {
+                    resolve(url);
+                    return;
+                }
+                
                 const img = new Image();
-                img.crossOrigin = 'anonymous';
+                img.crossOrigin = 'anonymous'; // Cho phép CORS
                 
                 img.onload = function() {
                     try {
@@ -403,29 +292,22 @@
                         canvas.height = img.naturalHeight;
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0);
-                        const base64 = canvas.toDataURL('image/jpeg', 0.85);
+                        const base64 = canvas.toDataURL('image/jpeg', 0.8);
                         resolve(base64);
                     } catch (e) {
-                        resolve(url);
+                        console.warn('Canvas error:', url, e.message);
+                        resolve(url); // Giữ URL gốc nếu lỗi
                     }
                 };
                 
-                img.onerror = () => resolve(url);
+                img.onerror = function() {
+                    console.warn('Không thể tải ảnh:', url);
+                    resolve(url); // Giữ URL gốc nếu không tải được
+                };
                 
-                // Timeout sau 5 giây
-                setTimeout(() => resolve(url), 5000);
-                
-                img.src = url;
-            });
-        }
-        
-        // Helper: Blob to Base64
-        function blobToBase64(blob) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onloadend = () => resolve(reader.result);
-                reader.onerror = reject;
-                reader.readAsDataURL(blob);
+                // Thêm timestamp để bypass cache
+                const separator = url.includes('?') ? '&' : '?';
+                img.src = url + separator + '_t=' + Date.now();
             });
         }
         
@@ -559,20 +441,68 @@
                 progressText.textContent = `${status}: ${processedImages}/${totalImages} (✓${convertedImages} ✗${failedImages})`;
             };
             
-            // Hàm xử lý từng ảnh sử dụng CORS proxy
+            // Hàm xử lý từng ảnh với timeout và CORS proxy
             const processImage = async (url) => {
                 if (!url || url.startsWith('data:')) {
-                    return { result: url, converted: url && url.startsWith('data:') };
-                }
-                
-                try {
-                    const result = await imageUrlToBase64(url);
-                    const converted = result !== url && result.startsWith('data:');
-                    return { result, converted };
-                } catch (e) {
-                    console.warn('Lỗi xử lý ảnh:', url, e);
                     return { result: url, converted: false };
                 }
+                
+                // Thử load ảnh trực tiếp trước
+                const tryLoadImage = (imgUrl) => {
+                    return new Promise((resolve) => {
+                        const timeout = setTimeout(() => {
+                            resolve({ result: null, converted: false });
+                        }, 5000);
+                        
+                        const img = new Image();
+                        img.crossOrigin = 'anonymous';
+                        
+                        img.onload = function() {
+                            clearTimeout(timeout);
+                            try {
+                                const canvas = document.createElement('canvas');
+                                canvas.width = img.naturalWidth;
+                                canvas.height = img.naturalHeight;
+                                const ctx = canvas.getContext('2d');
+                                ctx.drawImage(img, 0, 0);
+                                const base64 = canvas.toDataURL('image/jpeg', 0.8);
+                                resolve({ result: base64, converted: true });
+                            } catch (e) {
+                                resolve({ result: null, converted: false });
+                            }
+                        };
+                        
+                        img.onerror = function() {
+                            clearTimeout(timeout);
+                            resolve({ result: null, converted: false });
+                        };
+                        
+                        img.src = imgUrl;
+                    });
+                };
+                
+                // Thử load trực tiếp
+                let result = await tryLoadImage(url);
+                if (result.converted) {
+                    return result;
+                }
+                
+                // Thử qua CORS proxy (corsproxy.io)
+                const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(url);
+                result = await tryLoadImage(proxyUrl);
+                if (result.converted) {
+                    return result;
+                }
+                
+                // Thử qua CORS proxy khác (api.allorigins.win)
+                const proxyUrl2 = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url);
+                result = await tryLoadImage(proxyUrl2);
+                if (result.converted) {
+                    return result;
+                }
+                
+                // Không thể chuyển đổi, giữ URL gốc
+                return { result: url, converted: false };
             };
             
             try {
