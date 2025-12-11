@@ -2055,6 +2055,10 @@ function loadSettings() {
     const settingAddress = document.getElementById('settingAddress');
     const settingShippingFee = document.getElementById('settingShippingFee');
     const settingFreeShipMin = document.getElementById('settingFreeShipMin');
+    const settingFacebook = document.getElementById('settingFacebook');
+    const settingYoutube = document.getElementById('settingYoutube');
+    const settingInstagram = document.getElementById('settingInstagram');
+    const settingZalo = document.getElementById('settingZalo');
     
     if (settingWebsiteName) settingWebsiteName.value = settings.websiteName || 'Thế Giới Di Động';
     if (settingEmail) settingEmail.value = settings.email || 'info@thegioididong.com';
@@ -2062,6 +2066,10 @@ function loadSettings() {
     if (settingAddress) settingAddress.value = settings.address || '123 Đường ABC, Quận 1, TP.HCM';
     if (settingShippingFee) settingShippingFee.value = settings.shippingFee || 0;
     if (settingFreeShipMin) settingFreeShipMin.value = settings.freeShipMin || 0;
+    if (settingFacebook) settingFacebook.value = settings.facebook || '';
+    if (settingYoutube) settingYoutube.value = settings.youtube || '';
+    if (settingInstagram) settingInstagram.value = settings.instagram || '';
+    if (settingZalo) settingZalo.value = settings.zalo || '';
     
     // Thêm event listener cho form
     const settingsForm = document.getElementById('settingsForm');
@@ -2076,7 +2084,11 @@ function loadSettings() {
                 hotline: document.getElementById('settingHotline').value.trim(),
                 address: document.getElementById('settingAddress').value.trim(),
                 shippingFee: parseInt(document.getElementById('settingShippingFee').value) || 0,
-                freeShipMin: parseInt(document.getElementById('settingFreeShipMin').value) || 0
+                freeShipMin: parseInt(document.getElementById('settingFreeShipMin').value) || 0,
+                facebook: document.getElementById('settingFacebook').value.trim(),
+                youtube: document.getElementById('settingYoutube').value.trim(),
+                instagram: document.getElementById('settingInstagram').value.trim(),
+                zalo: document.getElementById('settingZalo').value.trim()
             };
             
             localStorage.setItem('settings', JSON.stringify(newSettings));
@@ -2135,7 +2147,11 @@ function saveSettings(event) {
         hotline: document.getElementById('settingHotline').value.trim(),
         address: document.getElementById('settingAddress').value.trim(),
         shippingFee: parseInt(document.getElementById('settingShippingFee').value) || 0,
-        freeShipMin: parseInt(document.getElementById('settingFreeShipMin').value) || 0
+        freeShipMin: parseInt(document.getElementById('settingFreeShipMin').value) || 0,
+        facebook: document.getElementById('settingFacebook').value.trim(),
+        youtube: document.getElementById('settingYoutube').value.trim(),
+        instagram: document.getElementById('settingInstagram').value.trim(),
+        zalo: document.getElementById('settingZalo').value.trim()
     };
     
     localStorage.setItem('settings', JSON.stringify(settings));

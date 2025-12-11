@@ -54,7 +54,7 @@
 </header>
 
 <!-- Navigation -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top shadow-sm" style="background-color: #002b5c !important;">
+<nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top shadow-sm">
   <div class="container-fluid px-4">
     <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
       <span class="navbar-toggler-icon"></span>
@@ -63,22 +63,22 @@
     <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
       <ul class="navbar-nav flex-wrap justify-content-center text-center">
         <li class="nav-item px-3">
-          <a class="nav-link fw-semibold text-white" href="index.html">
+          <a class="nav-link fw-semibold text-dark" href="index.html">
             <i class="fas fa-home"></i> Trang chủ
           </a>
         </li>
         <li class="nav-item px-3">
-          <a class="nav-link fw-semibold text-white" href="sanpham.html">
+          <a class="nav-link fw-semibold text-dark" href="sanpham.html">
             <i class="fas fa-mobile-alt"></i> Sản phẩm
           </a>
         </li>
         <li class="nav-item px-3">
-          <a class="nav-link fw-semibold text-white active" href="danhgia.html">
+          <a class="nav-link fw-semibold text-dark active" href="danhgia.html">
             <i class="fas fa-star"></i> Đánh giá
           </a>
         </li>
         <li class="nav-item px-3">
-          <a class="nav-link fw-semibold text-white" href="lienhe.html">
+          <a class="nav-link fw-semibold text-dark" href="lienhe.html">
             <i class="fas fa-envelope"></i> Liên hệ
           </a>
         </li>
@@ -99,19 +99,19 @@
 }
 
 .navbar .nav-link {
-  color: #fff !important;
+  color: #000 !important;
   transition: 0.3s;
 }
 
 .navbar .nav-link:hover {
   text-decoration: underline;
-  color: #e0e0e0 !important;
+  color: #666 !important;
 }
 
 .navbar .nav-link.active {
-  color: #fff !important;
+  color: #000 !important;
   font-weight: bold;
-  border-bottom: 3px solid #fff;
+  border-bottom: 3px solid #000;
   text-decoration: none !important;
 }
 
@@ -468,35 +468,35 @@
     </section>
 
     <!-- Footer -->
-    <footer class="footer bg-dark text-light py-5">
+    <footer class="footer py-5" style="background-color: #ffffcc; color: #000;">
         <div class="container">
             <div class="row g-4">
                 <div class="col-md-3">
-                    <h5 class="text-white mb-3" data-setting="websiteName">Thế Giới Di Động</h5>
+                    <h5 class="text-dark mb-3" data-setting="websiteName">Thế Giới Di Động</h5>
                     <p>Hệ thống bán lẻ điện thoại di động hàng đầu Việt Nam</p>
-                    <div class="social-links mt-3">
-                        <a href="#" class="text-light me-3"><i class="fab fa-facebook fa-2x"></i></a>
-                        <a href="#" class="text-light me-3"><i class="fab fa-instagram fa-2x"></i></a>
-                        <a href="#" class="text-light me-3"><i class="fab fa-youtube fa-2x"></i></a>
-                        <a href="#" class="text-light"><i class="fab fa-tiktok fa-2x"></i></a>
+                    <div class="social-links mt-3" id="socialLinks">
+                        <a href="#" class="text-dark me-3" data-social="facebook" style="display: none;"><i class="fab fa-facebook fa-2x"></i></a>
+                        <a href="#" class="text-dark me-3" data-social="youtube" style="display: none;"><i class="fab fa-youtube fa-2x"></i></a>
+                        <a href="#" class="text-dark me-3" data-social="instagram" style="display: none;"><i class="fab fa-instagram fa-2x"></i></a>
+                        <a href="#" class="text-dark" data-social="zalo" style="display: none;"><i class="fas fa-comment-dots fa-2x"></i></a>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <h5 class="text-warning mb-3">Thông tin</h5>
                     <ul class="list-unstyled">
-                        <li><a href="#" class="text-light text-decoration-none">Giới thiệu công ty</a></li>
-                        <li><a href="#" class="text-light text-decoration-none">Chính sách bảo mật</a></li>
-                        <li><a href="#" class="text-light text-decoration-none">Quy chế hoạt động</a></li>
-                        <li><a href="#" class="text-light text-decoration-none">Kiểm tra hóa đơn</a></li>
+                        <li><a href="gioi-thieu.html" class="text-dark text-decoration-none">Giới thiệu công ty</a></li>
+                        <li><a href="chinh-sach-bao-mat.html" class="text-dark text-decoration-none">Chính sách bảo mật</a></li>
+                        <li><a href="quy-che-hoat-dong.html" class="text-dark text-decoration-none">Quy chế hoạt động</a></li>
+                        <li><a href="kiem-tra-hoa-don.html" class="text-dark text-decoration-none">Kiểm tra hóa đơn</a></li>
                     </ul>
                 </div>
                 <div class="col-md-3">
                     <h5 class="text-warning mb-3">Hỗ trợ</h5>
                     <ul class="list-unstyled">
-                        <li><a href="#" class="text-light text-decoration-none">Hướng dẫn mua hàng</a></li>
-                        <li><a href="#" class="text-light text-decoration-none">Hướng dẫn thanh toán</a></li>
-                        <li><a href="#" class="text-light text-decoration-none">Chính sách đổi trả</a></li>
-                        <li><a href="#" class="text-light text-decoration-none">Bảo hành & sửa chữa</a></li>
+                        <li><a href="huong-dan-mua-hang.html" class="text-dark text-decoration-none">Hướng dẫn mua hàng</a></li>
+                        <li><a href="huong-dan-thanh-toan.html" class="text-dark text-decoration-none">Hướng dẫn thanh toán</a></li>
+                        <li><a href="chinh-sach-doi-tra.html" class="text-dark text-decoration-none">Chính sách đổi trả</a></li>
+                        <li><a href="bao-hanh-sua-chua.html" class="text-dark text-decoration-none">Bảo hành & sửa chữa</a></li>
                     </ul>
                 </div>
                 <div class="col-md-3">
@@ -508,9 +508,46 @@
                     </ul>
                 </div>
             </div>
-            <hr class="my-4 bg-light">
+            <hr class="my-4 bg-dark">
             <div class="text-center">
                 <p class="mb-0">&copy; 2025 <span data-setting="websiteName">Thế Giới Di Động</span>. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Additional Links Footer -->
+    <footer class="additional-links-footer py-3" style="background-color: #ffffcc; color: #000;">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="d-flex flex-wrap justify-content-center gap-3">
+                        <a href="gioi-thieu.html" class="text-dark text-decoration-none small">Giới thiệu công ty</a>
+                        <span class="text-muted">|</span>
+                        <a href="chinh-sach-bao-mat.html" class="text-dark text-decoration-none small">Chính sách bảo mật</a>
+                        <span class="text-muted">|</span>
+                        <a href="quy-che-hoat-dong.html" class="text-dark text-decoration-none small">Điều khoản sử dụng</a>
+                        <span class="text-muted">|</span>
+                        <a href="chinh-sach-doi-tra.html" class="text-dark text-decoration-none small">Chính sách đổi trả</a>
+                        <span class="text-muted">|</span>
+                        <a href="chinh-sach-van-chuyen.html" class="text-dark text-decoration-none small">Chính sách vận chuyển</a>
+                        <span class="text-muted">|</span>
+                        <a href="huong-dan-mua-hang.html" class="text-dark text-decoration-none small">Hướng dẫn mua hàng</a>
+                        <span class="text-muted">|</span>
+                        <a href="tuyen-dung.html" class="text-dark text-decoration-none small">Tuyển dụng</a>
+                        <span class="text-muted">|</span>
+                        <a href="lienhe.html" class="text-dark text-decoration-none small">Liên hệ</a>
+                        <span class="text-muted">|</span>
+                        <a href="ban-quyen.html" class="text-dark text-decoration-none small">Bản quyền</a>
+                        <span class="text-muted">|</span>
+                        <a href="sanpham.html" class="text-dark text-decoration-none small">Sản phẩm</a>
+                        <span class="text-muted">|</span>
+                        <a href="danhgia.html" class="text-dark text-decoration-none small">Đánh giá</a>
+                        <span class="text-muted">|</span>
+                        <a href="lienhe.html" class="text-dark text-decoration-none small">Liên hệ</a>
+                        <span class="text-muted">|</span>
+                        <a href="admin-login.html" class="text-dark text-decoration-none small">Admin</a>
+                    </div>
+                </div>
             </div>
         </div>
     </footer>

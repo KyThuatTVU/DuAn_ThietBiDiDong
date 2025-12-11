@@ -17,10 +17,11 @@
     <style>
         :root {
             --sidebar-width: 250px;
-            --primary-color: #001f3f;
-            --primary-light: #003366;
-            --primary-dark: #001529;
-            --accent-color: #0066cc;
+            --primary-color: #ffd700;
+            --primary-light: #ffe44d;
+            --primary-dark: #f5c400;
+            --accent-color: #ff8c00;
+            --text-color: #2c3e50;
         }
         
         body {
@@ -35,19 +36,21 @@
         
         .sidebar {
             width: var(--sidebar-width);
-            background: var(--primary-color);
-            color: white;
+            background: linear-gradient(180deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: var(--text-color);
             position: fixed;
             height: 100vh;
             overflow-y: auto;
             transition: all 0.3s;
+            box-shadow: 2px 0 15px rgba(255, 215, 0, 0.3);
+            border-right: 1px solid #f5c400;
         }
         
         .sidebar-header {
             padding: 20px;
-            background: var(--primary-dark);
+            background: rgba(245, 196, 0, 0.3);
             text-align: center;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 2px solid rgba(255, 140, 0, 0.3);
         }
         
         .sidebar-header img {
@@ -64,11 +67,12 @@
         .sidebar-menu li a {
             display: block;
             padding: 14px 20px;
-            color: rgba(255,255,255,0.8);
+            color: #2c3e50;
             text-decoration: none;
             transition: all 0.3s;
             border-left: 3px solid transparent;
-            font-size: 14px;
+            font-size: 15px;
+            font-weight: 600;
         }
         
         .sidebar-menu li a i {
@@ -78,9 +82,9 @@
         
         .sidebar-menu li a:hover,
         .sidebar-menu li a.active {
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 140, 0, 0.3);
             border-left-color: var(--accent-color);
-            color: white;
+            color: var(--accent-color);
         }
         
         .main-content {
@@ -1201,6 +1205,25 @@
                                 <label class="form-label">Đơn hàng miễn phí vận chuyển từ</label>
                                 <input type="number" class="form-control" id="settingFreeShipMin" value="0">
                             </div>
+                            
+                            <h6 class="mt-4 mb-3">Mạng xã hội</h6>
+                            <div class="mb-3">
+                                <label class="form-label">Facebook</label>
+                                <input type="url" class="form-control" id="settingFacebook" placeholder="https://facebook.com/...">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">YouTube</label>
+                                <input type="url" class="form-control" id="settingYoutube" placeholder="https://youtube.com/@...">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Instagram</label>
+                                <input type="url" class="form-control" id="settingInstagram" placeholder="https://instagram.com/...">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Zalo</label>
+                                <input type="text" class="form-control" id="settingZalo" placeholder="Số điện thoại Zalo">
+                            </div>
+                            
                             <button type="button" class="btn btn-primary" onclick="saveSettings()">
                                 <i class="fas fa-save"></i> Lưu thay đổi
                             </button>
