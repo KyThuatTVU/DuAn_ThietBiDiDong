@@ -63,6 +63,7 @@ async function convertAllImagesToBase64(data, progressCallback) {
     
     // Đếm tổng số ảnh cần xử lý
     if (result.products) total += result.products.length;
+    if (result.accessories) total += result.accessories.length;
     if (result.banners) total += result.banners.length;
     if (result.brands) total += result.brands.length;
     
@@ -74,6 +75,17 @@ async function convertAllImagesToBase64(data, progressCallback) {
             }
             processed++;
             if (progressCallback) progressCallback(processed, total, 'products');
+        }
+    }
+    
+    // Chuyển đổi ảnh accessories
+    if (result.accessories && Array.isArray(result.accessories)) {
+        for (let i = 0; i < result.accessories.length; i++) {
+            if (result.accessories[i].image) {
+                result.accessories[i].image = await imageUrlToBase64(result.accessories[i].image);
+            }
+            processed++;
+            if (progressCallback) progressCallback(processed, total, 'accessories');
         }
     }
     
@@ -106,6 +118,7 @@ async function convertAllImagesToBase64(data, progressCallback) {
 function getAllLocalStorageData() {
     const allKeys = [
         'products',
+        'accessories',
         'orders', 
         'users',
         'customers',
@@ -287,6 +300,7 @@ function getDataStats() {
     
     const stats = {
         products: data.products ? data.products.length : 0,
+        accessories: data.accessories ? data.accessories.length : 0,
         orders: data.orders ? data.orders.length : 0,
         users: data.users ? data.users.length : 0,
         customers: data.customers ? data.customers.length : 0,

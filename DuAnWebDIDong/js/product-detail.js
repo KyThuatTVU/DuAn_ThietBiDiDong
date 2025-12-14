@@ -406,10 +406,33 @@ function submitProductReview(event) {
     alert('Cảm ơn bạn đã đánh giá sản phẩm!');
 }
 
+// ==================== LOAD RECOMMENDED ACCESSORIES ====================
+function loadRecommendedAccessories() {
+    const productId = getProductIdFromURL();
+    const product = products.find(p => p.id === productId);
+    
+    if (!product) return;
+    
+    const recommendedAccessories = getRecommendedAccessories(product.name, 4);
+    const container = document.getElementById('recommendedAccessories');
+    
+    if (!container || recommendedAccessories.length === 0) return;
+    
+    container.innerHTML = `
+        <div class="container my-5">
+            <h3 class="mb-4"><i class="fas fa-gift"></i> Phụ kiện bạn có thể thích</h3>
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+                ${recommendedAccessories.map(acc => renderAccessoryCard(acc)).join('')}
+            </div>
+        </div>
+    `;
+}
+
 // ==================== INITIALIZE ====================
 document.addEventListener('DOMContentLoaded', () => {
     loadProductDetail();
     updateCartCount();
+    loadRecommendedAccessories();
     
     const productId = getProductIdFromURL();
     setupReviewSection(productId);

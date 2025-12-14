@@ -127,10 +127,23 @@ function searchProducts() {
     }
 }
 
+// ==================== SINGLE CHECKBOX SELECTION ====================
+function handleSingleCheckbox(clickedCheckbox, groupClass) {
+    if (clickedCheckbox.checked) {
+        // Uncheck all other checkboxes in the same group
+        document.querySelectorAll(`.${groupClass}`).forEach(checkbox => {
+            if (checkbox !== clickedCheckbox) {
+                checkbox.checked = false;
+            }
+        });
+    }
+    applyFilters();
+}
+
 // ==================== RESET FILTERS ====================
 function resetFilters() {
     // Reset old filter checkboxes
-    document.querySelectorAll('.filter-price, .filter-brand, .filter-ram, .filter-storage').forEach(checkbox => {
+    document.querySelectorAll('.filter-price, .filter-brand, .filter-ram, .filter-storage, .filter-screen, .filter-battery').forEach(checkbox => {
         checkbox.checked = false;
     });
 
@@ -170,11 +183,13 @@ function applyFilters() {
     const maxPrice = parseInt(document.getElementById('maxPrice')?.value) || Infinity;
     const sortBy = document.getElementById('sortSelect')?.value || 'name';
 
-    // Get selected filters from old checkboxes
-    const selectedPrices = Array.from(document.querySelectorAll('.filter-price:checked')).map(cb => cb.value);
-    const selectedBrandsOld = Array.from(document.querySelectorAll('.filter-brand:checked')).map(cb => cb.value);
-    const selectedRAMs = Array.from(document.querySelectorAll('.filter-ram:checked')).map(cb => parseInt(cb.value));
-    const selectedStorages = Array.from(document.querySelectorAll('.filter-storage:checked')).map(cb => parseInt(cb.value));
+    // Get selected filters from old checkboxes (only one per group)
+    const selectedPrice = document.querySelector('.filter-price:checked')?.value || '';
+    const selectedBrandOld = document.querySelector('.filter-brand:checked')?.value || '';
+    const selectedRAM = document.querySelector('.filter-ram:checked')?.value || '';
+    const selectedStorage = document.querySelector('.filter-storage:checked')?.value || '';
+    const selectedScreen = document.querySelector('.filter-screen:checked')?.value || '';
+    const selectedBattery = document.querySelector('.filter-battery:checked')?.value || '';
 
     // Combine search terms
     const searchTerm = searchInput || urlSearchTerm;
@@ -196,50 +211,71 @@ function applyFilters() {
             return false;
         }
 
-        // Brand filter from URL, old checkboxes, or new checkboxes
+        // Brand filter
         if (urlBrand && product.brand.toLowerCase() !== urlBrand.toLowerCase()) {
             return false;
         }
-        if (selectedBrandsOld.length > 0 && !selectedBrandsOld.includes(product.brand)) {
+        if (selectedBrandOld && product.brand !== selectedBrandOld) {
             return false;
         }
         if (selectedBrands.length > 0 && !selectedBrands.includes(product.brand)) {
             return false;
         }
 
-        // Price filter from old checkboxes or new inputs
-        if (selectedPrices.length > 0) {
+        // Price filter from checkbox
+        if (selectedPrice) {
             const price = product.price / 1000000;
-            const matchPrice = selectedPrices.some(range => {
-                const [min, max] = range.split('-').map(Number);
-                return price >= min && price < max;
-            });
-            if (!matchPrice) return false;
+            const [min, max] = selectedPrice.split('-').map(Number);
+            if (price < min || price >= max) {
+                return false;
+            }
         }
-        if (product.price < minPrice || product.price > maxPrice) {
+        // Price filter from inputs
+        if (minPrice > 0 && product.price < minPrice) {
+            return false;
+        }
+        if (maxPrice < Infinity && product.price > maxPrice) {
             return false;
         }
 
         // RAM filter
-        if (selectedRAMs.length > 0) {
-            const matchRAM = selectedRAMs.some(ram => {
-                if (ram === 12) {
-                    return product.ram >= 12;
-                }
-                return product.ram === ram;
-            });
-            if (!matchRAM) return false;
+        if (selectedRAM) {
+            const ram = parseInt(selectedRAM);
+            if (ram === 12) {
+                if (product.ram < 12) return false;
+            } else {
+                if (product.ram !== ram) return false;
+            }
         }
 
         // Storage filter
-        if (selectedStorages.length > 0) {
-            const matchStorage = selectedStorages.some(storage => {
-                if (storage === 512) {
-                    return product.storage >= 512;
-                }
-                return product.storage === storage;
-            });
-            if (!matchStorage) return false;
+        if (selectedStorage) {
+            const storage = parseInt(selectedStorage);
+            if (storage === 512) {
+                if (product.storage < 512) return false;
+            } else {
+                if (product.storage !== storage) return false;
+            }
+        }
+
+        // Screen size filter
+        if (selectedScreen) {
+            const screenSize = parseFloat(product.specs['Màn hình']?.match(/[\d.]+/)?.[0] || 0);
+            if (selectedScreen === 'small' && screenSize >= 6.5) {
+                return false;
+            }
+            if (selectedScreen === 'large' && screenSize < 6.5) {
+                return false;
+            }
+        }
+
+        // Battery filter
+        if (selectedBattery) {
+            const batteryCapacity = parseInt(product.specs['Pin']?.match(/\d+/)?.[0] || 0);
+            const [minBattery, maxBattery] = selectedBattery.split('-').map(Number);
+            if (batteryCapacity < minBattery || batteryCapacity >= maxBattery) {
+                return false;
+            }
         }
 
         return true;
@@ -287,9 +323,41 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Add event listeners to old filters
-    document.querySelectorAll('.filter-price, .filter-brand, .filter-ram, .filter-storage').forEach(checkbox => {
-        checkbox.addEventListener('change', filterProducts);
+    // Add event listeners to old filters with single selection
+    document.querySelectorAll('.filter-price').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            handleSingleCheckbox(this, 'filter-price');
+        });
+    });
+
+    document.querySelectorAll('.filter-brand').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            handleSingleCheckbox(this, 'filter-brand');
+        });
+    });
+
+    document.querySelectorAll('.filter-ram').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            handleSingleCheckbox(this, 'filter-ram');
+        });
+    });
+
+    document.querySelectorAll('.filter-storage').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            handleSingleCheckbox(this, 'filter-storage');
+        });
+    });
+
+    document.querySelectorAll('.filter-screen').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            handleSingleCheckbox(this, 'filter-screen');
+        });
+    });
+
+    document.querySelectorAll('.filter-battery').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            handleSingleCheckbox(this, 'filter-battery');
+        });
     });
 
     // Add event listeners for new filter inputs

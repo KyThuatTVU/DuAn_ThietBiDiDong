@@ -701,6 +701,11 @@
                     </a>
                 </li>
                 <li>
+                    <a href="#accessories" onclick="showSection('accessories')">
+                        <i class="fas fa-headphones"></i> Quản lý phụ kiện
+                    </a>
+                </li>
+                <li>
                     <a href="#orders" onclick="showSection('orders')">
                         <i class="fas fa-shopping-cart"></i> Đơn hàng
                     </a>
@@ -926,6 +931,38 @@
                                     </tr>
                                 </thead>
                                 <tbody id="productsTable">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Accessories Section -->
+                <div id="section-accessories" class="content-section" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3>Quản lý phụ kiện</h3>
+                        <button class="btn btn-primary" onclick="showAddAccessoryModal()">
+                            <i class="fas fa-plus"></i> Thêm phụ kiện
+                        </button>
+                    </div>
+                    
+                    <div class="table-section">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Hình ảnh</th>
+                                        <th>Tên phụ kiện</th>
+                                        <th>Loại</th>
+                                        <th>Thương hiệu</th>
+                                        <th>Giá</th>
+                                        <th>Tồn kho</th>
+                                        <th>Tương thích</th>
+                                        <th>Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="accessoriesTable">
                                 </tbody>
                             </table>
                         </div>
@@ -1748,6 +1785,86 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
                     <button type="button" class="btn btn-primary" onclick="saveVoucher()">
+                        <i class="fas fa-save"></i> Lưu lại
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Thêm/Sửa Phụ Kiện -->
+    <div class="modal fade" id="accessoryModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="accessoryModalTitle">Thêm phụ kiện</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="accessoryForm">
+                        <input type="hidden" id="accessoryId">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Tên phụ kiện <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="accessoryName" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Thương hiệu <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="accessoryBrand" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Giá <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="accessoryPrice" required min="0">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Giá cũ</label>
+                                <input type="number" class="form-control" id="accessoryOldPrice" min="0">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Tồn kho <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="accessoryStock" required min="0" value="0">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Loại phụ kiện <span class="text-danger">*</span></label>
+                                <select class="form-control" id="accessoryType" required>
+                                    <option value="">-- Chọn loại --</option>
+                                    <option value="case">Ốp lưng</option>
+                                    <option value="charger">Củ sạc</option>
+                                    <option value="cable">Cáp sạc</option>
+                                    <option value="earphone">Tai nghe</option>
+                                    <option value="screen-protector">Miếng dán màn hình</option>
+                                    <option value="powerbank">Pin dự phòng</option>
+                                    <option value="holder">Giá đỡ</option>
+                                    <option value="other">Khác</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Đánh giá</label>
+                                <input type="number" class="form-control" id="accessoryRating" min="1" max="5" value="5">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Tương thích với <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="accessoryCompatible" required placeholder="VD: iPhone, Samsung, Xiaomi (cách nhau bởi dấu phẩy)">
+                            <small class="text-muted">Nhập các thương hiệu/sản phẩm tương thích, cách nhau bởi dấu phẩy</small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">URL Hình ảnh <span class="text-danger">*</span></label>
+                            <input type="url" class="form-control" id="accessoryImage" required placeholder="https://example.com/image.jpg">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Mô tả</label>
+                            <textarea class="form-control" id="accessoryDescription" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-primary" onclick="saveAccessory()">
                         <i class="fas fa-save"></i> Lưu lại
                     </button>
                 </div>

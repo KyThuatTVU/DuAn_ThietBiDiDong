@@ -134,11 +134,11 @@ function submitReview(event) {
 
     console.log('Review submitted:', review);
 
-    // Add review to list (prepend) - hiển thị với trạng thái chờ duyệt
-    addReviewToList(review, true);
+    // Không hiển thị đánh giá ngay lập tức, chờ admin duyệt
+    // addReviewToList(review, true);
 
     // Show success message
-    showNotification('Cảm ơn bạn đã gửi đánh giá! Đánh giá của bạn đang chờ duyệt.', 'success');
+    showNotification('Cảm ơn bạn đã gửi đánh giá! Đánh giá của bạn đang chờ admin duyệt và sẽ được hiển thị sau khi được phê duyệt.', 'success');
 
     // Reset form
     document.getElementById('reviewForm').reset();
@@ -261,10 +261,10 @@ function loadApprovedReviews() {
     if (!reviewsList) return;
     
     const reviews = JSON.parse(localStorage.getItem('reviews') || '[]');
-    // Hiển thị cả đánh giá đã duyệt và đang chờ duyệt (để người dùng thấy đánh giá của mình)
-    const visibleReviews = reviews.filter(r => r.status === 'approved' || r.status === 'pending');
+    // Chỉ hiển thị đánh giá đã được admin duyệt
+    const approvedReviews = reviews.filter(r => r.status === 'approved');
     
-    if (visibleReviews.length === 0) {
+    if (approvedReviews.length === 0) {
         // Giữ các đánh giá mẫu đã có trong HTML
         return;
     }
@@ -273,7 +273,7 @@ function loadApprovedReviews() {
     reviewsList.innerHTML = '';
     
     // Thêm đánh giá vào danh sách
-    visibleReviews.forEach(review => {
+    approvedReviews.forEach(review => {
         addReviewToList(review, false);
     });
 }

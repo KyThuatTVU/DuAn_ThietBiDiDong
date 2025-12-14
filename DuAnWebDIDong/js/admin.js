@@ -1,3 +1,35 @@
+// ==================== NOTIFICATION ====================
+function showNotification(message, type = 'info') {
+    const existing = document.querySelector('.admin-notification');
+    if (existing) existing.remove();
+    
+    const bgColor = {
+        'success': '#28a745',
+        'error': '#dc3545',
+        'warning': '#ffc107',
+        'info': '#17a2b8'
+    }[type] || '#17a2b8';
+    
+    const notification = document.createElement('div');
+    notification.className = 'admin-notification';
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px 25px;
+        background: ${bgColor};
+        color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        z-index: 9999;
+    `;
+    notification.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'times-circle' : 'info-circle'} me-2"></i>${message}`;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => notification.remove(), 3000);
+}
+
 // Kiểm tra đăng nhập
 function checkAuth() {
     if (sessionStorage.getItem('adminLoggedIn') !== 'true') {
@@ -17,6 +49,71 @@ function logout() {
         sessionStorage.removeItem('adminUsername');
         window.location.href = 'admin-login.html';
     }
+}
+
+// ==================== SHOW SECTION ====================
+function showSection(sectionName) {
+    // Hide all sections
+    document.querySelectorAll('.content-section').forEach(section => {
+        section.style.display = 'none';
+    });
+    
+    // Show selected section
+    const targetSection = document.getElementById(`section-${sectionName}`);
+    if (targetSection) {
+        targetSection.style.display = 'block';
+    }
+    
+    // Update active menu
+    document.querySelectorAll('.sidebar-menu li a').forEach(link => {
+        link.classList.remove('active');
+    });
+    if (event && event.target) {
+        event.target.classList.add('active');
+    }
+    
+    // Load data for specific sections
+    switch(sectionName) {
+        case 'dashboard':
+            loadDashboard();
+            break;
+        case 'products':
+            loadProductsTable();
+            break;
+        case 'accessories':
+            loadAccessoriesTable();
+            break;
+        case 'orders':
+            loadOrdersTable();
+            break;
+        case 'customers':
+            loadCustomersTable();
+            break;
+        case 'reviews':
+            loadReviewsTable();
+            break;
+        case 'banners':
+            loadBannersTable();
+            break;
+        case 'categories':
+            loadCategoriesTable();
+            break;
+        case 'brands':
+            loadBrandsTable();
+            break;
+        case 'payments':
+            loadPaymentsTable();
+            break;
+        case 'vouchers':
+            loadVouchersTable();
+            break;
+        case 'settings':
+            loadSettings();
+            break;
+    }
+    
+    // Close sidebar on mobile
+    closeSidebarOnMobile();
 }
 
 // Lưu trữ chart instances để destroy khi cần
@@ -2444,4 +2541,235 @@ function closeSidebarOnMobile() {
         if (overlay) overlay.classList.remove('active');
         body.style.overflow = '';
     }
+}
+
+
+// ==================== ACCESSORIES MANAGEMENT ====================
+
+// Load accessories table
+function loadAccessoriesTable() {
+    const accessories = JSON.parse(localStorage.getItem('accessories')) || [];
+    const tbody = document.getElementById('accessoriesTable');
+    
+    if (!tbody) return;
+    
+    if (accessories.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="9" class="text-center text-muted">Chưa có phụ kiện nào</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = accessories.map((acc, index) => {
+        const discount = acc.oldPrice ? Math.round(((acc.oldPrice - acc.price) / acc.oldPrice) * 100) : 0;
+        const compatible = Array.isArray(acc.compatibleWith) ? acc.compatibleWith.join(', ') : acc.compatibleWith;
+        
+        return `
+            <tr>
+                <td>${acc.id}</td>
+                <td><img src="${acc.image}" alt="${acc.name}" style="width: 50px; height: 50px; object-fit: contain;"></td>
+                <td>${acc.name}</td>
+                <td><span class="badge bg-info">${getAccessoryTypeName(acc.type)}</span></td>
+                <td>${acc.brand}</td>
+                <td>${formatPrice(acc.price)}</td>
+                <td><span class="badge ${acc.stock > 10 ? 'bg-success' : acc.stock > 0 ? 'bg-warning' : 'bg-danger'}">${acc.stock}</span></td>
+                <td><small>${compatible}</small></td>
+                <td>
+                    <button class="btn btn-sm btn-warning" onclick="editAccessory(${index})">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteAccessory(${index})">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+// Get accessory type name
+function getAccessoryTypeName(type) {
+    const types = {
+        'case': 'Ốp lưng',
+        'charger': 'Củ sạc',
+        'cable': 'Cáp sạc',
+        'earphone': 'Tai nghe',
+        'screen-protector': 'Miếng dán',
+        'powerbank': 'Pin dự phòng',
+        'holder': 'Giá đỡ',
+        'other': 'Khác'
+    };
+    return types[type] || type;
+}
+
+// Show add accessory modal
+function showAddAccessoryModal() {
+    document.getElementById('accessoryModalTitle').textContent = 'Thêm phụ kiện';
+    document.getElementById('accessoryForm').reset();
+    document.getElementById('accessoryId').value = '';
+    
+    const modal = new bootstrap.Modal(document.getElementById('accessoryModal'));
+    modal.show();
+}
+
+// Edit accessory
+function editAccessory(index) {
+    const accessories = JSON.parse(localStorage.getItem('accessories')) || [];
+    const accessory = accessories[index];
+    
+    if (!accessory) return;
+    
+    document.getElementById('accessoryModalTitle').textContent = 'Sửa phụ kiện';
+    document.getElementById('accessoryId').value = accessory.id;
+    document.getElementById('accessoryName').value = accessory.name;
+    document.getElementById('accessoryBrand').value = accessory.brand;
+    document.getElementById('accessoryPrice').value = accessory.price;
+    document.getElementById('accessoryOldPrice').value = accessory.oldPrice || '';
+    document.getElementById('accessoryStock').value = accessory.stock || 0;
+    document.getElementById('accessoryType').value = accessory.type;
+    document.getElementById('accessoryRating').value = accessory.rating || 5;
+    document.getElementById('accessoryCompatible').value = Array.isArray(accessory.compatibleWith) 
+        ? accessory.compatibleWith.join(', ') 
+        : accessory.compatibleWith;
+    document.getElementById('accessoryImage').value = accessory.image;
+    document.getElementById('accessoryDescription').value = accessory.description || '';
+    
+    const modal = new bootstrap.Modal(document.getElementById('accessoryModal'));
+    modal.show();
+}
+
+// Save accessory
+function saveAccessory() {
+    const form = document.getElementById('accessoryForm');
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+    
+    const id = document.getElementById('accessoryId').value;
+    const name = document.getElementById('accessoryName').value.trim();
+    const brand = document.getElementById('accessoryBrand').value.trim();
+    const price = parseInt(document.getElementById('accessoryPrice').value);
+    const oldPrice = parseInt(document.getElementById('accessoryOldPrice').value) || 0;
+    const stock = parseInt(document.getElementById('accessoryStock').value) || 0;
+    const type = document.getElementById('accessoryType').value;
+    const rating = parseInt(document.getElementById('accessoryRating').value) || 5;
+    const compatible = document.getElementById('accessoryCompatible').value.split(',').map(s => s.trim()).filter(s => s);
+    const image = document.getElementById('accessoryImage').value.trim();
+    const description = document.getElementById('accessoryDescription').value.trim();
+    
+    const discount = oldPrice > 0 ? Math.round(((oldPrice - price) / oldPrice) * 100) : 0;
+    
+    const accessory = {
+        id: id ? parseInt(id) : Date.now(),
+        name,
+        brand,
+        price,
+        oldPrice,
+        discount,
+        image,
+        category: 'accessory',
+        type,
+        compatibleWith: compatible,
+        rating,
+        stock,
+        description
+    };
+    
+    let accessories = JSON.parse(localStorage.getItem('accessories')) || [];
+    
+    if (id) {
+        // Update existing
+        const index = accessories.findIndex(a => a.id === parseInt(id));
+        if (index !== -1) {
+            accessories[index] = accessory;
+        }
+    } else {
+        // Add new
+        accessories.unshift(accessory);
+    }
+    
+    localStorage.setItem('accessories', JSON.stringify(accessories));
+    
+    // Close modal
+    const modal = bootstrap.Modal.getInstance(document.getElementById('accessoryModal'));
+    modal.hide();
+    
+    // Reload table
+    loadAccessoriesTable();
+    showNotification(id ? 'Đã cập nhật phụ kiện!' : 'Đã thêm phụ kiện mới!', 'success');
+}
+
+// Delete accessory
+function deleteAccessory(index) {
+    if (!confirm('Bạn có chắc muốn xóa phụ kiện này?')) return;
+    
+    let accessories = JSON.parse(localStorage.getItem('accessories')) || [];
+    accessories.splice(index, 1);
+    localStorage.setItem('accessories', JSON.stringify(accessories));
+    
+    loadAccessoriesTable();
+    showNotification('Đã xóa phụ kiện!', 'success');
+}
+
+
+// ==================== SHOW SECTION ====================
+function showSection(sectionName) {
+    // Hide all sections
+    document.querySelectorAll('.content-section').forEach(section => {
+        section.style.display = 'none';
+    });
+    
+    // Show selected section
+    const targetSection = document.getElementById(`section-${sectionName}`);
+    if (targetSection) {
+        targetSection.style.display = 'block';
+    }
+    
+    // Update active menu
+    document.querySelectorAll('.sidebar-menu li a').forEach(link => {
+        link.classList.remove('active');
+    });
+    event.target.classList.add('active');
+    
+    // Load data for specific sections
+    switch(sectionName) {
+        case 'dashboard':
+            loadDashboard();
+            break;
+        case 'products':
+            loadProductsTable();
+            break;
+        case 'accessories':
+            loadAccessoriesTable();
+            break;
+        case 'orders':
+            loadOrdersTable();
+            break;
+        case 'customers':
+            loadCustomersTable();
+            break;
+        case 'reviews':
+            loadReviewsTable();
+            break;
+        case 'banners':
+            loadBannersTable();
+            break;
+        case 'categories':
+            loadCategoriesTable();
+            break;
+        case 'brands':
+            loadBrandsTable();
+            break;
+        case 'payments':
+            loadPaymentsTable();
+            break;
+        case 'vouchers':
+            loadVouchersTable();
+            break;
+        case 'settings':
+            loadSettings();
+            break;
+    }
+    
+    // Close sidebar on mobile
+    closeSidebarOnMobile();
 }

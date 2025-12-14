@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
@@ -118,6 +118,11 @@
         </div>
     </div>
 
+    <!-- Recommended Accessories Section -->
+    <section id="recommendedAccessoriesAfterOrder" class="bg-light py-5">
+        <!-- Accessories will be loaded by JavaScript -->
+    </section>
+
     <!-- Footer -->
     <footer class="footer py-5" style="background-color: #ffffcc; color: #000;">
         <div class="container">
@@ -216,7 +221,42 @@
             if (logoContainer) {
                 logoContainer.innerHTML = createLogo();
             }
+            
+            // Load recommended accessories after order
+            loadAccessoriesAfterOrder();
         });
+        
+        function loadAccessoriesAfterOrder() {
+            // Lấy sản phẩm từ đơn hàng vừa đặt
+            const urlParams = new URLSearchParams(window.location.search);
+            const orderId = urlParams.get('orderId');
+            
+            if (!orderId) return;
+            
+            const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+            const order = orders.find(o => o.id == orderId);
+            
+            if (!order || !order.items || order.items.length === 0) return;
+            
+            // Lấy tên sản phẩm đầu tiên để gợi ý phụ kiện
+            const firstProduct = order.items[0].name;
+            const recommendedAccessories = getRecommendedAccessories(firstProduct, 4);
+            
+            if (recommendedAccessories.length === 0) return;
+            
+            const container = document.getElementById('recommendedAccessoriesAfterOrder');
+            if (!container) return;
+            
+            container.innerHTML = `
+                <div class="container">
+                    <h3 class="mb-4 text-center"><i class="fas fa-gift"></i> Phụ kiện bạn có thể cần</h3>
+                    <p class="text-center text-muted mb-4">Hoàn thiện trải nghiệm với các phụ kiện chính hãng</p>
+                    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+                        ${recommendedAccessories.map(acc => renderAccessoryCard(acc)).join('')}
+                    </div>
+                </div>
+            `;
+        }
     </script>
 </body>
 </html>

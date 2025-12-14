@@ -31,6 +31,25 @@
         "description": "string - Mô tả sản phẩm"
       }
     },
+    "accessories": {
+      "description": "Danh sách phụ kiện điện thoại (12 phụ kiện mặc định)",
+      "type": "array",
+      "structure": {
+        "id": "number - ID phụ kiện (bắt đầu từ 1001)",
+        "name": "string - Tên phụ kiện",
+        "brand": "string - Thương hiệu",
+        "price": "number - Giá bán (VND)",
+        "oldPrice": "number - Giá cũ (VND)",
+        "discount": "number - Phần trăm giảm giá",
+        "image": "string - URL hình ảnh",
+        "category": "string - Danh mục (accessory)",
+        "type": "string - Loại phụ kiện (case, cable, earphone, charger, screen-protector, powerbank, holder)",
+        "compatibleWith": "array - Danh sách tương thích (iPhone, Samsung, Xiaomi, OPPO, Vivo, Realme, Android)",
+        "rating": "number - Đánh giá (1-5 sao)",
+        "stock": "number - Số lượng tồn kho",
+        "description": "string - Mô tả phụ kiện"
+      }
+    },
     "orders": {
       "description": "Danh sách đơn hàng",
       "type": "array",

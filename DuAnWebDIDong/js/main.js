@@ -1308,9 +1308,241 @@ let products = JSON.parse(localStorage.getItem('products')) || [
     }
 ];
 
+// ==================== ACCESSORIES DATA ====================
+const defaultAccessories = [
+    {
+        id: 1001,
+        name: 'Ốp lưng iPhone 15 Pro Max Silicone',
+        brand: 'Apple',
+        price: 990000,
+        oldPrice: 1290000,
+        discount: 23,
+        image: 'https://cdn.tgdd.vn/Products/Images/60/313045/op-lung-iphone-15-pro-max-silicone-magsafe-thumb-600x600.jpg',
+        category: 'accessory',
+        type: 'case',
+        compatibleWith: ['iPhone 15 Pro Max', 'iPhone'],
+        rating: 5,
+        stock: 50,
+        description: 'Ốp lưng Silicone chính hãng Apple với MagSafe, bảo vệ tối ưu cho iPhone 15 Pro Max.'
+    },
+    {
+        id: 1002,
+        name: 'Cáp sạc Type-C to Lightning 1m',
+        brand: 'Apple',
+        price: 490000,
+        oldPrice: 690000,
+        discount: 29,
+        image: 'https://cdn.tgdd.vn/Products/Images/58/281698/cap-type-c-lightning-1m-apple-mxly3-thumb-600x600.jpg',
+        category: 'accessory',
+        type: 'cable',
+        compatibleWith: ['iPhone', 'iPad'],
+        rating: 5,
+        stock: 100,
+        description: 'Cáp sạc nhanh Type-C to Lightning chính hãng Apple, hỗ trợ sạc nhanh và truyền dữ liệu.'
+    },
+    {
+        id: 1003,
+        name: 'Tai nghe AirPods Pro 2 USB-C',
+        brand: 'Apple',
+        price: 5990000,
+        oldPrice: 6990000,
+        discount: 14,
+        image: 'https://cdn.tgdd.vn/Products/Images/54/325338/tai-nghe-bluetooth-airpods-pro-2-usb-c-apple-thumb-600x600.jpg',
+        category: 'accessory',
+        type: 'earphone',
+        compatibleWith: ['iPhone', 'iPad', 'Android'],
+        rating: 5,
+        stock: 30,
+        description: 'AirPods Pro 2 với chip H2, chống ồn chủ động và cổng sạc USB-C tiện lợi.'
+    },
+    {
+        id: 1004,
+        name: 'Sạc nhanh 25W Samsung',
+        brand: 'Samsung',
+        price: 390000,
+        oldPrice: 490000,
+        discount: 20,
+        image: 'https://cdn.tgdd.vn/Products/Images/58/226207/sac-25w-type-c-samsung-ep-ta800-thumb-600x600.jpg',
+        category: 'accessory',
+        type: 'charger',
+        compatibleWith: ['Samsung', 'Android'],
+        rating: 5,
+        stock: 80,
+        description: 'Củ sạc nhanh 25W chính hãng Samsung, hỗ trợ sạc nhanh cho các dòng Galaxy.'
+    },
+    {
+        id: 1005,
+        name: 'Ốp lưng Samsung S24 Ultra Clear',
+        brand: 'Samsung',
+        price: 590000,
+        oldPrice: 790000,
+        discount: 25,
+        image: 'https://cdn.tgdd.vn/Products/Images/60/313046/op-lung-samsung-s24-ultra-clear-thumb-600x600.jpg',
+        category: 'accessory',
+        type: 'case',
+        compatibleWith: ['Samsung Galaxy S24 Ultra', 'Samsung'],
+        rating: 5,
+        stock: 60,
+        description: 'Ốp lưng trong suốt chính hãng Samsung, bảo vệ và tôn lên vẻ đẹp của S24 Ultra.'
+    },
+    {
+        id: 1006,
+        name: 'Tai nghe Galaxy Buds2 Pro',
+        brand: 'Samsung',
+        price: 3490000,
+        oldPrice: 4990000,
+        discount: 30,
+        image: 'https://cdn.tgdd.vn/Products/Images/54/289781/tai-nghe-bluetooth-samsung-galaxy-buds2-pro-thumb-600x600.jpg',
+        category: 'accessory',
+        type: 'earphone',
+        compatibleWith: ['Samsung', 'Android', 'iPhone'],
+        rating: 5,
+        stock: 40,
+        description: 'Galaxy Buds2 Pro với chất lượng âm thanh Hi-Fi 24bit và chống ồn thông minh.'
+    },
+    {
+        id: 1007,
+        name: 'Miếng dán cường lực full màn',
+        brand: 'Universal',
+        price: 150000,
+        oldPrice: 250000,
+        discount: 40,
+        image: 'https://cdn.tgdd.vn/Products/Images/60/226208/mieng-dan-cuong-luc-thumb-600x600.jpg',
+        category: 'accessory',
+        type: 'screen-protector',
+        compatibleWith: ['iPhone', 'Samsung', 'Xiaomi', 'OPPO', 'Vivo', 'Realme'],
+        rating: 4,
+        stock: 200,
+        description: 'Miếng dán cường lực full màn hình, chống trầy xước và va đập hiệu quả.'
+    },
+    {
+        id: 1008,
+        name: 'Pin dự phòng 10000mAh Xiaomi',
+        brand: 'Xiaomi',
+        price: 390000,
+        oldPrice: 590000,
+        discount: 34,
+        image: 'https://cdn.tgdd.vn/Products/Images/57/226209/pin-du-phong-10000mah-xiaomi-thumb-600x600.jpg',
+        category: 'accessory',
+        type: 'powerbank',
+        compatibleWith: ['iPhone', 'Samsung', 'Xiaomi', 'OPPO', 'Vivo', 'Realme', 'Android'],
+        rating: 5,
+        stock: 70,
+        description: 'Pin dự phòng 10000mAh Xiaomi, sạc nhanh 2 chiều, thiết kế nhỏ gọn tiện lợi.'
+    },
+    {
+        id: 1009,
+        name: 'Giá đỡ điện thoại xoay 360°',
+        brand: 'Universal',
+        price: 99000,
+        oldPrice: 199000,
+        discount: 50,
+        image: 'https://cdn.tgdd.vn/Products/Images/60/226210/gia-do-dien-thoai-thumb-600x600.jpg',
+        category: 'accessory',
+        type: 'holder',
+        compatibleWith: ['iPhone', 'Samsung', 'Xiaomi', 'OPPO', 'Vivo', 'Realme', 'Android'],
+        rating: 4,
+        stock: 150,
+        description: 'Giá đỡ điện thoại xoay 360°, gắn taplo ô tô hoặc để bàn làm việc.'
+    },
+    {
+        id: 1010,
+        name: 'Cáp sạc Type-C to Type-C 1m',
+        brand: 'Universal',
+        price: 190000,
+        oldPrice: 290000,
+        discount: 34,
+        image: 'https://cdn.tgdd.vn/Products/Images/58/226211/cap-type-c-to-type-c-thumb-600x600.jpg',
+        category: 'accessory',
+        type: 'cable',
+        compatibleWith: ['Samsung', 'Xiaomi', 'OPPO', 'Vivo', 'Realme', 'Android'],
+        rating: 4,
+        stock: 120,
+        description: 'Cáp sạc Type-C to Type-C hỗ trợ sạc nhanh và truyền dữ liệu tốc độ cao.'
+    },
+    {
+        id: 1011,
+        name: 'Ốp lưng Xiaomi 14 Ultra chống sốc',
+        brand: 'Xiaomi',
+        price: 290000,
+        oldPrice: 490000,
+        discount: 41,
+        image: 'https://cdn.tgdd.vn/Products/Images/60/313047/op-lung-xiaomi-14-ultra-thumb-600x600.jpg',
+        category: 'accessory',
+        type: 'case',
+        compatibleWith: ['Xiaomi 14 Ultra', 'Xiaomi'],
+        rating: 5,
+        stock: 45,
+        description: 'Ốp lưng chống sốc 4 góc, bảo vệ tối ưu cho Xiaomi 14 Ultra.'
+    },
+    {
+        id: 1012,
+        name: 'Tai nghe có dây Type-C',
+        brand: 'Universal',
+        price: 149000,
+        oldPrice: 249000,
+        discount: 40,
+        image: 'https://cdn.tgdd.vn/Products/Images/54/226212/tai-nghe-type-c-thumb-600x600.jpg',
+        category: 'accessory',
+        type: 'earphone',
+        compatibleWith: ['Samsung', 'Xiaomi', 'OPPO', 'Vivo', 'Realme', 'Android'],
+        rating: 4,
+        stock: 90,
+        description: 'Tai nghe có dây Type-C, âm thanh chất lượng cao, tương thích đa dạng thiết bị.'
+    }
+];
+
+// Initialize accessories from localStorage or use default
+let accessories = JSON.parse(localStorage.getItem('accessories'));
+if (!accessories || accessories.length === 0) {
+    accessories = defaultAccessories;
+    localStorage.setItem('accessories', JSON.stringify(accessories));
+}
+
 // Save default products to localStorage if not exists
 if (!localStorage.getItem('products')) {
     localStorage.setItem('products', JSON.stringify(products));
+}
+
+// ==================== UTILITY FUNCTIONS ====================
+function formatPrice(price) {
+    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
+}
+
+function showNotification(message, type = 'info') {
+    // Remove existing notifications
+    const existing = document.querySelector('.notification-toast');
+    if (existing) existing.remove();
+    
+    const bgColor = {
+        'success': '#28a745',
+        'error': '#dc3545',
+        'warning': '#ffc107',
+        'info': '#17a2b8'
+    }[type] || '#17a2b8';
+    
+    const notification = document.createElement('div');
+    notification.className = 'notification-toast';
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px 25px;
+        background: ${bgColor};
+        color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        z-index: 9999;
+        animation: slideIn 0.3s ease;
+    `;
+    notification.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'times-circle' : 'info-circle'} me-2"></i>${message}`;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
 }
 
 // ==================== CART MANAGEMENT ====================
@@ -1591,15 +1823,109 @@ function initSearch() {
     });
 }
 
+// ==================== ACCESSORIES RECOMMENDATIONS ====================
+function getRecommendedAccessories(productName, limit = 4) {
+    const accessories = JSON.parse(localStorage.getItem('accessories')) || [];
+    
+    // Lọc phụ kiện tương thích với sản phẩm
+    const compatible = accessories.filter(acc => {
+        return acc.compatibleWith.some(brand => 
+            productName.toLowerCase().includes(brand.toLowerCase())
+        );
+    });
+    
+    // Nếu không đủ, thêm phụ kiện universal
+    if (compatible.length < limit) {
+        const universal = accessories.filter(acc => 
+            acc.compatibleWith.includes('iPhone') || 
+            acc.compatibleWith.includes('Samsung') ||
+            acc.compatibleWith.includes('Android')
+        );
+        compatible.push(...universal);
+    }
+    
+    // Loại bỏ trùng lặp và giới hạn số lượng
+    const unique = [...new Map(compatible.map(item => [item.id, item])).values()];
+    return unique.slice(0, limit);
+}
+
+function renderAccessoryCard(accessory) {
+    const discountBadge = accessory.discount > 0 
+        ? `<span class="badge bg-danger position-absolute top-0 end-0 m-2">-${accessory.discount}%</span>` 
+        : '';
+    
+    return `
+        <div class="col">
+            <div class="card product-card h-100 shadow-sm">
+                ${discountBadge}
+                <img src="${accessory.image}" class="card-img-top p-3" alt="${accessory.name}" style="height: 200px; object-fit: contain;">
+                <div class="card-body d-flex flex-column">
+                    <h6 class="card-title text-truncate" title="${accessory.name}">${accessory.name}</h6>
+                    <div class="mt-auto">
+                        <div class="d-flex align-items-center mb-2">
+                            <span class="text-danger fw-bold fs-5">${formatPrice(accessory.price)}</span>
+                            ${accessory.oldPrice ? `<span class="text-muted text-decoration-line-through ms-2 small">${formatPrice(accessory.oldPrice)}</span>` : ''}
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-primary btn-sm flex-grow-1" onclick="addAccessoryToCart(${accessory.id})">
+                                <i class="fas fa-cart-plus"></i> Thêm
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function addAccessoryToCart(accessoryId) {
+    const accessories = JSON.parse(localStorage.getItem('accessories')) || [];
+    const accessory = accessories.find(a => a.id === accessoryId);
+    
+    if (!accessory) {
+        showNotification('Không tìm thấy sản phẩm!', 'error');
+        return;
+    }
+    
+    const cartKey = getCartKey();
+    let cart = JSON.parse(localStorage.getItem(cartKey)) || [];
+    
+    const existingItem = cart.find(item => item.id === accessoryId);
+    
+    if (existingItem) {
+        existingItem.quantity += 1;
+    } else {
+        cart.push({
+            id: accessory.id,
+            name: accessory.name,
+            price: accessory.price,
+            image: accessory.image,
+            quantity: 1,
+            category: 'accessory'
+        });
+    }
+    
+    localStorage.setItem(cartKey, JSON.stringify(cart));
+    updateCartCount();
+    showNotification('Đã thêm phụ kiện vào giỏ hàng!', 'success');
+}
+
 // ==================== INITIALIZE DATA ====================
 function initializeDefaultData() {
     // Kiểm tra và khởi tạo dữ liệu mặc định nếu localStorage trống
     const storedProducts = localStorage.getItem('products');
+    const storedAccessories = localStorage.getItem('accessories');
     
     // Nếu chưa có hoặc là mảng rỗng, lưu dữ liệu mẫu
     if (!storedProducts || JSON.parse(storedProducts).length === 0) {
         console.log('Initializing default product data...');
         localStorage.setItem('products', JSON.stringify(products));
+    }
+    
+    if (!storedAccessories || JSON.parse(storedAccessories).length === 0) {
+        console.log('Initializing default accessories data...');
+        accessories = defaultAccessories;
+        localStorage.setItem('accessories', JSON.stringify(defaultAccessories));
     }
 }
 

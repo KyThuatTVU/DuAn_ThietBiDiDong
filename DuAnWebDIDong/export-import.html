@@ -43,6 +43,10 @@
                                 <small>Sản phẩm</small>
                             </div>
                             <div class="col text-center">
+                                <div class="fs-3 fw-bold" id="statAccessories">0</div>
+                                <small>Phụ kiện</small>
+                            </div>
+                            <div class="col text-center">
                                 <div class="fs-3 fw-bold" id="statOrders">0</div>
                                 <small>Đơn hàng</small>
                             </div>
@@ -83,6 +87,10 @@
                                     <div class="form-check">
                                         <input class="form-check-input export-check" type="checkbox" value="products" id="expProducts" checked>
                                         <label class="form-check-label" for="expProducts">Sản phẩm</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input export-check" type="checkbox" value="accessories" id="expAccessories" checked>
+                                        <label class="form-check-label" for="expAccessories">Phụ kiện</label>
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input export-check" type="checkbox" value="orders" id="expOrders" checked>
@@ -200,6 +208,7 @@
                     <select class="form-select" id="previewKey" onchange="previewData()">
                         <option value="">-- Chọn --</option>
                         <option value="products">products</option>
+                        <option value="accessories">accessories</option>
                         <option value="orders">orders</option>
                         <option value="users">users</option>
                         <option value="customers">customers</option>
@@ -247,7 +256,7 @@
     <script src="js/main.js"></script>
     <script>
         // Danh sách keys
-        const ALL_KEYS = ['products', 'orders', 'users', 'customers', 'reviews', 'banners', 'categories', 'brands', 'paymentMethods', 'vouchers', 'settings'];
+        const ALL_KEYS = ['products', 'accessories', 'orders', 'users', 'customers', 'reviews', 'banners', 'categories', 'brands', 'paymentMethods', 'vouchers', 'settings'];
         
         // Load thống kê
         function loadStats() {
@@ -261,6 +270,7 @@
             };
             
             document.getElementById('statProducts').textContent = getCount('products');
+            document.getElementById('statAccessories').textContent = getCount('accessories');
             document.getElementById('statOrders').textContent = getCount('orders');
             document.getElementById('statUsers').textContent = getCount('users');
             document.getElementById('statReviews').textContent = getCount('reviews');
