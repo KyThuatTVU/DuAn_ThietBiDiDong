@@ -12,6 +12,7 @@
         "price": "number - Giá bán (VND)",
         "oldPrice": "number - Giá cũ (VND)",
         "discount": "number - Phần trăm giảm giá",
+      "stock": "number - Số lượng tồn kho (ví dụ: 10)",
         "image": "string - URL hình ảnh sản phẩm",
         "category": "string - Danh mục (phone, tablet, laptop, accessory, smartwatch)",
         "ram": "number - Dung lượng RAM (GB)",

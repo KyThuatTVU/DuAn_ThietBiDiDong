@@ -143,8 +143,18 @@ function handleSingleCheckbox(clickedCheckbox, groupClass) {
 // ==================== RESET FILTERS ====================
 function resetFilters() {
     // Reset old filter checkboxes
-    document.querySelectorAll('.filter-price, .filter-brand, .filter-ram, .filter-storage, .filter-screen, .filter-battery').forEach(checkbox => {
+    document.querySelectorAll('.filter-brand, .filter-ram, .filter-storage, .filter-screen, .filter-battery').forEach(checkbox => {
         checkbox.checked = false;
+    });
+
+    // Reset price radio buttons
+    document.querySelectorAll('input[name="price"]').forEach(radio => {
+        radio.checked = false;
+    });
+
+    // Reset other radio buttons
+    document.querySelectorAll('input[name="brand"], input[name="ram"], input[name="storage"], input[name="screen"], input[name="battery"]').forEach(radio => {
+        radio.checked = false;
     });
 
     // Reset new filter inputs
@@ -183,13 +193,13 @@ function applyFilters() {
     const maxPrice = parseInt(document.getElementById('maxPrice')?.value) || Infinity;
     const sortBy = document.getElementById('sortSelect')?.value || 'name';
 
-    // Get selected filters from old checkboxes (only one per group)
-    const selectedPrice = document.querySelector('.filter-price:checked')?.value || '';
-    const selectedBrandOld = document.querySelector('.filter-brand:checked')?.value || '';
-    const selectedRAM = document.querySelector('.filter-ram:checked')?.value || '';
-    const selectedStorage = document.querySelector('.filter-storage:checked')?.value || '';
-    const selectedScreen = document.querySelector('.filter-screen:checked')?.value || '';
-    const selectedBattery = document.querySelector('.filter-battery:checked')?.value || '';
+    // Get selected filters from radio buttons
+    const selectedPrice = document.querySelector('input[name="price"]:checked')?.value || '';
+    const selectedBrand = document.querySelector('input[name="brand"]:checked')?.value || '';
+    const selectedRAM = document.querySelector('input[name="ram"]:checked')?.value || '';
+    const selectedStorage = document.querySelector('input[name="storage"]:checked')?.value || '';
+    const selectedScreen = document.querySelector('input[name="screen"]:checked')?.value || '';
+    const selectedBattery = document.querySelector('input[name="battery"]:checked')?.value || '';
 
     // Combine search terms
     const searchTerm = searchInput || urlSearchTerm;
@@ -215,7 +225,7 @@ function applyFilters() {
         if (urlBrand && product.brand.toLowerCase() !== urlBrand.toLowerCase()) {
             return false;
         }
-        if (selectedBrandOld && product.brand !== selectedBrandOld) {
+        if (selectedBrand && product.brand !== selectedBrand) {
             return false;
         }
         if (selectedBrands.length > 0 && !selectedBrands.includes(product.brand)) {
@@ -311,53 +321,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const brandParam = urlParams.get('brand');
 
     if (brandParam) {
-        // Pre-select in old filter checkboxes
-        const brandCheckbox = document.querySelector(`.filter-brand[value="${brandParam}"]`);
-        if (brandCheckbox) {
-            brandCheckbox.checked = true;
-        }
-        // Pre-select in new filter checkboxes
-        const newBrandCheckbox = document.querySelector(`input[name="brand"][value="${brandParam}"]`);
-        if (newBrandCheckbox) {
-            newBrandCheckbox.checked = true;
+        // Pre-select in brand radio buttons
+        const brandRadio = document.querySelector(`input[name="brand"][value="${brandParam}"]`);
+        if (brandRadio) {
+            brandRadio.checked = true;
         }
     }
 
-    // Add event listeners to old filters with single selection
-    document.querySelectorAll('.filter-price').forEach(checkbox => {
-        checkbox.addEventListener('change', function() {
-            handleSingleCheckbox(this, 'filter-price');
-        });
-    });
-
-    document.querySelectorAll('.filter-brand').forEach(checkbox => {
-        checkbox.addEventListener('change', function() {
-            handleSingleCheckbox(this, 'filter-brand');
-        });
-    });
-
-    document.querySelectorAll('.filter-ram').forEach(checkbox => {
-        checkbox.addEventListener('change', function() {
-            handleSingleCheckbox(this, 'filter-ram');
-        });
-    });
-
-    document.querySelectorAll('.filter-storage').forEach(checkbox => {
-        checkbox.addEventListener('change', function() {
-            handleSingleCheckbox(this, 'filter-storage');
-        });
-    });
-
-    document.querySelectorAll('.filter-screen').forEach(checkbox => {
-        checkbox.addEventListener('change', function() {
-            handleSingleCheckbox(this, 'filter-screen');
-        });
-    });
-
-    document.querySelectorAll('.filter-battery').forEach(checkbox => {
-        checkbox.addEventListener('change', function() {
-            handleSingleCheckbox(this, 'filter-battery');
-        });
+    // Add event listeners to radio buttons
+    document.querySelectorAll('input[name="price"], input[name="brand"], input[name="ram"], input[name="storage"], input[name="screen"], input[name="battery"]').forEach(radio => {
+        radio.addEventListener('change', applyFilters);
     });
 
     // Add event listeners for new filter inputs

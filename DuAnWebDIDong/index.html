@@ -90,6 +90,24 @@
   </div>
 </nav>
 
+<!-- Flash Sale Banner -->
+<div id="flashSaleBanner" class="flash-sale-banner py-3">
+  <div class="container d-flex align-items-center justify-content-between">
+    <div class="d-flex align-items-center gap-3">
+      <div class="flash-icon bg-danger text-white rounded d-flex align-items-center justify-content-center" style="width:80px;height:80px;font-size:28px;">
+        <i class="fas fa-bolt"></i>
+      </div>
+      <div>
+        <h4 class="mb-1 text-white" id="flashSaleTitle">Flash Sale: Giảm đến 50% — Số lượng có hạn!</h4>
+        <div class="text-white small">Kết thúc trong: <span id="flashSaleCountdown">00:00:00</span></div>
+      </div>
+    </div>
+    <div>
+      <a href="sanpham.html?promo=flash" class="btn btn-lg btn-warning" id="flashSaleCta">Mua ngay</a>
+    </div>
+  </div>
+</div>
+
 <!-- CSS -->
 <style>
 /* ========== MÀU CHỦ ĐẠO ========== */
@@ -381,75 +399,74 @@
     <h3 class="text-center mb-4 fw-bold text-uppercase">
       Thương hiệu nổi bật
     </h3>
-    <div class="row g-3 text-center">
-      
-      <!-- Brand Item -->
-      <div class="col-6 col-md-2">
-        <a href="sanpham.html?brand=apple" class="brand-card text-decoration-none">
-          <div class="card border-0 shadow-sm h-100 hover-card">
-            <img src="images/products/logo_iphone_ngang_eac93ff477.webp" class="card-img-top p-3" alt="Apple">
-            <div class="card-body py-2">
-              <p class="fw-bold text-dark mb-0">Apple</p>
+    <div class="brands-marquee">
+      <div class="brands-track" id="brandsTrack">
+        <div class="brand-item">
+          <a href="sanpham.html?brand=apple" class="brand-card text-decoration-none">
+            <div class="card border-0 shadow-sm hover-card">
+              <img src="images/products/logo_iphone_ngang_eac93ff477.webp" class="card-img-top p-3" alt="Apple">
+              <div class="card-body py-2 text-center">
+                <p class="fw-bold text-dark mb-0">Apple</p>
+              </div>
             </div>
-          </div>
-        </a>
-      </div>
+          </a>
+        </div>
 
-      <div class="col-6 col-md-2">
-        <a href="sanpham.html?brand=samsung" class="brand-card text-decoration-none">
-          <div class="card border-0 shadow-sm h-100 hover-card">
-            <img src="images/products/logo_samsung_ngang_1624d75bd8.webp" class="card-img-top p-3" alt="Samsung">
-            <div class="card-body py-2">
-              <p class="fw-bold text-dark mb-0">Samsung</p>
+        <div class="brand-item">
+          <a href="sanpham.html?brand=samsung" class="brand-card text-decoration-none">
+            <div class="card border-0 shadow-sm hover-card">
+              <img src="images/products/logo_samsung_ngang_1624d75bd8.webp" class="card-img-top p-3" alt="Samsung">
+              <div class="card-body py-2 text-center">
+                <p class="fw-bold text-dark mb-0">Samsung</p>
+              </div>
             </div>
-          </div>
-        </a>
-      </div>
+          </a>
+        </div>
 
-      <div class="col-6 col-md-2">
-        <a href="sanpham.html?brand=xiaomi" class="brand-card text-decoration-none">
-          <div class="card border-0 shadow-sm h-100 hover-card">
-            <img src="images/products/logo_tcl_ngang_0ed4175607.webp" class="card-img-top p-3" alt="Xiaomi">
-            <div class="card-body py-2">
-              <p class="fw-bold text-dark mb-0">Xiaomi</p>
+        <div class="brand-item">
+          <a href="sanpham.html?brand=xiaomi" class="brand-card text-decoration-none">
+            <div class="card border-0 shadow-sm hover-card">
+              <img src="images/products/logo_tcl_ngang_0ed4175607.webp" class="card-img-top p-3" alt="Xiaomi">
+              <div class="card-body py-2 text-center">
+                <p class="fw-bold text-dark mb-0">Xiaomi</p>
+              </div>
             </div>
-          </div>
-        </a>
-      </div>
+          </a>
+        </div>
 
-      <div class="col-6 col-md-2">
-        <a href="sanpham.html?brand=oppo" class="brand-card text-decoration-none">
-          <div class="card border-0 shadow-sm h-100 hover-card">
-            <img src="images/products/logo_oppo_ngang_68d31fcd73.webp" class="card-img-top p-3" alt="OPPO">
-            <div class="card-body py-2">
-              <p class="fw-bold text-dark mb-0">OPPO</p>
+        <div class="brand-item">
+          <a href="sanpham.html?brand=oppo" class="brand-card text-decoration-none">
+            <div class="card border-0 shadow-sm hover-card">
+              <img src="images/products/logo_oppo_ngang_68d31fcd73.webp" class="card-img-top p-3" alt="OPPO">
+              <div class="card-body py-2 text-center">
+                <p class="fw-bold text-dark mb-0">OPPO</p>
+              </div>
             </div>
-          </div>
-        </a>
-      </div>
+          </a>
+        </div>
 
-      <div class="col-6 col-md-2">
-        <a href="sanpham.html?brand=vivo" class="brand-card text-decoration-none">
-          <div class="card border-0 shadow-sm h-100 hover-card">
-            <img src="images/products/logo_vivo_ngang_45494ff733.webp" class="card-img-top p-3" alt="Vivo">
-            <div class="card-body py-2">
-              <p class="fw-bold text-dark mb-0">Vivo</p>
+        <div class="brand-item">
+          <a href="sanpham.html?brand=vivo" class="brand-card text-decoration-none">
+            <div class="card border-0 shadow-sm hover-card">
+              <img src="images/products/logo_vivo_ngang_45494ff733.webp" class="card-img-top p-3" alt="Vivo">
+              <div class="card-body py-2 text-center">
+                <p class="fw-bold text-dark mb-0">Vivo</p>
+              </div>
             </div>
-          </div>
-        </a>
-      </div>
+          </a>
+        </div>
 
-      <div class="col-6 col-md-2">
-        <a href="sanpham.html?brand=realme" class="brand-card text-decoration-none">
-          <div class="card border-0 shadow-sm h-100 hover-card">
-            <img src="images/products/logo_realme_ngang_0185815a13.webp" class="card-img-top p-3" alt="Realme">
-            <div class="card-body py-2">
-              <p class="fw-bold text-dark mb-0">Realme</p>
+        <div class="brand-item">
+          <a href="sanpham.html?brand=realme" class="brand-card text-decoration-none">
+            <div class="card border-0 shadow-sm hover-card sparkle">
+              <img src="images/products/logo_realme_ngang_0185815a13.webp" class="card-img-top p-3" alt="Realme">
+              <div class="card-body py-2 text-center">
+                <p class="fw-bold text-dark mb-0">Realme</p>
+              </div>
             </div>
-          </div>
-        </a>
+          </a>
+        </div>
       </div>
-
     </div>
   </div>
 </section>
@@ -463,6 +480,17 @@
             <h3 class="mb-4">
                 <i class="fas fa-fire text-danger"></i> Sản phẩm HOT
             </h3>
+            <div class="d-flex justify-content-center mb-4">
+                <div class="countdown-container bg-danger text-white p-3 rounded">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="fas fa-clock"></i>
+                        <span class="fw-bold">Thời gian còn lại:</span>
+                        <div id="hotCountdown" class="d-flex gap-2">
+                            <!-- Countdown will be loaded by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="row g-4" id="hotProducts">
                 <!-- Products will be loaded by JavaScript -->
             </div>
@@ -480,6 +508,17 @@
             <h3 class="mb-4">
                 <i class="fas fa-percent text-success"></i> Sản phẩm khuyến mãi
             </h3>
+            <div class="d-flex justify-content-center mb-4">
+                <div class="countdown-container bg-success text-white p-3 rounded">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="fas fa-clock"></i>
+                        <span class="fw-bold">Thời gian còn lại:</span>
+                        <div id="discountCountdown" class="d-flex gap-2">
+                            <!-- Countdown will be loaded by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="row g-4" id="discountProducts">
                 <!-- Products will be loaded by JavaScript -->
             </div>
@@ -632,6 +671,24 @@
     <script src="js/auth.js"></script>
     <script src="js/main.js"></script>
     <script>
+      // Brands marquee initializer: clone items for seamless loop and enable pause on hover
+      document.addEventListener('DOMContentLoaded', function() {
+        const track = document.getElementById('brandsTrack');
+        if (!track) return;
+
+        // Duplicate children to allow seamless infinite scroll
+        const children = Array.from(track.children);
+        children.forEach(node => {
+          const clone = node.cloneNode(true);
+          track.appendChild(clone);
+        });
+
+        // Pause on hover
+        track.parentElement.addEventListener('mouseenter', () => track.classList.add('paused'));
+        track.parentElement.addEventListener('mouseleave', () => track.classList.remove('paused'));
+      });
+    </script>
+    <script>
         // Initialize logo
         document.addEventListener('DOMContentLoaded', function() {
             const logoContainer = document.getElementById('logoContainer');
@@ -688,6 +745,72 @@
 
           updateCountdown();
           setInterval(updateCountdown, 1000);
+        }
+
+        // === Hot products countdown ===
+        const hotCountdownEl = document.getElementById('hotCountdown');
+        if (hotCountdownEl) {
+          // target: 2025-12-31 23:59 local time
+          const target = new Date('2025-12-31T23:59:59');
+
+          function updateHotCountdown() {
+            const now = new Date();
+            let diff = Math.floor((target - now) / 1000);
+
+            if (diff <= 0) {
+              hotCountdownEl.innerHTML = '<span class="text-muted">Đã hết hạn</span> <button class="btn btn-sm btn-outline-primary ms-2" onclick="resetHotCountdown()">Reset</button>';
+              hotCountdownEl.closest('.countdown-container').classList.remove('bg-danger');
+              hotCountdownEl.closest('.countdown-container').classList.add('bg-secondary');
+              return;
+            }
+
+            const days = Math.floor(diff / 86400); diff %= 86400;
+            const hours = Math.floor(diff / 3600); diff %= 3600;
+            const minutes = Math.floor(diff / 60); const seconds = diff % 60;
+
+            hotCountdownEl.innerHTML = `
+              <div class="badge bg-light text-danger py-1 px-2">${String(days).padStart(2,'0')}d</div>
+              <div class="badge bg-light text-danger py-1 px-2">${String(hours).padStart(2,'0')}h</div>
+              <div class="badge bg-light text-danger py-1 px-2">${String(minutes).padStart(2,'0')}m</div>
+              <div class="badge bg-light text-danger py-1 px-2">${String(seconds).padStart(2,'0')}s</div>
+            `;
+          }
+
+          updateHotCountdown();
+          setInterval(updateHotCountdown, 1000);
+        }
+
+        // === Discount products countdown ===
+        const discountCountdownEl = document.getElementById('discountCountdown');
+        if (discountCountdownEl) {
+          // target: 2025-12-31 23:59 local time
+          const target = new Date('2025-12-31T23:59:59');
+
+          function updateDiscountCountdown() {
+            const now = new Date();
+            let diff = Math.floor((target - now) / 1000);
+
+            if (diff <= 0) {
+              discountCountdownEl.innerHTML = '<span class="text-muted">Đã hết hạn</span> <button class="btn btn-sm btn-outline-success ms-2" onclick="resetDiscountCountdown()">Reset</button>';
+              discountCountdownEl.closest('.countdown-container').classList.remove('bg-success');
+              discountCountdownEl.closest('.countdown-container').classList.add('bg-secondary');
+              return;
+            }
+
+            const days = Math.floor(diff / 86400); diff %= 86400;
+            const hours = Math.floor(diff / 3600); diff %= 3600;
+            const minutes = Math.floor(diff / 60); const seconds = diff % 60;
+
+            discountCountdownEl.innerHTML = `
+              <div class="badge bg-light text-success py-1 px-2">${String(days).padStart(2,'0')}d</div>
+              <div class="badge bg-light text-success py-1 px-2">${String(hours).padStart(2,'0')}h</div>
+              <div class="badge bg-light text-success py-1 px-2">${String(minutes).padStart(2,'0')}m</div>
+              <div class="badge bg-light text-success py-1 px-2">${String(seconds).padStart(2,'0')}s</div>
+            `;
+          }
+
+          updateDiscountCountdown();
+          setInterval(updateDiscountCountdown, 1000);
         }
       });
     </script>

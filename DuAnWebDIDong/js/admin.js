@@ -280,45 +280,89 @@ function renderCharts() {
     renderBrandChart();
 }
 
-// Biểu đồ doanh thu theo tháng
+// Helper: compute period range based on granularity
+function getPeriodRange(granularity) {
+    const now = new Date();
+    let startDate;
+    if (granularity === 'day') {
+        // last 7 days
+        startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 6);
+    } else if (granularity === 'year') {
+        // last 5 years
+        startDate = new Date(now.getFullYear() - 4, 0, 1);
+    } else {
+        // month (default) - last 6 months
+        startDate = new Date(now.getFullYear(), now.getMonth() - 5, 1);
+    }
+    return { startDate: startDate, endDate: now };
+}
+
+// Helper: aggregate revenue/orders by period
 function renderRevenueChart() {
     const ctx = document.getElementById('revenueChart');
     if (!ctx) return;
-    
-    // Destroy chart cũ nếu tồn tại
+
     if (chartInstances.revenueChart) {
         chartInstances.revenueChart.destroy();
     }
-    
-    const orders = JSON.parse(localStorage.getItem('orders') || '[]');
-    
-    // Tính doanh thu theo tháng (6 tháng gần nhất)
-    const months = [];
-    const revenues = [];
+
+    const granEl = document.getElementById('statGranularity');
+    const gran = granEl ? granEl.value : 'month';
+    const ordersAll = JSON.parse(localStorage.getItem('orders') || '[]');
     const now = new Date();
-    
-    for (let i = 5; i >= 0; i--) {
-        const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
-        const monthName = date.toLocaleDateString('vi-VN', { month: 'short', year: '2-digit' });
-        months.push(monthName);
-        
-        // Tính doanh thu trong tháng
-        const monthRevenue = orders
-            .filter(order => {
-                const orderDate = new Date(order.createdAt || order.date);
-                return orderDate.getMonth() === date.getMonth() && 
-                       orderDate.getFullYear() === date.getFullYear() &&
-                       (order.status === 'Hoàn thành' || order.status === 'Đang giao' || order.status === 'Đã xác nhận');
-            })
-            .reduce((sum, order) => sum + (order.total || 0), 0);
-        
-        revenues.push(monthRevenue / 1000000); // Đơn vị triệu đồng
+
+    let labels = [];
+    let revenues = [];
+
+    if (gran === 'day') {
+        // last 7 days
+        for (let i = 6; i >= 0; i--) {
+            const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
+            const label = d.toLocaleDateString('vi-VN', { day: '2-digit', month: 'short' });
+            labels.push(label);
+            const rev = ordersAll
+                .filter(o => {
+                    const od = new Date(o.createdAt || o.date);
+                    return od.getFullYear() === d.getFullYear() && od.getMonth() === d.getMonth() && od.getDate() === d.getDate() &&
+                        (o.status === 'Hoàn thành' || o.status === 'Đang giao' || o.status === 'Đã xác nhận');
+                })
+                .reduce((s, o) => s + (o.total || 0), 0);
+            revenues.push(rev / 1000000);
+        }
+    } else if (gran === 'year') {
+        // last 5 years
+        for (let i = 4; i >= 0; i--) {
+            const y = now.getFullYear() - i;
+            labels.push(String(y));
+            const rev = ordersAll
+                .filter(o => {
+                    const od = new Date(o.createdAt || o.date);
+                    return od.getFullYear() === y && (o.status === 'Hoàn thành' || o.status === 'Đang giao' || o.status === 'Đã xác nhận');
+                })
+                .reduce((s, o) => s + (o.total || 0), 0);
+            revenues.push(rev / 1000000);
+        }
+    } else {
+        // month - last 6 months
+        for (let i = 5; i >= 0; i--) {
+            const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+            const monthName = date.toLocaleDateString('vi-VN', { month: 'short', year: '2-digit' });
+            labels.push(monthName);
+            const monthRevenue = ordersAll
+                .filter(order => {
+                    const orderDate = new Date(order.createdAt || order.date);
+                    return orderDate.getMonth() === date.getMonth() && orderDate.getFullYear() === date.getFullYear() &&
+                        (order.status === 'Hoàn thành' || order.status === 'Đang giao' || order.status === 'Đã xác nhận');
+                })
+                .reduce((sum, order) => sum + (order.total || 0), 0);
+            revenues.push(monthRevenue / 1000000);
+        }
     }
-    
+
     chartInstances.revenueChart = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: months,
+            labels: labels,
             datasets: [{
                 label: 'Doanh thu (triệu đồng)',
                 data: revenues,
@@ -337,27 +381,15 @@ function renderRevenueChart() {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-                legend: {
-                    display: false
-                }
+                legend: { display: false }
             },
             scales: {
                 y: {
                     beginAtZero: true,
-                    grid: {
-                        color: 'rgba(0,0,0,0.05)'
-                    },
-                    ticks: {
-                        callback: function(value) {
-                            return value + 'M';
-                        }
-                    }
+                    grid: { color: 'rgba(0,0,0,0.05)' },
+                    ticks: { callback: function(value) { return value + 'M'; } }
                 },
-                x: {
-                    grid: {
-                        display: false
-                    }
-                }
+                x: { grid: { display: false } }
             }
         }
     });
@@ -441,10 +473,19 @@ function renderTopProductsChart() {
         chartInstances.topProductsChart.destroy();
     }
     
-    const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+    // Lấy granularity để lọc theo khoảng thời gian
+    const gran = document.getElementById('statGranularity') ? document.getElementById('statGranularity').value : 'month';
+    const range = getPeriodRange(gran);
+
+    const orders = JSON.parse(localStorage.getItem('orders') || '[]')
+        .filter(o => {
+            const od = new Date(o.createdAt || o.date);
+            return od >= range.startDate && od <= range.endDate;
+        });
+
     const productSales = {};
-    
-    // Đếm số lượng bán của từng sản phẩm
+
+    // Đếm số lượng bán của từng sản phẩm trong khoảng thời gian
     orders.forEach(order => {
         if (order.items && Array.isArray(order.items)) {
             order.items.forEach(item => {
@@ -454,13 +495,26 @@ function renderTopProductsChart() {
         }
     });
     
-    // Sắp xếp và lấy top 5
+    // Sắp xếp và lấy top 10, chỉ gồm sản phẩm có số lượng bán > 0 (ẩn sản phẩm không bán chạy)
     const sorted = Object.entries(productSales)
+        .filter(([name, count]) => (count || 0) > 0)
         .sort((a, b) => b[1] - a[1])
-        .slice(0, 5);
+        .slice(0, 10);
     
     const labels = sorted.map(item => item[0].length > 20 ? item[0].substring(0, 20) + '...' : item[0]);
     const data = sorted.map(item => item[1]);
+
+    // Điều chỉnh chiều cao của wrapper để chắc chắn hiển thị đủ số thanh (mỗi thanh ~40px)
+    try {
+        const wrapper = ctx.parentElement;
+        if (wrapper && labels.length > 0) {
+            const minHeight = 280;
+            const desired = labels.length * 40;
+            wrapper.style.height = Math.max(minHeight, desired) + 'px';
+        }
+    } catch (e) {
+        // ignore
+    }
     
     // Nếu không có dữ liệu, hiển thị mẫu
     if (labels.length === 0) {
@@ -476,10 +530,15 @@ function renderTopProductsChart() {
                 label: 'Số lượng bán',
                 data: data,
                 backgroundColor: [
+                    'rgba(0, 102, 204, 0.9)',
                     'rgba(0, 102, 204, 0.8)',
+                    'rgba(0, 102, 204, 0.75)',
                     'rgba(0, 102, 204, 0.7)',
+                    'rgba(0, 102, 204, 0.65)',
                     'rgba(0, 102, 204, 0.6)',
+                    'rgba(0, 102, 204, 0.55)',
                     'rgba(0, 102, 204, 0.5)',
+                    'rgba(0, 102, 204, 0.45)',
                     'rgba(0, 102, 204, 0.4)'
                 ],
                 borderRadius: 5
@@ -574,6 +633,17 @@ function renderBrandChart() {
     });
 }
 
+// Bind granularity selector to re-render charts when changed
+document.addEventListener('DOMContentLoaded', () => {
+    const gran = document.getElementById('statGranularity');
+    if (gran) {
+        gran.addEventListener('change', () => {
+            renderRevenueChart();
+            renderTopProductsChart();
+        });
+    }
+});
+
 // Load đơn hàng gần đây
 function loadRecentOrders() {
     const orders = JSON.parse(localStorage.getItem('orders') || '[]');
@@ -616,16 +686,30 @@ function loadProducts() {
         tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">Chưa có sản phẩm nào</td></tr>';
         return;
     }
-    
-    tbody.innerHTML = window.products.map(product => `
+    // Tính số lượng đã bán cho mỗi sản phẩm (toàn thời gian)
+    const ordersAll = JSON.parse(localStorage.getItem('orders') || '[]');
+    const salesMap = {};
+    ordersAll.forEach(o => {
+        if (o.items && Array.isArray(o.items)) {
+            o.items.forEach(it => {
+                const id = it.id;
+                salesMap[id] = (salesMap[id] || 0) + (it.quantity || 0);
+            });
+        }
+    });
+
+    tbody.innerHTML = window.products.map(product => {
+        const stock = (product.stock !== undefined && product.stock !== null) ? Number(product.stock) : 0;
+        const statusBadge = stock === 0 ? `<span class="badge bg-danger">Hết hàng</span>` : `<span class="badge bg-success">Còn hàng</span>`;
+        return `
         <tr>
             <td>${product.id}</td>
             <td><img src="${product.image}" alt="${product.name}" style="width: 50px; height: 50px; object-fit: contain;"></td>
             <td>${product.name}</td>
             <td>${product.brand}</td>
             <td>${formatCurrency(product.price)}</td>
-            <td>${product.stock || 'Còn hàng'}</td>
-            <td><span class="badge bg-success">Hoạt động</span></td>
+            <td>${stock}</td>
+            <td>${statusBadge}</td>
             <td>
                 <button class="btn btn-sm btn-info" onclick="editProduct(${product.id})">
                     <i class="fas fa-edit"></i>
@@ -635,7 +719,8 @@ function loadProducts() {
                 </button>
             </td>
         </tr>
-    `).join('');
+    `;
+    }).join('');
 }
 
 // Chỉnh sửa sản phẩm
@@ -660,6 +745,7 @@ function editProduct(id) {
         document.getElementById('productImage').value = product.image;
         document.getElementById('productCategory').value = product.category || '';
         document.getElementById('productDescription').value = product.description || '';
+        document.getElementById('productStock').value = product.stock || 0;
         document.getElementById('productHot').checked = product.hot || false;
         document.getElementById('productBestSelling').checked = product.bestSelling || false;
         
@@ -700,6 +786,7 @@ function showAddProductModal() {
     document.getElementById('productCameraBack').value = '';
     document.getElementById('productCameraFront').value = '';
     document.getElementById('productBattery').value = '';
+    document.getElementById('productStock').value = 0;
     
     // Ẩn preview
     const imagePreview = document.getElementById('imagePreview');
@@ -807,6 +894,7 @@ function saveProduct() {
         brand: document.getElementById('productBrand').value,
         price: price,
         oldPrice: oldPrice,
+        stock: parseInt(document.getElementById('productStock').value) || 0,
         ram: parseInt(ramValue.replace('GB', '')),
         storage: parseInt(storageValue.replace(/GB|TB/, '')),
         rating: parseFloat(document.getElementById('productRating').value),
@@ -969,7 +1057,7 @@ function loadOrders() {
                 <button class="btn btn-sm btn-info" onclick="viewOrderById(${order.id})" title="Xem chi tiết">
                     <i class="fas fa-eye"></i>
                 </button>
-                ${order.status === 'Chờ xác nhận' ? `
+                ${isPendingStatus(order.status) ? `
                     <button class="btn btn-sm btn-success" onclick="approveOrderById(${order.id})" title="Duyệt đơn">
                         <i class="fas fa-check"></i>
                     </button>
@@ -1008,6 +1096,10 @@ function approveOrderById(orderId) {
         const index = orders.findIndex(o => o.id === orderId);
         
         if (index !== -1) {
+            if (!isPendingStatus(orders[index].status)) {
+                showNotification('Đơn hàng không ở trạng thái chờ, không thể duyệt!', 'warning');
+                return;
+            }
             orders[index].status = 'Đã xác nhận';
             orders[index].updatedAt = new Date().toISOString();
             orders[index].approvedBy = sessionStorage.getItem('adminUsername') || 'Admin';
@@ -1676,6 +1768,11 @@ function getStatusColor(status) {
         'Đang xử lý': 'info'
     };
     return colors[status] || 'secondary';
+}
+
+// Helper: kiểm tra trạng thái đang chờ (dùng cho nút duyệt/hủy)
+function isPendingStatus(status) {
+    return status === 'Chờ xác nhận' || status === 'Chờ xử lý' || !status;
 }
 
 // Khởi tạo khi trang load

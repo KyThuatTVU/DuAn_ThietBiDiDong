@@ -1308,6 +1308,11 @@ let products = JSON.parse(localStorage.getItem('products')) || [
     }
 ];
 
+// Gán mặc định `stock = 10` cho mọi sản phẩm (theo yêu cầu)
+products.forEach(p => p.stock = 10);
+// Lưu lại vào localStorage để đồng bộ với giao diện admin
+localStorage.setItem('products', JSON.stringify(products));
+
 // ==================== ACCESSORIES DATA ====================
 const defaultAccessories = [
     {
@@ -1692,7 +1697,7 @@ function renderProductCard(product) {
                         ${product.oldPrice ? `<div class="product-old-price">${formatCurrency(product.oldPrice)}</div>` : ''}
                     </div>
                     <div class="product-rating mb-2">
-                        ${'<i class="fas fa-star"></i>'.repeat(product.rating)}
+                        ${'<i class="fas fa-star text-warning"></i>'.repeat(product.rating)}
                         ${'<i class="far fa-star"></i>'.repeat(5 - product.rating)}
                     </div>
                     <div class="product-actions">
@@ -1723,7 +1728,7 @@ function renderProductCardWithoutBadges(product) {
                         ${product.oldPrice ? `<div class="product-old-price">${formatCurrency(product.oldPrice)}</div>` : ''}
                     </div>
                     <div class="product-rating mb-2">
-                        ${'<i class="fas fa-star"></i>'.repeat(product.rating)}
+                        ${'<i class="fas fa-star text-warning"></i>'.repeat(product.rating)}
                         ${'<i class="far fa-star"></i>'.repeat(5 - product.rating)}
                     </div>
                     <div class="product-actions">
@@ -1939,4 +1944,42 @@ document.addEventListener('DOMContentLoaded', () => {
     initBackToTop();
     initBannerSwiper();
     initSearch();
+    initFlashSale();
 });
+
+// ==================== FLASH SALE TIMER ====================
+function initFlashSale() {
+    // Set flash sale end time: default to 6 hours from now (can be changed)
+    const storedEnd = localStorage.getItem('flashSaleEnd');
+    let endTime;
+    if (storedEnd) {
+        endTime = new Date(storedEnd);
+    } else {
+        endTime = new Date(Date.now() + 6 * 60 * 60 * 1000);
+        localStorage.setItem('flashSaleEnd', endTime.toISOString());
+    }
+
+    const countdownEl = document.getElementById('flashSaleCountdown');
+    const bannerEl = document.getElementById('flashSaleBanner');
+
+    function updateCountdown() {
+        const now = new Date();
+        const diff = endTime - now;
+        if (diff <= 0) {
+            if (bannerEl) {
+                bannerEl.querySelector('#flashSaleTitle').textContent = 'Flash Sale đã kết thúc';
+                if (countdownEl) countdownEl.textContent = '00:00:00';
+                bannerEl.classList.add('flash-ended');
+            }
+            clearInterval(intervalId);
+            return;
+        }
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+        if (countdownEl) countdownEl.textContent = `${String(hours).padStart(2,'0')}:${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}`;
+    }
+
+    updateCountdown();
+    const intervalId = setInterval(updateCountdown, 1000);
+}

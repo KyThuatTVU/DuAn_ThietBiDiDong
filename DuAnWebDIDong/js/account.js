@@ -215,7 +215,7 @@ function cancelOrder(orderId) {
     const orders = JSON.parse(localStorage.getItem('orders') || '[]');
     const order = orders.find(o => o.id === orderId);
     
-    if (order && order.status === 'Chờ xác nhận') {
+    if (order && (order.status === 'Chờ xác nhận' || order.status === 'Chờ xử lý')) {
         order.status = 'Đã hủy';
         order.updatedAt = new Date().toISOString();
         localStorage.setItem('orders', JSON.stringify(orders));
