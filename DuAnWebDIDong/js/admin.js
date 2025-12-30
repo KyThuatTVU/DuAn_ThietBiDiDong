@@ -1888,7 +1888,7 @@ function initSampleData() {
         const samplePayments = [
             { id: 1, name: 'Thanh toán khi nhận hàng (COD)', logo: '', description: 'Thanh toán bằng tiền mặt khi nhận hàng', fee: 0, active: true },
             { id: 2, name: 'Chuyển khoản ngân hàng', logo: '', description: 'Chuyển khoản qua Internet Banking', fee: 0, active: true },
-            { id: 3, name: 'Ví MoMo', logo: 'https://upload.wikimedia.org/wikipedia/vi/f/fe/MoMo_Logo.png', description: 'Thanh toán qua ví điện tử MoMo', fee: 0, active: true },
+            { id: 3, name: 'Ví MoMo', logo: 'https://cdn.haitrieu.com/wp-content/uploads/2022/10/Logo-MoMo-Circle.png', description: 'Thanh toán qua ví điện tử MoMo', fee: 0, active: true },
             { id: 4, name: 'VNPay', logo: 'https://vinadesign.vn/uploads/images/2023/05/vnpay-logo-vinadesign-25-12-57-55.jpg', description: 'Thanh toán qua VNPay QR', fee: 0, active: true },
             { id: 5, name: 'ZaloPay', logo: 'https://cdn.haitrieu.com/wp-content/uploads/2022/10/Logo-ZaloPay-Square.png', description: 'Thanh toán qua ví ZaloPay', fee: 0, active: true },
             { id: 6, name: 'Thẻ Visa/Mastercard', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/200px-Visa_Inc._logo.svg.png', description: 'Thanh toán bằng thẻ tín dụng/ghi nợ', fee: 1.5, active: true }
